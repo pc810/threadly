@@ -4,22 +4,30 @@ import com.threadly.auth.TokenDTO;
 import com.threadly.auth.application.service.AuthInternalApi;
 import com.threadly.auth.domain.RegisterUserRequest;
 import com.threadly.common.CookieUtil;
+import com.threadly.common.UserPrincipal;
+import com.threadly.user.UserDTO;
+import com.threadly.user.UserExternalService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("auth")
 @RequiredArgsConstructor
 public class AuthController {
 
   private final AuthInternalApi authInternalApi;
+  private final UserExternalService userExternalService;
   private final CookieUtil cookieUtil;
 
   @Operation(
@@ -87,5 +95,21 @@ public class AuthController {
     cookieUtil.clearCookie(response, "refresh_token");
     return ResponseEntity.noContent().build();
   }
+
+  @GetMapping("me")
+  @Operation(
+      summary = "Authenticated user info",
+      description = "Returns authenticated user info"
+  )
+  public ResponseEntity<UserDTO> getUser(@AuthenticationPrincipal UserPrincipal principal) {
+
+    log.info("principal={}",principal);
+
+    var user = userExternalService.getUserById(UUID.fromString(principal.getName()));
+
+    return user.map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.notFound().build());
+  }
+
 
 }

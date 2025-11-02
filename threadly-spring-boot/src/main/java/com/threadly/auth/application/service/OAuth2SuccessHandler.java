@@ -51,7 +51,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     cookieUtil.addCookie(response, "refresh_token", refreshToken, expires * 2);
 
     // Redirect frontend
-    response.sendRedirect("http://localhost:3000/login-success?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8));
+    response.sendRedirect("http://localhost:3000/login/success?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8));
   }
 
 }
