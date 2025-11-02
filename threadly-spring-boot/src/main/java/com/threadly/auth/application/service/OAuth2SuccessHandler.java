@@ -1,0 +1,57 @@
+package com.threadly.auth.application.service;
+
+
+import com.threadly.common.AuthProvider;
+import com.threadly.common.CookieUtil;
+import com.threadly.user.UserCreateRequest;
+import com.threadly.user.UserExternalService;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
+
+  private final UserExternalService userExternalService;
+  private final JwtService jwtService;
+  private final CookieUtil cookieUtil;
+
+  @Override
+  public void onAuthenticationSuccess(
+      jakarta.servlet.http.HttpServletRequest request,
+      HttpServletResponse response,
+      Authentication authentication
+  ) throws IOException {
+    OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+    String email = oAuth2User.getAttribute("email");
+    String name = oAuth2User.getAttribute("name");
+
+
+    var userRequest = new UserCreateRequest(
+        email,
+        email.split("@")[0],
+        AuthProvider.GOOGLE
+    );
+
+    var userId = userExternalService.createOrGetUser(userRequest);
+
+    String accessToken = jwtService.createAccessToken(userId, Map.of("role", "USER"));
+    String refreshToken = jwtService.createRefreshToken(userId);
+    long expires = jwtService.getExpiration();
+
+    cookieUtil.addCookie(response, "access_token", accessToken, expires);
+    cookieUtil.addCookie(response, "refresh_token", refreshToken, expires * 2);
+
+    // Redirect frontend
+    response.sendRedirect("http://localhost:3000/login-success?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8));
+  }
+
+}

@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: threadly-services
+  output:
+    ansi:
+      enabled: always
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 633490798203-cu1n5gt964mnqa9pm6lpmkog102bjnqo.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - openid
+              - profile
+              - email
+        provider:
+          google:
+            issuer-uri: https://accounts.google.com
+springdoc:
+  show-actuator=true:
+
+logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){blue} %clr([%X{traceId:-},%X{spanId:-}]){cyan} %clr(${LOG_LEVEL_PATTERN:-%5p}) %m%n"
+
+threadly:
+  security:
+    jwt:
+      secret: UZjBmGoDLCb0PnAcmnSjZdkcZnNoN35S
+      access-ms: 900000
+      refresh-ms: 1209600000
