@@ -67,7 +67,11 @@ class SecurityConfig {
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/public/**", "/auth/**", "/oauth2/**").permitAll()
+            .requestMatchers("/public/**", "/auth/login","/auth/logout", "/auth/register", "/oauth2/**", "/v3/api-docs/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/swagger-resources/**",
+                "/webjars/**").permitAll()
             .anyRequest().authenticated()
         )
         .oauth2Login(oauth2 -> oauth2
