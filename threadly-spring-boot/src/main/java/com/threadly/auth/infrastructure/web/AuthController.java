@@ -1,7 +1,7 @@
 package com.threadly.auth.infrastructure.web;
 
 import com.threadly.auth.TokenDTO;
-import com.threadly.auth.application.service.AuthInternalApi;
+import com.threadly.auth.application.usecase.AuthInternalApi;
 import com.threadly.auth.domain.RegisterUserRequest;
 import com.threadly.common.CookieUtil;
 import com.threadly.common.UserPrincipal;

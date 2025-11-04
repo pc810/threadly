@@ -1,11 +1,11 @@
 package com.threadly.auth.application.service;
 
 import com.threadly.auth.TokenDTO;
+import com.threadly.auth.application.usecase.AuthInternalApi;
 import com.threadly.auth.application.usecase.JwtInternalApi;
 import com.threadly.auth.domain.RegisterUserRequest;
 import com.threadly.common.AuthProvider;
 import com.threadly.user.LocalUserCreateRequest;
-import com.threadly.user.UserCreateRequest;
 import com.threadly.user.UserExternalService;
 import java.util.Map;
 import java.util.UUID;
