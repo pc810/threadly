@@ -12,7 +12,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -35,7 +34,9 @@ const postSchema = z.object({
   community: z.string().min(1, "Please select a community"),
   type: z.enum(["text", "media", "link"]),
   title: z.string().min(3, "Title must be at least 3 characters"),
-  content: z.string().optional().nullable(),
+  contentJson: z.string().nullable().optional(),
+  contentHtml: z.string().nullable().optional(),
+  contentText: z.string().nullable().optional(),
   media: z
     .any()
     .optional()
@@ -167,14 +168,18 @@ export default function Page() {
           {postType == "text" && (
             <FormField
               control={form.control}
-              name="content"
-              render={({ field }) => (
+              name="contentHtml"
+              render={() => (
                 <FormItem>
-                  <FormLabel>Body</FormLabel>
+                  <FormLabel>Content</FormLabel>
                   <FormControl>
                     <RichTextEditor
-                      value={field.value ?? ""}
-                      onChange={field.onChange}
+                      value={form.getValues("contentJson") ?? ""}
+                      onChange={(content) => {
+                        form.setValue("contentJson", content.json);
+                        form.setValue("contentHtml", content.html);
+                        form.setValue("contentText", content.text);
+                      }}
                       placeholder="Write your post content..."
                     />
                   </FormControl>

@@ -1,5 +1,6 @@
 package com.threadly.post.domain;
 
+import com.threadly.post.CreatePostRequest;
 import com.threadly.post.PostType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import java.time.Instant;
@@ -45,6 +47,20 @@ public class Post {
   @Column(nullable = false, length = 20)
   private PostType type;
 
+  @Column(columnDefinition = "jsonb", nullable = false)
+  private String contentJson;
+
+  @Lob
+  @Column(columnDefinition = "text")
+  private String contentHtml;
+
+  @Lob
+  @Column(columnDefinition = "text")
+  private String contentText;
+
+  @Column(columnDefinition = "text")
+  private String link;
+
   @CreationTimestamp
   @Column(updatable = false, nullable = false)
   private Instant createdAt;
@@ -57,4 +73,28 @@ public class Post {
   @Column(nullable = false)
   private Long version;
 
+  public static Post from(CreatePostRequest request, UUID userId) {
+    var postBuilder = Post.builder()
+        .userId(userId)
+        .title(request.title())
+        .type(request.type());
+
+    switch (request.type()) {
+      case TEXT -> postBuilder.contentJson(request.contentJson())
+          .contentHtml(request.contentHtml())
+          .contentText(request.contentText())
+          .link("");
+      case MEDIA -> postBuilder.contentJson("{}")
+          .contentHtml("")
+          .contentText("")
+          .link(request.link());
+      case LINK -> postBuilder.contentJson("{}")
+          .contentHtml("")
+          .contentText("")
+          .link("");
+    }
+
+    return postBuilder
+        .build();
+  }
 }

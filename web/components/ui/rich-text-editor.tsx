@@ -17,9 +17,15 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
+export type EditorContentFormats = {
+  json: string;
+  html: string;
+  text: string;
+};
+
 type RichTextEditorProps = {
   value?: string;
-  onChange?: (value: string) => void;
+  onChange?: (content: EditorContentFormats) => void;
   placeholder?: string;
   className?: string;
 };
@@ -44,7 +50,19 @@ export function RichTextEditor({
         placeholder,
       }),
     ],
-    content: value,
+    // content: value,
+    content: (() => {
+      try {
+        // Detect if value is JSON and parse it
+        const parsed = JSON.parse(value);
+        if (parsed && parsed.type === "doc") {
+          return parsed;
+        }
+      } catch {
+        // Fallback to HTML
+      }
+      return value; // fallback if not JSON
+    })(),
     editorProps: {
       attributes: {
         class:
@@ -53,7 +71,10 @@ export function RichTextEditor({
     },
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
-      onChange?.(html);
+      const json = JSON.stringify(editor.getJSON());
+      const text = editor.getText();
+
+      onChange?.({ json, html, text });
     },
   });
 

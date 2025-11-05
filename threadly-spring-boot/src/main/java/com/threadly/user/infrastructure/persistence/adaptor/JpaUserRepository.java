@@ -1,4 +1,4 @@
-package com.threadly.user.application.usercase;
+package com.threadly.user.infrastructure.persistence.adaptor;
 
 import com.threadly.user.domain.User;
 import java.util.Optional;

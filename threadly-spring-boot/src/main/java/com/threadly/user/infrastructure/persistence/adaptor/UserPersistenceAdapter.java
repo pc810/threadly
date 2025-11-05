@@ -1,8 +1,6 @@
 package com.threadly.user.infrastructure.persistence.adaptor;
 
 
-import com.threadly.user.UserDTO;
-import com.threadly.user.application.usercase.JpaUserRepository;
 import com.threadly.user.domain.User;
 import com.threadly.user.infrastructure.persistence.UserRepository;
 import java.util.Optional;
