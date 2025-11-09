@@ -172,7 +172,8 @@ export const RichTextContent = ({ value }: { value: Content }) => {
     // content: value,
     content: value,
     editorProps: editorProps,
+    editable: false,
   });
 
-  return <EditorContent editor={editor} />;
+  return <EditorContent editor={editor} contentEditable={false} />;
 };

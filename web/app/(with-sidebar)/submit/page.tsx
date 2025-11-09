@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/file-upload";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useCreatePost } from "@/query/post.query";
+import { useCommunities } from "@/query/community.query";
 
 const postSchema = z.object({
   community: z.string().min(1, "Please select a community"),
@@ -51,35 +52,41 @@ const postSchema = z.object({
     .nullable(),
 });
 
+const defaultValues: PostFormValues = {
+  community: "",
+  type: "text",
+  title: "",
+  media: [],
+  link: "",
+};
+
 type PostFormValues = z.infer<typeof postSchema>;
 
 export default function Page() {
   const form = useForm<PostFormValues>({
     resolver: zodResolver(postSchema),
-    defaultValues: {
-      community: "",
-      type: "text",
-      title: "",
-      media: [],
-      link: "",
-    },
+    defaultValues: defaultValues,
   });
 
   const postType = form.watch("type");
 
+  const communtiesQuery = useCommunities();
+
   const createPostQuery = useCreatePost();
 
   function onSubmit(values: PostFormValues) {
-    console.log(values);
-    createPostQuery.mutateAsync({
-      title: values.title,
-      type: values.type.toUpperCase(),
-      link: values.link ?? "",
-      contentJson: values.contentJson ?? "",
-      contentText: values.contentText ?? "",
-      contentHtml: values.contentHtml ?? "",
-      communityId: "",
-    });
+    // console.log(values);
+    createPostQuery
+      .mutateAsync({
+        title: values.title,
+        type: values.type.toUpperCase(),
+        link: values.link ?? "",
+        contentJson: values.contentJson ?? "",
+        contentText: values.contentText ?? "",
+        contentHtml: values.contentHtml ?? "",
+        communityId: "",
+      })
+      .then(() => form.reset());
   }
 
   return (
@@ -107,8 +114,11 @@ export default function Page() {
                     <SelectItem value="u/Any_Yellow_123">
                       u/Any_Yellow_123
                     </SelectItem>
-                    <SelectItem value="r/react">r/react</SelectItem>
-                    <SelectItem value="r/nextjs">r/nextjs</SelectItem>
+                    {communtiesQuery.data?.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        r/{c.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />

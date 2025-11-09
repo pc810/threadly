@@ -1,6 +1,5 @@
 package com.threadly.post;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public record CreatePostRequest(

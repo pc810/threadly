@@ -46,11 +46,11 @@ public class PostController {
       @AuthenticationPrincipal UserPrincipal principal
   ) {
 
-    log.info("Creating post: title={}, principal={}", request.title(), principal);
+    log.info("creating post: title={}, principal={}", request.title(), principal);
 
     var postId = postInternalApi.createPost(request, principal.userId());
 
-    log.info("Created post with ID={}", postId);
+    log.info("created post with ID={}", postId);
 
     var location = URI.create("/posts/" + postId);
     return ResponseEntity.created(location).build();

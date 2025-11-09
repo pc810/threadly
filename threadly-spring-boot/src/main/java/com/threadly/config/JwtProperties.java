@@ -9,7 +9,7 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "threadly.security.jwt")
 public record JwtProperties(
     @NotBlank String secret,
-    @DefaultValue("900000") long accessMs, // 15min
+    @DefaultValue("86400000") long accessMs, // 15min
     @DefaultValue("1209600000") long refreshMs // 14 days
 ) {
 

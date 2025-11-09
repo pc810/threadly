@@ -29,5 +29,5 @@ threadly:
   security:
     jwt:
       secret: UZjBmGoDLCb0PnAcmnSjZdkcZnNoN35S
-      access-ms: 900000
+      access-ms: 86400000
       refresh-ms: 1209600000
