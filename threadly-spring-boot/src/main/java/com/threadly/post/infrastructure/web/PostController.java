@@ -1,6 +1,6 @@
 package com.threadly.post.infrastructure.web;
 
-import com.threadly.auth.application.usecase.PostInternalApi;
+import com.threadly.post.application.usecase.PostInternalApi;
 import com.threadly.common.UserPrincipal;
 import com.threadly.post.CreatePostRequest;
 import com.threadly.post.domain.Post;

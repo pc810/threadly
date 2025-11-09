@@ -1,4 +1,4 @@
-package com.threadly.auth.application.usecase;
+package com.threadly.post.application.usecase;
 
 import com.threadly.post.application.usercase.CreatePostUseCase;
 import com.threadly.post.application.usercase.GetPostUseCase;

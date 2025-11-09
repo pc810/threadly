@@ -1,6 +1,6 @@
 package com.threadly.post.application.service;
 
-import com.threadly.auth.application.usecase.PostInternalApi;
+import com.threadly.post.application.usecase.PostInternalApi;
 import com.threadly.post.CreatePostRequest;
 import com.threadly.post.PostCreatedEvent;
 import com.threadly.post.domain.Post;
