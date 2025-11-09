@@ -46,8 +46,9 @@ class SecurityConfig {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowedOrigins(List.of("http://localhost:3000"));
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-    config.setAllowCredentials(true); // allow cookies!
+    config.setAllowedHeaders(List.of("*")); // allow all headers
+    config.setAllowCredentials(true);
+    config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
     config.setMaxAge(3600L);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -64,19 +65,26 @@ class SecurityConfig {
     http
         .csrf(AbstractHttpConfigurer::disable)
         .cors(Customizer.withDefaults())
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/public/**", "/auth/login","/auth/logout", "/auth/register", "/oauth2/**", "/v3/api-docs/**",
-                "/swagger-ui/**",
-                "/swagger-ui.html",
-                "/swagger-resources/**",
-                "/webjars/**").permitAll()
-            .anyRequest().authenticated()
-        )
         .oauth2Login(oauth2 -> oauth2
             .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
             .successHandler(successHandler)
+        )
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(
+                "/public/**",
+                "/auth/login",
+                "/auth/logout",
+                "/auth/register",
+                "/oauth2/**",
+                "/v3/api-docs/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/swagger-resources/**",
+                "/webjars/**"
+            ).permitAll()
+            .anyRequest().authenticated()
         )
 //        .formLogin(Customizer.withDefaults())
         .userDetailsService(userDetailsService)

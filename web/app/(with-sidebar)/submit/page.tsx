@@ -29,6 +29,7 @@ import {
   FileUpload,
 } from "@/components/ui/file-upload";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { useCreatePost } from "@/query/post.query";
 
 const postSchema = z.object({
   community: z.string().min(1, "Please select a community"),
@@ -66,9 +67,19 @@ export default function Page() {
 
   const postType = form.watch("type");
 
+  const createPostQuery = useCreatePost();
+
   function onSubmit(values: PostFormValues) {
     console.log(values);
-    // handle submit logic
+    createPostQuery.mutateAsync({
+      title: values.title,
+      type: values.type.toUpperCase(),
+      link: values.link ?? "",
+      contentJson: values.contentJson ?? "",
+      contentText: values.contentText ?? "",
+      contentHtml: values.contentHtml ?? "",
+      communityId: "",
+    });
   }
 
   return (

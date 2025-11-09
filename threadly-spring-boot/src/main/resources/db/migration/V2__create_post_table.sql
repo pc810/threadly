@@ -4,7 +4,7 @@ user_id UUID not null,
 title varchar(255) not null,
 type varchar(20) not null,
 
-content jsonb not null,
+content_json jsonb not null,
 content_text text,
 content_html text,
 link text,

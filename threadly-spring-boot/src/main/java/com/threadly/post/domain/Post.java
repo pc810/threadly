@@ -13,6 +13,7 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "posts")
@@ -48,7 +51,8 @@ public class Post {
   private PostType type;
 
   @Column(columnDefinition = "jsonb", nullable = false)
-  private String contentJson;
+  @JdbcTypeCode(SqlTypes.JSON)
+  private Object contentJson;
 
   @Lob
   @Column(columnDefinition = "text")
@@ -84,11 +88,11 @@ public class Post {
           .contentHtml(request.contentHtml())
           .contentText(request.contentText())
           .link("");
-      case MEDIA -> postBuilder.contentJson("{}")
+      case MEDIA -> postBuilder.contentJson(Map.of())
           .contentHtml("")
           .contentText("")
           .link(request.link());
-      case LINK -> postBuilder.contentJson("{}")
+      case LINK -> postBuilder.contentJson(Map.of())
           .contentHtml("")
           .contentText("")
           .link("");

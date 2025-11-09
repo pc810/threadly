@@ -5,6 +5,7 @@ import com.threadly.post.CreatePostRequest;
 import com.threadly.post.PostCreatedEvent;
 import com.threadly.post.domain.Post;
 import com.threadly.post.infrastructure.persistence.PostRepository;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -41,5 +42,11 @@ public class PostService implements PostInternalApi {
   @Override
   public Optional<Post> getPost(UUID id) {
     return postRepository.findById(id);
+  }
+
+  @Override
+  public List<Post> getAllPosts() {
+    return postRepository
+        .findAll();
   }
 }

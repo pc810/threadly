@@ -1,6 +1,6 @@
 "use client";
 
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useEditor, EditorContent, Content } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import clsx from "clsx";
 
 export type EditorContentFormats = {
   json: string;
@@ -30,6 +31,29 @@ type RichTextEditorProps = {
   className?: string;
 };
 
+type RichTextExtensionsProps = {
+  placeholder: string;
+};
+
+const richTextExtensions = (props: Partial<RichTextExtensionsProps>) => [
+  StarterKit.configure({
+    bulletList: { keepMarks: true },
+    orderedList: { keepMarks: true },
+  }),
+  Link.configure({
+    openOnClick: false,
+  }),
+  Placeholder.configure({
+    placeholder: props?.placeholder,
+  }),
+];
+
+const editorProps = {
+  attributes: {
+    class: "prose prose-sm dark:prose-invert focus:outline-none",
+  },
+};
+
 export function RichTextEditor({
   value = "",
   onChange,
@@ -38,18 +62,7 @@ export function RichTextEditor({
 }: RichTextEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
-    extensions: [
-      StarterKit.configure({
-        bulletList: { keepMarks: true },
-        orderedList: { keepMarks: true },
-      }),
-      Link.configure({
-        openOnClick: false,
-      }),
-      Placeholder.configure({
-        placeholder,
-      }),
-    ],
+    extensions: richTextExtensions({ placeholder }),
     // content: value,
     content: (() => {
       try {
@@ -65,8 +78,7 @@ export function RichTextEditor({
     })(),
     editorProps: {
       attributes: {
-        class:
-          "min-h-[150px] prose prose-sm dark:prose-invert focus:outline-none",
+        class: clsx(editorProps.attributes.class, "min-h-[150px]"),
       },
     },
     onUpdate: ({ editor }) => {
@@ -152,3 +164,15 @@ export function RichTextEditor({
     </div>
   );
 }
+
+export const RichTextContent = ({ value }: { value: Content }) => {
+  const editor = useEditor({
+    immediatelyRender: false,
+    extensions: richTextExtensions({ placeholder: "" }),
+    // content: value,
+    content: value,
+    editorProps: editorProps,
+  });
+
+  return <EditorContent editor={editor} />;
+};

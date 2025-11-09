@@ -7,6 +7,7 @@ import com.threadly.post.domain.Post;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +16,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/posts")
 @AllArgsConstructor
 @Slf4j
 public class PostController {
@@ -42,7 +45,8 @@ public class PostController {
       @Valid @RequestBody CreatePostRequest request,
       @AuthenticationPrincipal UserPrincipal principal
   ) {
-    log.info("Creating post: title={}", request.title());
+
+    log.info("Creating post: title={}, principal={}", request.title(), principal);
 
     var postId = postInternalApi.createPost(request, principal.userId());
 
@@ -69,4 +73,28 @@ public class PostController {
     return postInternalApi.getPost(id).map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
   }
+
+
+  @Operation(
+      summary = "Get all posts",
+      description = """
+        Retrieves a paginated list of all posts available in the system.
+        Each post includes essential information such as its ID, title,
+        type, author, and timestamps. For text-based posts, content fields 
+        (JSON, HTML, text) are also included.
+        
+        This endpoint is publicly accessible, but may exclude certain 
+        restricted or draft posts depending on visibility settings.
+        
+        Pagination parameters (page, size) and optional filters (e.g. 
+        post type, user ID, or community ID) can be added in future 
+        enhancements for efficient querying.
+        """
+  )
+  @GetMapping
+  ResponseEntity<List<Post>> getAllPosts() {
+    List<Post> posts = postInternalApi.getAllPosts();
+    return ResponseEntity.ok(posts);
+  }
+
 }
