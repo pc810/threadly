@@ -2,10 +2,11 @@ import { axios } from "@/lib/axios";
 import { Community, CreateCommunityRequest } from "@/types/community";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { QueryKeys } from "./utils";
 
 export const useCommunities = () => {
   return useQuery({
-    queryKey: ["communities"],
+    queryKey: [QueryKeys.community],
     queryFn: async () => {
       const response = await axios.get<Community[]>("/communities");
       return response.data;
@@ -25,7 +26,7 @@ export function useCreateCommunity() {
     },
     onSuccess: (data) => {
       toast("Community created successfully 🎉");
-      queryClient.invalidateQueries({ queryKey: ["communities"] });
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.community] });
     },
     onError: (error: any) => {
       const message =

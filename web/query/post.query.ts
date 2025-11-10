@@ -1,17 +1,8 @@
 import { axios } from "@/lib/axios";
-import { Post } from "@/types";
+import { CreatePostRequest, Post } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-
-export type CreatePostRequest = {
-  title: string;
-  type: string;
-  link: string;
-  contentJson: string;
-  contentHtml: string;
-  contentText: string;
-  communityId: string;
-};
+import { QueryKeys } from "./utils";
 
 export function useCreatePost() {
   const queryClient = useQueryClient();
@@ -28,7 +19,7 @@ export function useCreatePost() {
         description: "Your post has been published.",
       });
       // Invalidate or refresh related post queries
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: [QueryKeys.post] });
     },
     onError: (error: any) => {
       const message =

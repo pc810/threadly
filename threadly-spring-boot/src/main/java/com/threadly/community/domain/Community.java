@@ -36,9 +36,6 @@ public class Community {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
-  @Column(nullable = false)
-  private UUID ownerId;
-
   @Column(length = 64, nullable = false)
   private String name;
 
@@ -67,14 +64,21 @@ public class Community {
   @Column(nullable = false)
   private Long version;
 
-  public static Community from(CreateCommunityRequest request, UUID ownerId) {
+  public static Community from(CreateCommunityRequest request) {
     return Community.builder()
-        .ownerId(ownerId)
         .name(request.name())
         .title(request.title())
         .description(request.description())
         .visibility(request.visibility())
         .isNsfw(request.isNsfw())
         .build();
+  }
+
+  public boolean isPublic() {
+    return visibility.equals(CommunityVisibility.PUBLIC);
+  }
+
+  public boolean isRestricted() {
+    return visibility.equals(CommunityVisibility.PRIVATE);
   }
 }

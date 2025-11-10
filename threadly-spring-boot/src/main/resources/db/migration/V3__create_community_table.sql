@@ -1,6 +1,5 @@
 create table communities(
 id UUID not null primary key,
-owner_id UUID not null,
 name varchar(64) not null,
 title varchar(128) not null,
 description varchar(512),
