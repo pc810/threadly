@@ -34,7 +34,7 @@ export function useCreatePost() {
 
 export function usePosts() {
   return useQuery({
-    queryKey: ["posts"],
+    queryKey: [QueryKeys.post],
     queryFn: async () => {
       const response = await axios.get<Post[]>("/posts", {
         withCredentials: true,
