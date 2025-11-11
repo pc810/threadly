@@ -1,7 +1,10 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { RichTextContent } from "@/components/ui/rich-text-editor";
 import { usePosts } from "@/query/post.query";
+import { Link2 } from "lucide-react";
+import Link from "next/link";
 
 export function PostList() {
   const { data: posts, isLoading, error } = usePosts();
@@ -17,7 +20,15 @@ export function PostList() {
           <p className="text-sm text-gray-500">
             {post.type} • {new Date(post.createdAt).toLocaleString()}
           </p>
-          <RichTextContent value={JSON.parse(post.contentJson)} />
+          {post.type == "TEXT" && <RichTextContent value={post.contentJson} />}
+          {post.type == "LINK" && (
+            <Button variant="link" asChild>
+              <Link href={post.link} className="flex gap-0.5 items-center">
+                <Link2 />
+                {post.link}
+              </Link>
+            </Button>
+          )}
         </div>
       ))}
     </div>

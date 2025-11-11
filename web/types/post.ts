@@ -18,7 +18,7 @@ export const createPostRequestSchema = z.object({
   title: z.string(),
   type: z.string(),
   link: z.string(),
-  contentJson: z.string(),
+  contentJson: z.any(),
   contentHtml: z.string(),
   contentText: z.string(),
   communityId: z.string(),

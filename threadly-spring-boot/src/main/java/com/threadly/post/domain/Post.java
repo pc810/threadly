@@ -52,7 +52,7 @@ public class Post {
 
   @Column(columnDefinition = "jsonb", nullable = false)
   @JdbcTypeCode(SqlTypes.JSON)
-  private Object contentJson;
+  private Map<String, Object> contentJson;
 
   @Lob
   @Column(columnDefinition = "text")
@@ -91,11 +91,11 @@ public class Post {
       case MEDIA -> postBuilder.contentJson(Map.of())
           .contentHtml("")
           .contentText("")
-          .link(request.link());
+          .link("");
       case LINK -> postBuilder.contentJson(Map.of())
           .contentHtml("")
           .contentText("")
-          .link("");
+          .link(request.link());
     }
 
     return postBuilder

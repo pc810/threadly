@@ -81,10 +81,10 @@ export default function Page() {
         title: values.title,
         type: values.type.toUpperCase(),
         link: values.link ?? "",
-        contentJson: values.contentJson ?? "",
+        contentJson: JSON.parse(values.contentJson ?? "{}"),
         contentText: values.contentText ?? "",
         contentHtml: values.contentHtml ?? "",
-        communityId: "",
+        communityId: values.community,
       })
       .then(() => form.reset());
   }
