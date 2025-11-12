@@ -4,6 +4,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gocolly/colly"
 	"github.com/pc810/threadly/threadly-go/logger"
@@ -144,12 +145,25 @@ var descriptionTags = []string{"meta[name='description']", "meta[property='og:de
 var metaImages = []string{"meta[property='og:image']", "meta[name='twitter:image']", "link[rel='image_src']"}
 var htmlImage = []string{"img[src]"}
 
-func ExtractSEO(url string) (*Website, error) {
+type CollyService struct {
+	c *colly.Collector
+}
+
+func NewCollyService() CollyService {
 
 	c := colly.NewCollector(
 		colly.AllowURLRevisit(),
 		colly.Async(true),
+		colly.MaxDepth(1),
+		colly.DetectCharset(),
 	)
+	c.DisableCookies()
+
+	c.Limit(&colly.LimitRule{
+		DomainGlob:  "*",
+		Parallelism: 50,                     // Number of concurrent requests per domain
+		RandomDelay: 100 * time.Millisecond, // Optional: jitter to avoid rate-limits
+	})
 
 	c.OnResponse(func(r *colly.Response) {
 		contentType := r.Headers.Get("Content-Type")
@@ -158,6 +172,13 @@ func ExtractSEO(url string) (*Website, error) {
 			return
 		}
 	})
+
+	return CollyService{
+		c: c,
+	}
+}
+
+func (service *CollyService) ExtractSEO(url string) (*Website, error) {
 
 	website, err := parseUrl(url)
 
@@ -169,21 +190,25 @@ func ExtractSEO(url string) (*Website, error) {
 	}
 
 	for _, t := range titleTags {
-		c.OnHTML(t, HTMLTitleHandler(website))
+		service.c.OnHTML(t, HTMLTitleHandler(website))
 	}
 	for _, t := range descriptionTags {
-		c.OnHTML(t, HTMLDescriptionHandler(website))
+		service.c.OnHTML(t, HTMLDescriptionHandler(website))
 	}
 	for _, t := range metaImages {
-		c.OnHTML(t, OgImageHandler(website))
+		service.c.OnHTML(t, OgImageHandler(website))
 	}
 	for _, t := range htmlImage {
-		c.OnHTML(t, HTMLImageHandler(website))
+		service.c.OnHTML(t, HTMLImageHandler(website))
 	}
 
-	logger.Log.Info("visit", zap.Any("url", website.Url))
-	c.Visit(website.Url)
-	c.Wait()
-	logger.Log.Info("finish", zap.Any("website", website))
+	// logger.Log.Info("visit", zap.Any("url", website.Url))
+	service.c.Visit(website.Url)
+	// service.c.Wait()
+	// logger.Log.Info("finish", zap.Any("website", website))
 	return website, nil
+}
+
+func (service *CollyService) Wait() {
+	service.c.Wait()
 }
