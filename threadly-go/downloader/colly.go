@@ -146,7 +146,18 @@ var htmlImage = []string{"img[src]"}
 
 func ExtractSEO(url string) (*Website, error) {
 
-	c := colly.NewCollector()
+	c := colly.NewCollector(
+		colly.AllowURLRevisit(),
+		colly.Async(true),
+	)
+
+	c.OnResponse(func(r *colly.Response) {
+		contentType := r.Headers.Get("Content-Type")
+		if !strings.Contains(contentType, "text/html") {
+			r.Request.Abort()
+			return
+		}
+	})
 
 	website, err := parseUrl(url)
 
@@ -172,6 +183,7 @@ func ExtractSEO(url string) (*Website, error) {
 
 	logger.Log.Info("visit", zap.Any("url", website.Url))
 	c.Visit(website.Url)
+	c.Wait()
 	logger.Log.Info("finish", zap.Any("website", website))
 	return website, nil
 }
