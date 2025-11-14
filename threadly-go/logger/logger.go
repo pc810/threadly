@@ -6,9 +6,13 @@ import (
 
 var Log *zap.Logger
 
-func Init() {
+func Init(service_name string) {
 	var err error
-	Log, err = zap.NewDevelopment()
+	Log, err = zap.NewDevelopment(
+		zap.Fields(
+			zap.String("service", service_name),
+		),
+	)
 
 	if err != nil {
 		panic(err)

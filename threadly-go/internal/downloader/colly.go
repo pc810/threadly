@@ -4,7 +4,6 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gocolly/colly"
 	"github.com/pc810/threadly/threadly-go/logger"
@@ -159,11 +158,11 @@ func NewCollyService() CollyService {
 	)
 	c.DisableCookies()
 
-	c.Limit(&colly.LimitRule{
-		DomainGlob:  "*",
-		Parallelism: 50,                     // Number of concurrent requests per domain
-		RandomDelay: 100 * time.Millisecond, // Optional: jitter to avoid rate-limits
-	})
+	// c.Limit(&colly.LimitRule{
+	// 	DomainGlob:  "*",
+	// 	Parallelism: 50,                     // Number of concurrent requests per domain
+	// 	RandomDelay: 100 * time.Millisecond, // Optional: jitter to avoid rate-limits
+	// })
 
 	c.OnResponse(func(r *colly.Response) {
 		contentType := r.Headers.Get("Content-Type")
@@ -203,9 +202,12 @@ func (service *CollyService) ExtractSEO(url string) (*Website, error) {
 	}
 
 	// logger.Log.Info("visit", zap.Any("url", website.Url))
+	// time.Sleep(500 * time.Millisecond)
 	service.c.Visit(website.Url)
-	// service.c.Wait()
+
+	service.c.Wait()
 	// logger.Log.Info("finish", zap.Any("website", website))
+
 	return website, nil
 }
 
