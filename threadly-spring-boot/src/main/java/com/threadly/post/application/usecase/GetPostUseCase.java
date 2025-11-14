@@ -1,4 +1,4 @@
-package com.threadly.post.application.usercase;
+package com.threadly.post.application.usecase;
 
 import com.threadly.post.domain.Post;
 import java.util.List;

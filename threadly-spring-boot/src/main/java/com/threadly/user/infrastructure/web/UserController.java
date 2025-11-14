@@ -1,13 +1,11 @@
 package com.threadly.user.infrastructure.web;
 
 import com.threadly.user.UserDTO;
-import com.threadly.user.application.usercase.GetUserUseCase;
-import com.threadly.user.application.usercase.UserInternalApi;
+import com.threadly.user.application.usecase.UserInternalApi;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

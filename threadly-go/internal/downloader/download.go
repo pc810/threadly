@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/pc810/threadly/threadly-go/logger"
+	"github.com/pc810/threadly/threadly-go/internal/logger"
 	"go.uber.org/zap"
 )
 

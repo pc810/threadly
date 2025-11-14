@@ -18,3 +18,13 @@ func Init(service_name string) {
 		panic(err)
 	}
 }
+
+func NewWorkerLogger(serviceName string) *zap.Logger {
+	log, err := zap.NewDevelopment(
+		zap.Fields(zap.String("worker", serviceName)),
+	)
+	if err != nil {
+		panic(err)
+	}
+	return log
+}

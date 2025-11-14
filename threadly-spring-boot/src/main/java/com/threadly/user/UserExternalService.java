@@ -1,7 +1,7 @@
 package com.threadly.user;
 
-import com.threadly.user.application.usercase.CreateUserUseCase;
-import com.threadly.user.application.usercase.GetUserUseCase;
+import com.threadly.user.application.usecase.CreateUserUseCase;
+import com.threadly.user.application.usecase.GetUserUseCase;
 
 public interface UserExternalService extends GetUserUseCase, CreateUserUseCase {
 

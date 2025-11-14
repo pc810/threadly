@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gocolly/colly"
-	"github.com/pc810/threadly/threadly-go/logger"
+	"github.com/pc810/threadly/threadly-go/internal/logger"
 	"go.uber.org/zap"
 )
 

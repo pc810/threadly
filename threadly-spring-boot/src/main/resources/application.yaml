@@ -4,6 +4,12 @@ spring:
   output:
     ansi:
       enabled: always
+  modulith:
+    events:
+      externalization:
+        amqp:
+          enabled: true
+          exchange: modulith.events
   security:
     oauth2:
       client:
@@ -22,6 +28,8 @@ springdoc:
   show-actuator=true:
 
 logging:
+  level:
+    org.springframework.modulith.events: TRACE
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){blue} %clr([%X{traceId:-},%X{spanId:-}]){cyan} %clr(${LOG_LEVEL_PATTERN:-%5p}) %m%n"
 

@@ -6,7 +6,7 @@ import com.threadly.user.UserCreatedEvent;
 import com.threadly.user.UserDTO;
 import com.threadly.user.UserDetailDTO;
 import com.threadly.user.UserExternalService;
-import com.threadly.user.application.usercase.UserInternalApi;
+import com.threadly.user.application.usecase.UserInternalApi;
 import com.threadly.user.domain.User;
 import com.threadly.user.infrastructure.persistence.UserRepository;
 import java.util.Optional;

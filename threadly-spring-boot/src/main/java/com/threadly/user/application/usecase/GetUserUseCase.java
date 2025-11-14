@@ -1,4 +1,4 @@
-package com.threadly.user.application.usercase;
+package com.threadly.user.application.usecase;
 
 import com.threadly.user.UserDTO;
 import com.threadly.user.UserDetailDTO;

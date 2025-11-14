@@ -53,12 +53,19 @@ const postSchema = z.object({
 });
 
 const defaultValues: PostFormValues = {
-  community: "",
-  type: "text",
-  title: "",
+  community: "9999afbc-f041-45b9-a6a7-2f4df7926893",
+  type: "link",
+  title: "Test",
   media: [],
-  link: "",
+  link: "http://127.0.0.1:5500/demo/index.html",
 };
+// const defaultValues: PostFormValues = {
+//   community: "",
+//   type: "text",
+//   title: "",
+//   media: [],
+//   link: "",
+// };
 
 type PostFormValues = z.infer<typeof postSchema>;
 
