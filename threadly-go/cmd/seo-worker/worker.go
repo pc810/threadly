@@ -55,7 +55,7 @@ func newSeoWorker(workerID int, ctx *SEOWorkerContext) *SEOExtractWorker {
 	}
 }
 
-func start() sync.WaitGroup {
+func start() *sync.WaitGroup {
 	const workerCount = 5
 	var wg sync.WaitGroup
 	wg.Add(workerCount)
@@ -67,7 +67,7 @@ func start() sync.WaitGroup {
 			w.start()
 		}(i)
 	}
-	return wg
+	return &wg
 }
 
 func (worker *SEOExtractWorker) start() {
