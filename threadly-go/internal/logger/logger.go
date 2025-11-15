@@ -21,7 +21,7 @@ func Init(service_name string) {
 
 func NewWorkerLogger(serviceName string) *zap.Logger {
 	log, err := zap.NewDevelopment(
-		zap.Fields(zap.String("worker", serviceName)),
+		zap.Fields(zap.String("wid", serviceName)),
 	)
 	if err != nil {
 		panic(err)

@@ -180,7 +180,7 @@ func NewCollyService() CollyService {
 func (service *CollyService) ExtractSEO(url string) (*Website, error) {
 
 	website, err := parseUrl(url)
-
+	website.SEO.Images = make([]HTMLImage, 0)
 	if err != nil {
 		logger.Log.Error("parse:url",
 			zap.String("url", url),

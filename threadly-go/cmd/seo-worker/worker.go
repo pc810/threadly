@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -17,8 +18,10 @@ import (
 const (
 	RabbitURL          = "amqp://guest:guest@localhost:5672/"
 	PostEventsExchange = "post.events.exchange"
-	PostQueue          = "post.link.queue"
-	RoutingKey         = "post.link.created"
+	CreatePostQueue    = "post.link.created.queue"
+	CreatedRoutingKey  = "post.link.created"
+	CompletePostQueue  = "post.link.complete.queue"
+	CompleteRoutingKey = "post.link.complete"
 )
 
 func failOnError(err error, msg string) {
@@ -33,8 +36,9 @@ type LinkPostCreatedEvent struct {
 	Link   string `json:"link"`
 }
 
-type ExtractSEOCompleteEvent struct {
+type LinkPostCompletedEvent struct {
 	Id          string
+	PostId      string
 	CompletedAt time.Time
 	Website     *downloader.Website
 }
@@ -45,7 +49,9 @@ type SEOExtractWorker struct {
 }
 
 type SEOWorkerContext struct {
-	msgs <-chan amqp.Delivery
+	linkPostCreatedMsgs <-chan amqp.Delivery
+	ch                  *amqp.Channel
+	conn                *amqp.Connection
 }
 
 func newSeoWorker(workerID int, ctx *SEOWorkerContext) *SEOExtractWorker {
@@ -55,106 +61,135 @@ func newSeoWorker(workerID int, ctx *SEOWorkerContext) *SEOExtractWorker {
 	}
 }
 
-func start() *sync.WaitGroup {
-	const workerCount = 5
+func start(ctx context.Context, workerCount int) *sync.WaitGroup {
 	var wg sync.WaitGroup
 	wg.Add(workerCount)
-	ctx := newSeoWorkerContext()
+
+	seoCtx := newSeoWorkerContext()
+
 	for i := 0; i < workerCount; i++ {
 		go func(workerID int) {
-			w := newSeoWorker(workerID, ctx)
 			defer wg.Done()
-			w.start()
+			w := newSeoWorker(workerID, seoCtx)
+			w.start(ctx)
 		}(i)
 	}
 	return &wg
 }
 
-func (worker *SEOExtractWorker) start() {
-	worker.log.Info("starter worker")
-	for d := range worker.context.msgs {
-		var event LinkPostCreatedEvent
-		if err := json.Unmarshal(d.Body, &event); err != nil {
-			worker.log.Error("Failed to unmarshal: %v", zap.Error(err))
-			continue
-		}
-		worker.log.Info("Received event", zap.Any("event", event))
-		worker.extractSeoFromEvent(&event)
-	}
+func (w *SEOExtractWorker) start(ctx context.Context) {
+	w.log.Info("starter worker")
 
+	for {
+		select {
+		case <-ctx.Done():
+			w.log.Info("Worked stopping")
+			return
+		case d, ok := <-w.context.linkPostCreatedMsgs:
+			if !ok {
+				w.log.Info("Channel closed, stopping worker")
+				return
+			}
+
+			var event LinkPostCreatedEvent
+			if err := json.Unmarshal(d.Body, &event); err != nil {
+				w.log.Error("Failed to unmarshal", zap.Error(err))
+				continue
+			}
+
+			w.log.Info("Received event", zap.Any("event", event))
+			w.extractSeoFromEvent(&event)
+		}
+	}
 }
 
-func (worker *SEOExtractWorker) extractSeoFromEvent(event *LinkPostCreatedEvent) {
+func (w *SEOExtractWorker) extractSeoFromEvent(event *LinkPostCreatedEvent) {
 
-	worker.log.Info("started", zap.String("eventId", event.Id))
+	w.log.Info("started", zap.String("eventId", event.Id))
 
 	start := time.Now()
 
 	website, err := seo.ExtractWebsite(event.Link)
 
 	if err != nil {
-		worker.log.Error("failed", zap.Error(err), zap.String("eventId", event.Id))
+		w.log.Error("failed", zap.Error(err), zap.String("eventId", event.Id))
 	}
 
-	worker.log.Info("complete", zap.Duration("duration", time.Since(start)), zap.String("eventId", event.Id))
+	w.log.Info("complete", zap.Duration("duration", time.Since(start)), zap.String("eventId", event.Id))
+	// w.log.Info("result", zap.Any("website", website))
 
-	worker.log.Info("result", zap.Any("website", website))
+	w.publishCompleteEvent(&LinkPostCompletedEvent{
+		Id:          event.Id,
+		PostId:      event.PostId,
+		CompletedAt: time.Now(),
+		Website:     website,
+	})
 }
 
-func (worker *SEOExtractWorker) publishCompletedMessage() {
+func (w *SEOExtractWorker) publishCompleteEvent(event *LinkPostCompletedEvent) {
+	body, err := json.Marshal(event)
+	if err != nil {
+		w.log.Error("Failed to marshal complete event", zap.Error(err))
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	done := make(chan error, 1)
+
+	go func() {
+		done <- w.context.ch.Publish(
+			PostEventsExchange,
+			CompleteRoutingKey,
+			false,
+			false,
+			amqp.Publishing{
+				ContentType: "application/json",
+				Body:        body,
+			},
+		)
+	}()
+
+	select {
+	case err := <-done:
+		if err != nil {
+			w.log.Error("Failed to publish complete event", zap.Error(err))
+		} else {
+			w.log.Info("Published complete event", zap.Any("event", event))
+		}
+	case <-ctx.Done():
+		w.log.Error("Timeout publishing complete event", zap.String("eventId", event.Id))
+	}
 
 }
 
 func newSeoWorkerContext() *SEOWorkerContext {
 	conn, err := amqp.Dial(RabbitURL)
 	failOnError(err, "Failed to connect to RabbitMQ")
-	defer conn.Close()
 
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open a channel")
-	defer ch.Close()
 
-	err = ch.ExchangeDeclare(
-		PostEventsExchange, // name
-		"direct",           // type
-		true,               // durable
-		false,              // auto-deleted
-		false,              // internal
-		false,              // no-wait
-		nil,                // arguments
-	)
+	err = ch.ExchangeDeclare(PostEventsExchange, "direct", true, false, false, false, nil)
 	failOnError(err, "Failed to declare exchange")
 
-	// Declare queue
-	q, err := ch.QueueDeclare(
-		PostQueue, // name
-		true,      // durable
-		false,     // delete when unused
-		false,     // exclusive
-		false,     // no-wait
-		nil,       // arguments
-	)
-	failOnError(err, "Failed to declare queue")
+	createdQ, err := ch.QueueDeclare(CreatePostQueue, true, false, false, false, nil)
+	failOnError(err, "Failed to declare created queue")
+	err = ch.QueueBind(createdQ.Name, CreatedRoutingKey, PostEventsExchange, false, nil)
+	failOnError(err, "Failed to bind created queue")
 
-	err = ch.QueueBind(
-		q.Name,             // queue name
-		RoutingKey,         // routing key
-		PostEventsExchange, // exchange
-		false,
-		nil,
-	)
-	failOnError(err, "Failed to bind queue")
+	completeQ, err := ch.QueueDeclare(CompletePostQueue, true, false, false, false, nil)
+	failOnError(err, "Failed to declare complete queue")
+	err = ch.QueueBind(completeQ.Name, CompleteRoutingKey, PostEventsExchange, false, nil)
+	failOnError(err, "Failed to bind complete queue")
 
-	msgs, err := ch.Consume(
-		q.Name, // queue
-		"",     // consumer
-		true,   // auto-ack
-		false,  // exclusive
-		false,  // no-local
-		false,  // no-wait
-		nil,    // args
-	)
+	msgs, err := ch.Consume(createdQ.Name, "", true, false, false, false, nil)
 	failOnError(err, "Failed to register consumer")
 
-	return &SEOWorkerContext{msgs: msgs}
+	return &SEOWorkerContext{
+		linkPostCreatedMsgs: msgs,
+		ch:                  ch,
+		conn:                conn,
+	}
 }
