@@ -61,10 +61,11 @@ type DownloadedImage struct {
 }
 
 type Media struct {
-	BasePath  string                     `json:"basePath"`
-	Provider  string                     `json:"provider"`
-	Filename  string                     `json:"filename"`
-	Dimension *downloader.ImageDimension `json:"dimension"`
+	BasePath    string                     `json:"basePath"`
+	Provider    string                     `json:"provider"`
+	Filename    string                     `json:"filename"`
+	ContentType string                     `json:"contentType"`
+	Dimension   *downloader.ImageDimension `json:"dimension"`
 }
 
 type PostMetaSeo struct {
@@ -265,16 +266,17 @@ func (w *ImageWorker) downloadImages(event *LinkPostCompletedEvent) {
 	bestImage.Storage = w.context.storage.GetProvider()
 
 	postMetaUpdateEvent := &PostMetaUpdateEvent{
-		Id:     bestImage.Id,
-		PostId: event.Id,
+		Id:     event.Id,
+		PostId: event.PostId,
 		SEO: &PostMetaSeo{
 			Title:       event.Website.SEO.Title,
 			Description: event.Website.SEO.Description,
 			Media: &Media{
-				BasePath:  w.context.storage.GetBasePath(),
-				Provider:  w.context.storage.GetProvider(),
-				Filename:  bestImage.File.Filename,
-				Dimension: bestImage.File.Dimension,
+				BasePath:    w.context.storage.GetBasePath(),
+				Provider:    w.context.storage.GetProvider(),
+				ContentType: bestImage.File.ContentType,
+				Filename:    bestImage.File.Filename,
+				Dimension:   bestImage.File.Dimension,
 			},
 		},
 	}

@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { RichTextContent } from "@/components/ui/rich-text-editor";
-import { usePosts } from "@/query/post.query";
+import { usePostLink, usePosts } from "@/query/post.query";
+import { Post } from "@/types";
 import { Link2 } from "lucide-react";
 import Link from "next/link";
 
@@ -21,16 +22,27 @@ export function PostList() {
             {post.type} • {new Date(post.createdAt).toLocaleString()}
           </p>
           {post.type == "TEXT" && <RichTextContent value={post.contentJson} />}
-          {post.type == "LINK" && (
-            <Button variant="link" asChild>
-              <Link href={post.link} className="flex gap-0.5 items-center">
-                <Link2 />
-                {post.link}
-              </Link>
-            </Button>
-          )}
+          {post.type == "LINK" && <PostLink post={post} />}
         </div>
       ))}
     </div>
   );
 }
+
+const PostLink = ({ post }: { post: Post }) => {
+  const { data, isLoading } = usePostLink(post.id);
+
+  if (isLoading) return <>Loading</>;
+
+  return (
+    <>
+      <Button variant="link" asChild>
+        <Link href={post.link} className="flex gap-0.5 items-center">
+          <Link2 />
+          {post.link}
+        </Link>
+      </Button>
+      {JSON.stringify(data)}
+    </>
+  );
+};

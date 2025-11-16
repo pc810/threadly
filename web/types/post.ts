@@ -1,4 +1,5 @@
 import z from "zod";
+import { instant } from "./common";
 
 export interface Post {
   id: string;
@@ -14,6 +15,16 @@ export interface Post {
   version: number;
 }
 
+export const postLinkSchema = z.object({
+  id: z.uuid(),
+  postId: z.uuid(),
+  mediaId: z.uuid(),
+  title: z.string(),
+  description: z.string(),
+  createdAt: instant.optional(),
+  updatedAt: instant.optional(),
+});
+
 export const createPostRequestSchema = z.object({
   title: z.string(),
   type: z.string(),
@@ -25,3 +36,4 @@ export const createPostRequestSchema = z.object({
 });
 
 export type CreatePostRequest = z.infer<typeof createPostRequestSchema>;
+export type PostLink = z.infer<typeof postLinkSchema>;

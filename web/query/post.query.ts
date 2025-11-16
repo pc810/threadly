@@ -1,5 +1,5 @@
 import { axios } from "@/lib/axios";
-import { CreatePostRequest, Post } from "@/types";
+import { CreatePostRequest, Post, PostLink } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { QueryKeys } from "./utils";
@@ -37,6 +37,18 @@ export function usePosts() {
     queryKey: [QueryKeys.post],
     queryFn: async () => {
       const response = await axios.get<Post[]>("/posts", {
+        withCredentials: true,
+      });
+      return response.data;
+    },
+  });
+}
+
+export function usePostLink(postId: string) {
+  return useQuery({
+    queryKey: [QueryKeys.post, postId, QueryKeys.postLink],
+    queryFn: async () => {
+      const response = await axios.get<PostLink>(`/posts/${postId}/post-link`, {
         withCredentials: true,
       });
       return response.data;

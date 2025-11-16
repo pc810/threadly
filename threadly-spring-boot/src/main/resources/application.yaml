@@ -10,6 +10,10 @@ spring:
         amqp:
           enabled: true
           exchange: modulith.events
+  rabbitmq:
+    listener:
+      simple:
+        missing-queues-fatal: false
   security:
     oauth2:
       client:

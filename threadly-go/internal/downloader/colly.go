@@ -255,11 +255,12 @@ func NewImageCollyService(prefix string, storageService storage.StorageService, 
 
 		if onResult != nil {
 			onResult(ImageResult{
-				URL:       r.Request.URL.String(),
-				Filename:  filename,
-				Size:      size,
-				Err:       nil,
-				Dimension: GetImageDimensions(r.Body),
+				URL:         r.Request.URL.String(),
+				Filename:    filename,
+				Size:        size,
+				Err:         nil,
+				Dimension:   GetImageDimensions(r.Body),
+				ContentType: contentType,
 			})
 		}
 	})
