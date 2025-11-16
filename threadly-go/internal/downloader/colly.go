@@ -25,8 +25,8 @@ import (
 )
 
 type ImageDimension struct {
-	Width  int
-	Height int
+	Width  int `json:"width"`
+	Height int `json:"height"`
 }
 
 func (d *ImageDimension) Ratio() float64 {
@@ -39,11 +39,12 @@ func (d *ImageDimension) Ratio() float64 {
 }
 
 type ImageResult struct {
-	URL       string          `json:"url"`
-	Filename  string          `json:"filename"`
-	Size      int             `json:"size"`
-	Dimension *ImageDimension `json:"dimension"`
-	Err       error           `json:"error"`
+	ContentType string          `json:"contentType"`
+	URL         string          `json:"url"`
+	Filename    string          `json:"filename"`
+	Size        int             `json:"size"`
+	Dimension   *ImageDimension `json:"dimension"`
+	Err         error           `json:"error"`
 }
 
 type HTMLImage struct {
@@ -248,7 +249,7 @@ func NewImageCollyService(prefix string, storageService storage.StorageService, 
 
 		size := len(r.Body)
 
-		if err := storageService.Save(filename, r.Body); err != nil {
+		if err := storageService.Save(filename, r.Body, contentType); err != nil {
 			fmt.Println("Failed to save image:", err)
 		}
 

@@ -18,14 +18,14 @@ import (
 )
 
 const (
-	RabbitURL                  = "amqp://guest:guest@localhost:5672/"
-	PostEventsExchange         = "post.events.exchange"
-	CreatePostQueue            = "post.link.created.queue"
-	CreatedRoutingKey          = "post.link.created"
-	CompletePostQueue          = "post.link.complete.queue"
-	CompleteRoutingKey         = "post.link.complete"
-	CompleteMediaDownloadQueue = "media.download.complete.queue"
-	CompleteMediaRoutingKey    = "media.download.complete"
+	RabbitURL                 = "amqp://guest:guest@localhost:5672/"
+	PostEventsExchange        = "post.events.exchange"
+	CreatePostQueue           = "post.link.created.queue"
+	CreatedRoutingKey         = "post.link.created"
+	CompletePostQueue         = "post.link.complete.queue"
+	CompleteRoutingKey        = "post.link.complete"
+	CompletePostSEOQueue      = "post.seo.complete.queue"
+	CompletePostSEORoutingKey = "post.seo.complete"
 )
 
 func failOnError(err error, msg string) {
@@ -38,6 +38,7 @@ type ImageWorkerContext struct {
 	seoMsgs <-chan amqp.Delivery
 	ch      *amqp.Channel
 	conn    *amqp.Connection
+	storage storage.StorageService
 }
 
 type ImageWorker struct {
@@ -52,11 +53,30 @@ type LinkPostCompletedEvent struct {
 	Website     *downloader.Website
 }
 
-type ImageDownloadedEvent struct {
+type DownloadedImage struct {
 	Id      string                  `json:"id"`
 	PostId  string                  `json:"postId"`
 	File    *downloader.ImageResult `json:"file"`
 	Storage string                  `json:"storage"`
+}
+
+type Media struct {
+	BasePath  string                     `json:"basePath"`
+	Provider  string                     `json:"provider"`
+	Filename  string                     `json:"filename"`
+	Dimension *downloader.ImageDimension `json:"dimension"`
+}
+
+type PostMetaSeo struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Media       *Media `json:"image"`
+}
+
+type PostMetaUpdateEvent struct {
+	Id     string       `json:"id"`
+	PostId string       `json:"postId"`
+	SEO    *PostMetaSeo `json:"seo"`
 }
 
 func start(ctx context.Context, workerCount int) (*sync.WaitGroup, *ImageWorkerContext) {
@@ -91,18 +111,21 @@ func newImageWorkerContext() *ImageWorkerContext {
 	err = ch.QueueBind(completeQ.Name, CompleteRoutingKey, PostEventsExchange, false, nil)
 	failOnError(err, "Failed to bind complete queue")
 
-	completeMediaQ, err := ch.QueueDeclare(CompleteMediaDownloadQueue, true, false, false, false, nil)
+	completeMediaQ, err := ch.QueueDeclare(CompletePostSEOQueue, true, false, false, false, nil)
 	failOnError(err, "Failed to declare complete queue")
-	err = ch.QueueBind(completeMediaQ.Name, CompleteMediaRoutingKey, PostEventsExchange, false, nil)
+	err = ch.QueueBind(completeMediaQ.Name, CompletePostSEOQueue, PostEventsExchange, false, nil)
 	failOnError(err, "Failed to bind complete queue")
 
 	msgs, err := ch.Consume(completeQ.Name, "", false, false, false, false, nil)
 	failOnError(err, "Failed to register consumer")
 
+	service := storage.NewService("s3", "seo")
+
 	return &ImageWorkerContext{
 		seoMsgs: msgs,
 		ch:      ch,
 		conn:    conn,
+		storage: service,
 	}
 }
 
@@ -166,16 +189,16 @@ func (w *ImageWorker) downloadImages(event *LinkPostCompletedEvent) {
 		return
 	}
 
-	storageService := storage.NewService("local")
+	storageService := storage.NewService("local", "threadly-temp")
 
-	allWebsiteImageEvents := make([]*ImageDownloadedEvent, 0)
+	allWebsiteImageEvents := make([]*DownloadedImage, 0)
 
 	collyService := downloader.NewImageCollyService(event.Id, storageService,
 		func(result downloader.ImageResult) {
 			if result.Err != nil {
 				w.log.Error("Failed to save image", zap.String("url", result.URL), zap.Error(result.Err))
 			} else {
-				event := &ImageDownloadedEvent{
+				event := &DownloadedImage{
 					Id:      event.Id,
 					PostId:  event.PostId,
 					File:    &result,
@@ -216,29 +239,56 @@ func (w *ImageWorker) downloadImages(event *LinkPostCompletedEvent) {
 
 	// w.log.Info("Images", zap.Any("images", allWebsiteImageEvents))
 
-	if hasMeta {
-		w.publishDownloadedImageEvent(allWebsiteImageEvents[0])
-	} else {
+	if !hasMeta {
 		sort.Slice(allWebsiteImageEvents, func(i, j int) bool {
 			di := ratioDiff(allWebsiteImageEvents[i].File.Dimension.Width, allWebsiteImageEvents[i].File.Dimension.Height)
 			dj := ratioDiff(allWebsiteImageEvents[j].File.Dimension.Width, allWebsiteImageEvents[j].File.Dimension.Height)
 
 			return di < dj
 		})
+	}
 
-		bestImage := allWebsiteImageEvents[0]
-		w.publishDownloadedImageEvent(bestImage)
+	bestImage := allWebsiteImageEvents[0]
 
-		for i, image := range allWebsiteImageEvents {
-			if i != 0 {
-				storageService.Delete(image.File.Filename)
-			}
+	tempBestImage, err := storageService.Get(bestImage.File.Filename)
+
+	if err != nil {
+		w.log.Fatal("unable to read temp file")
+		return
+	}
+
+	if w.context.storage.Save(bestImage.File.Filename, tempBestImage, bestImage.File.ContentType) != nil {
+		w.log.Fatal("unable to persist image")
+		return
+	}
+
+	bestImage.Storage = w.context.storage.GetProvider()
+
+	postMetaUpdateEvent := &PostMetaUpdateEvent{
+		Id:     bestImage.Id,
+		PostId: event.Id,
+		SEO: &PostMetaSeo{
+			Title:       event.Website.SEO.Title,
+			Description: event.Website.SEO.Description,
+			Media: &Media{
+				BasePath:  w.context.storage.GetBasePath(),
+				Provider:  w.context.storage.GetProvider(),
+				Filename:  bestImage.File.Filename,
+				Dimension: bestImage.File.Dimension,
+			},
+		},
+	}
+	w.publishPostMetaUpdate(postMetaUpdateEvent)
+
+	for i, image := range allWebsiteImageEvents {
+		if i != 0 {
+			storageService.Delete(image.File.Filename)
 		}
-
 	}
 }
 
-func (w *ImageWorker) publishDownloadedImageEvent(event *ImageDownloadedEvent) {
+func (w *ImageWorker) publishPostMetaUpdate(event *PostMetaUpdateEvent) {
+
 	body, err := json.Marshal(event)
 
 	if err != nil {
@@ -254,7 +304,7 @@ func (w *ImageWorker) publishDownloadedImageEvent(event *ImageDownloadedEvent) {
 	go func() {
 		done <- w.context.ch.Publish(
 			PostEventsExchange,
-			CompleteMediaRoutingKey,
+			CompletePostSEOQueue,
 			false,
 			false,
 			amqp.Publishing{
