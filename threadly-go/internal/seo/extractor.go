@@ -6,7 +6,7 @@ import (
 
 func ExtractWebsite(url string) (*downloader.Website, error) {
 
-	service := downloader.NewCollyService()
+	service := downloader.NewHTMLCollyService()
 
 	return service.ExtractSEO(url)
 

@@ -61,7 +61,7 @@ func newSeoWorker(workerID int, ctx *SEOWorkerContext) *SEOExtractWorker {
 	}
 }
 
-func start(ctx context.Context, workerCount int) *sync.WaitGroup {
+func start(ctx context.Context, workerCount int) (*sync.WaitGroup, *SEOWorkerContext) {
 	var wg sync.WaitGroup
 	wg.Add(workerCount)
 
@@ -74,16 +74,17 @@ func start(ctx context.Context, workerCount int) *sync.WaitGroup {
 			w.start(ctx)
 		}(i)
 	}
-	return &wg
+
+	return &wg, seoCtx
 }
 
 func (w *SEOExtractWorker) start(ctx context.Context) {
-	w.log.Info("starter worker")
+	w.log.Info("started worker")
 
 	for {
 		select {
 		case <-ctx.Done():
-			w.log.Info("Worked stopping")
+			w.log.Info("Worker stopping")
 			return
 		case d, ok := <-w.context.linkPostCreatedMsgs:
 			if !ok {
@@ -99,7 +100,20 @@ func (w *SEOExtractWorker) start(ctx context.Context) {
 
 			w.log.Info("Received event", zap.Any("event", event))
 			w.extractSeoFromEvent(&event)
+
+			if err := d.Ack(false); err != nil {
+				w.log.Error("Failed to ack message", zap.Error(err))
+			}
 		}
+	}
+}
+
+func Close(ctx *SEOWorkerContext) {
+	if err := ctx.ch.Close(); err != nil {
+		fmt.Println("Error closing channel:", err)
+	}
+	if err := ctx.conn.Close(); err != nil {
+		fmt.Println("Error closing connection:", err)
 	}
 }
 
@@ -184,7 +198,7 @@ func newSeoWorkerContext() *SEOWorkerContext {
 	err = ch.QueueBind(completeQ.Name, CompleteRoutingKey, PostEventsExchange, false, nil)
 	failOnError(err, "Failed to bind complete queue")
 
-	msgs, err := ch.Consume(createdQ.Name, "", true, false, false, false, nil)
+	msgs, err := ch.Consume(createdQ.Name, "", false, false, false, false, nil)
 	failOnError(err, "Failed to register consumer")
 
 	return &SEOWorkerContext{

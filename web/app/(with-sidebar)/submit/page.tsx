@@ -53,7 +53,7 @@ const postSchema = z.object({
 });
 
 const defaultValues: PostFormValues = {
-  community: "9999afbc-f041-45b9-a6a7-2f4df7926893",
+  community: "362f5794-64b9-4082-9e4b-ec056d2d579a",
   type: "link",
   title: "Test",
   media: [],

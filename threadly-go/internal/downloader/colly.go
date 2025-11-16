@@ -1,14 +1,50 @@
 package downloader
 
 import (
+	"bytes"
+	"fmt"
+	"image"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
+	"net/http"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
+
+	_ "golang.org/x/image/webp"
 
 	"github.com/gocolly/colly"
+	"github.com/google/uuid"
 	"github.com/pc810/threadly/threadly-go/internal/logger"
+	"github.com/pc810/threadly/threadly-go/internal/storage"
 	"go.uber.org/zap"
 )
+
+type ImageDimension struct {
+	Width  int
+	Height int
+}
+
+func (d *ImageDimension) Ratio() float64 {
+
+	if d.Height == 0 {
+		return float64(0)
+	}
+
+	return float64(d.Width) / float64(d.Height)
+}
+
+type ImageResult struct {
+	URL       string          `json:"url"`
+	Filename  string          `json:"filename"`
+	Size      int             `json:"size"`
+	Dimension *ImageDimension `json:"dimension"`
+	Err       error           `json:"error"`
+}
 
 type HTMLImage struct {
 	Name   string
@@ -145,10 +181,11 @@ var metaImages = []string{"meta[property='og:image']", "meta[name='twitter:image
 var htmlImage = []string{"img[src]"}
 
 type CollyService struct {
-	c *colly.Collector
+	c             *colly.Collector
+	onImageResult func(result ImageResult)
 }
 
-func NewCollyService() CollyService {
+func NewHTMLCollyService() CollyService {
 
 	c := colly.NewCollector(
 		colly.AllowURLRevisit(),
@@ -177,6 +214,61 @@ func NewCollyService() CollyService {
 	}
 }
 
+func NewImageCollyService(prefix string, storageService storage.StorageService, onResult func(ImageResult)) CollyService {
+	c := colly.NewCollector(
+		colly.Async(true),
+		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"),
+	)
+	c.DisableCookies()
+	c.WithTransport(&http.Transport{
+		DisableCompression: false, // ENABLE decompression
+	})
+	c.OnResponse(func(r *colly.Response) {
+		contentType := r.Headers.Get("Content-Type")
+		if !strings.HasPrefix(contentType, "image/") {
+			r.Request.Abort()
+			return
+		}
+		filePath := filepath.Join(os.TempDir(), "threadly-temp")
+		os.MkdirAll(filePath, os.ModePerm)
+
+		ext := ""
+		switch contentType {
+		case "image/jpeg":
+			ext = ".jpg"
+		case "image/png":
+			ext = ".png"
+		case "image/webp":
+			ext = ".webp"
+		default:
+			ext = ".jpg"
+		}
+
+		filename := fmt.Sprintf("image_%s_%d_%s%s", prefix, time.Now().UnixNano(), uuid.New().String(), ext)
+
+		size := len(r.Body)
+
+		if err := storageService.Save(filename, r.Body); err != nil {
+			fmt.Println("Failed to save image:", err)
+		}
+
+		if onResult != nil {
+			onResult(ImageResult{
+				URL:       r.Request.URL.String(),
+				Filename:  filename,
+				Size:      size,
+				Err:       nil,
+				Dimension: GetImageDimensions(r.Body),
+			})
+		}
+	})
+
+	return CollyService{
+		c:             c,
+		onImageResult: onResult,
+	}
+}
+
 func (service *CollyService) ExtractSEO(url string) (*Website, error) {
 
 	website, err := parseUrl(url)
@@ -201,14 +293,37 @@ func (service *CollyService) ExtractSEO(url string) (*Website, error) {
 		service.c.OnHTML(t, HTMLImageHandler(website))
 	}
 
-	// logger.Log.Info("visit", zap.Any("url", website.Url))
-	// time.Sleep(500 * time.Millisecond)
 	service.c.Visit(website.Url)
 
 	service.c.Wait()
-	// logger.Log.Info("finish", zap.Any("website", website))
 
 	return website, nil
+}
+
+func (service *CollyService) ExtractImage(url string) error {
+
+	website, err := parseUrl(url)
+
+	if err != nil {
+		logger.Log.Error("parse:url",
+			zap.String("url", url),
+			zap.Error(err),
+		)
+		return err
+	}
+
+	service.c.Visit(website.Url)
+
+	return nil
+}
+
+func GetImageDimensions(data []byte) *ImageDimension {
+	img, _, err := image.Decode(bytes.NewReader(data))
+	if err != nil {
+		return &ImageDimension{Width: 0, Height: 0}
+	}
+	bounds := img.Bounds()
+	return &ImageDimension{Width: bounds.Dx(), Height: bounds.Dy()}
 }
 
 func (service *CollyService) Wait() {
