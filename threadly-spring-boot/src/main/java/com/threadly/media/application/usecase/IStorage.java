@@ -3,12 +3,8 @@ package com.threadly.media.application.usecase;
 import com.threadly.media.ImageMedia;
 import com.threadly.media.domain.Media;
 import java.util.Optional;
-import java.util.UUID;
 
-public interface GetMediaUseCase {
+public interface IStorage {
 
-  Optional<Media> findById(UUID id);
-
-  Optional<ImageMedia> findImageMediaById(UUID id);
-
+  ImageMedia getImage(Media media);
 }

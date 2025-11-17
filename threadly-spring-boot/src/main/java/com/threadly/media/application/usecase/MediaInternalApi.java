@@ -1,5 +1,5 @@
 package com.threadly.media.application.usecase;
 
-public interface MediaInternalApi extends CreateMediaUseCase {
+public interface MediaInternalApi extends CreateMediaUseCase ,GetMediaUseCase{
 
 }

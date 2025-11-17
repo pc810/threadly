@@ -3,4 +3,5 @@ export const QueryKeys = {
   post: "post",
   auth: "auth",
   postLink: "post-link",
+  media: "media",
 } as const;

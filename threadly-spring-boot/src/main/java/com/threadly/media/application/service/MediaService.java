@@ -1,7 +1,9 @@
 package com.threadly.media.application.service;
 
 import com.threadly.media.CreateMediaEvent;
+import com.threadly.media.ImageMedia;
 import com.threadly.media.MediaExternalApi;
+import com.threadly.media.application.usecase.IStorage;
 import com.threadly.media.application.usecase.MediaInternalApi;
 import com.threadly.media.domain.Media;
 import com.threadly.media.infrastructure.persistence.MediaRepository;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 class MediaService implements MediaInternalApi, MediaExternalApi {
 
   private final MediaRepository repository;
+  private final IStorage storageService;
 
   @Override
   public UUID createMedia(CreateMediaEvent event) {
@@ -33,5 +36,10 @@ class MediaService implements MediaInternalApi, MediaExternalApi {
   @Override
   public Optional<Media> findById(UUID id) {
     return repository.findById(id);
+  }
+
+  @Override
+  public Optional<ImageMedia> findImageMediaById(UUID id) {
+    return findById(id).map(storageService::getImage);
   }
 }

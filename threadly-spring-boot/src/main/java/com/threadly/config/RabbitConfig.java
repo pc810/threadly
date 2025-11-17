@@ -2,6 +2,8 @@ package com.threadly.config;
 
 import static com.threadly.common.RabbitUtil.POST_EVENTS_EXCHANGE;
 import static com.threadly.common.RabbitUtil.POST_QUEUE;
+import static com.threadly.common.RabbitUtil.POST_SEO_COMPLETE_QUEUE;
+import static com.threadly.common.RabbitUtil.POST_SEO_COMPLETE_ROUTING_KEY;
 import static com.threadly.common.RabbitUtil.ROUTING_KEY;
 
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +11,7 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -53,7 +56,7 @@ public class RabbitConfig {
 
   @Bean
   public Queue postQueue() {
-    return new Queue(POST_QUEUE, true);
+    return QueueBuilder.durable(POST_QUEUE).build();
   }
 
 
@@ -63,6 +66,7 @@ public class RabbitConfig {
         .to(postEventsExchange)
         .with(ROUTING_KEY);
   }
+
 
   @Bean
   public ApplicationRunner rabbitDebug(ConnectionFactory cf) {

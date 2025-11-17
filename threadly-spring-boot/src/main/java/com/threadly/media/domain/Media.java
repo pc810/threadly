@@ -71,4 +71,9 @@ public class Media {
         .contentType(event.contentType())
         .build();
   }
+
+  public boolean isImage() {
+    return contentType.startsWith("image");
+  }
+
 }

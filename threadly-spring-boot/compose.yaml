@@ -28,6 +28,7 @@ services:
       MINIO_ROOT_PASSWORD: minioadmin
     command: server /data --console-address ":9001"
     volumes:
-      - ./data/minio:/data
+      - minio_data:/minio:/data
 volumes:
   rabbitmq_data:
+  minio_data:

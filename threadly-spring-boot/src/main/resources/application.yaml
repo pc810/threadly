@@ -14,6 +14,9 @@ spring:
     listener:
       simple:
         missing-queues-fatal: false
+    template:
+      mandatory: true
+    dynamic: false
   security:
     oauth2:
       client:
@@ -38,6 +41,11 @@ logging:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){blue} %clr([%X{traceId:-},%X{spanId:-}]){cyan} %clr(${LOG_LEVEL_PATTERN:-%5p}) %m%n"
 
 threadly:
+  media-server:
+      endpoint: http://localhost:9000
+      access-key: minioadmin
+      secret-key: minioadmin
+  base-url: http://localhost:8080
   security:
     jwt:
       secret: UZjBmGoDLCb0PnAcmnSjZdkcZnNoN35S
