@@ -1,7 +1,10 @@
 "use client";
 
 import { AppPostLink } from "@/components/app-post-link";
-import { RichTextContent } from "@/components/ui/rich-text-editor";
+import {
+  RichTextContent,
+  RichTextPreview,
+} from "@/components/ui/rich-text-editor";
 import { usePost } from "@/query/post.query";
 import { Post } from "@/types";
 import clsx from "clsx";
@@ -80,7 +83,7 @@ const PostCardContent = ({
 }: React.ComponentProps<"div"> & PostProps) => {
   return (
     <div {...props}>
-      {post.type == "TEXT" && <RichTextContent value={post.contentJson} />}
+      {post.type == "TEXT" && <RichTextPreview value={post.contentText} />}
       {post.type == "LINK" && <AppPostLink post={post} />}
     </div>
   );

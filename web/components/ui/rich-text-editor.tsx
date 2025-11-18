@@ -1,6 +1,6 @@
 "use client";
 
-import { useEditor, EditorContent, Content } from "@tiptap/react";
+import { useEditor, EditorContent, Content, generateText } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -169,11 +169,16 @@ export const RichTextContent = ({ value }: { value: Content }) => {
   const editor = useEditor({
     immediatelyRender: false,
     extensions: richTextExtensions({ placeholder: "" }),
-    // content: value,
     content: value,
     editorProps: editorProps,
     editable: false,
   });
 
   return <EditorContent editor={editor} contentEditable={false} />;
+};
+
+export const RichTextPreview = ({ value }: { value: string }) => {
+  const limitedText = value.split("\n").slice(0, 5).join("\n");
+
+  return <div className="whitespace-pre-line line-clamp-3">{limitedText}</div>;
 };

@@ -7,6 +7,9 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.converters.models.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
@@ -24,6 +27,12 @@ public class PostPersistenceAdaptor implements PostRepository {
   @Override
   public List<Post> findAll() {
     return repository.findAll();
+  }
+
+  @Override
+  public List<Post> findByPage(PageRequest pageRequest) {
+    return repository.findAll(pageRequest)
+        .get().toList();
   }
 
   @Override

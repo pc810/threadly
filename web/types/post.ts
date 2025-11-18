@@ -7,7 +7,7 @@ export interface Post {
   communityId: string;
   title: string;
   type: "TEXT" | "MEDIA" | "LINK";
-  contentJson: Record<string, unknown>;
+  contentJson: Document;
   contentHtml: string;
   contentText: string;
   link: string;

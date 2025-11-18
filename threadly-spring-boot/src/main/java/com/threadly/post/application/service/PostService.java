@@ -18,6 +18,8 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,6 +74,12 @@ public class PostService implements PostInternalApi {
   }
 
   @Override
+  public List<Post> getAllPosts(int page, int size) {
+    return postRepository.findByPage(PageRequest
+        .of(page, Math.min(size, 10), Sort.by("createdAt").descending()));
+  }
+
+  @Override
   public Optional<PostLink> findPostLinkByPostId(UUID postId) {
     return postLinkRepository.findByPostId(postId);
   }
@@ -93,7 +101,6 @@ public class PostService implements PostInternalApi {
         event.seo().image().contentType(),
         event.seo().image().dimension()
     ));
-
 
     var postLink = postLinkRepository.findByPostId(event.postId());
 

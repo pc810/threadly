@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -94,8 +97,11 @@ public class PostController {
           """
   )
   @GetMapping
-  ResponseEntity<List<Post>> getAllPosts() {
-    List<Post> posts = postInternalApi.getAllPosts();
+  ResponseEntity<List<Post>> getAllPosts(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size
+  ) {
+    List<Post> posts = postInternalApi.getAllPosts(page,size);
     return ResponseEntity.ok(posts);
   }
 

@@ -10,4 +10,6 @@ public interface GetPostUseCase {
   Optional<Post> getPost(UUID id);
 
   List<Post> getAllPosts();
+
+  List<Post> getAllPosts(int page, int size);
 }
