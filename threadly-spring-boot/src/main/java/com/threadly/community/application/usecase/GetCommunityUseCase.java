@@ -8,5 +8,7 @@ import java.util.UUID;
 public interface GetCommunityUseCase {
   Optional<Community> getCommunity(UUID id);
 
+  Optional<Community> getCommunityByName(String name);
+
   List<Community> getAllCommunity();
 }

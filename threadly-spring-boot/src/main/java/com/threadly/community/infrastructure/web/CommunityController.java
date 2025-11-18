@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -78,6 +77,24 @@ public class CommunityController {
   ) {
     return communityInternalApi
         .getCommunity(id)
+        .map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.notFound().build());
+  }
+
+
+  @Operation(
+      summary = "Get a community by ID",
+      description = """          
+          Fetches detailed information about a specific community using its unique identifier.
+          Returns metadata such as name, title, description, visibility, and NSFW status.
+          """
+  )
+  @GetMapping("name/{communityName}")
+  ResponseEntity<Community> getCommunity(
+      @PathVariable String communityName
+  ) {
+    return communityInternalApi
+        .getCommunityByName(communityName)
         .map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
   }

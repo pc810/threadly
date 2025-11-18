@@ -30,6 +30,11 @@ class CommunityService implements CommunityInternalApi {
   }
 
   @Override
+  public Optional<Community> getCommunityByName(String name) {
+    return communityRepository.findByName(name);
+  }
+
+  @Override
   public List<Community> getAllCommunity() {
     return communityRepository.findAll();
   }

@@ -31,6 +31,8 @@ import {
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useCreatePost } from "@/query/post.query";
 import { useCommunities } from "@/query/community.query";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
 const postSchema = z.object({
   community: z.string().min(1, "Please select a community"),
@@ -75,9 +77,11 @@ export default function Page() {
     defaultValues: defaultValues,
   });
 
+  const { communityName } = useParams();
+
   const postType = form.watch("type");
 
-  const communtiesQuery = useCommunities();
+  const { data: communities, isLoading } = useCommunities();
 
   const createPostQuery = useCreatePost();
 
@@ -96,10 +100,19 @@ export default function Page() {
       .then(() => form.reset());
   }
 
-  return (
-    <div className="max-w-3xl mx-auto">
-      <h1 className="text-3xl font-extrabold pt-6 pb-4">Create Post</h1>
+  useEffect(() => {
+    if (isLoading) return;
+    if (communityName) {
+      const community = communities?.find((c) => c.name === communityName);
+      if (community) form.setValue("community", community.id);
+      else form.setValue("community", "u/Any_Yellow_123");
+    }
+  }, [communities, communityName, form, isLoading]);
 
+  return (
+    <div className="w-[80%] mx-auto">
+      <h1 className="text-3xl font-extrabold pt-6 pb-4">Create Post</h1>
+      {communityName}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
@@ -121,7 +134,7 @@ export default function Page() {
                     <SelectItem value="u/Any_Yellow_123">
                       u/Any_Yellow_123
                     </SelectItem>
-                    {communtiesQuery.data?.map((c) => (
+                    {(communities ?? []).map((c) => (
                       <SelectItem key={c.id} value={c.id}>
                         r/{c.name}
                       </SelectItem>

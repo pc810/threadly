@@ -27,4 +27,9 @@ public class CommunityPersistenceAdaptor implements CommunityRepository {
   public void save(Community community) {
       repository.save(community);
   }
+
+  @Override
+  public Optional<Community> findByName(String name) {
+    return repository.findByName(name);
+  }
 }

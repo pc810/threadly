@@ -3,7 +3,7 @@
 import { AppPostCard } from "@/components/app-post-card";
 import { usePosts } from "@/query/post.query";
 
-export function PostList() {
+export function AppPostList() {
   const { data: posts, isLoading, error } = usePosts();
 
   if (isLoading) return <p>Loading...</p>;

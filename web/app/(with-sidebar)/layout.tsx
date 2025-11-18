@@ -6,9 +6,11 @@ import React from "react";
 function Layout({
   children,
   widget,
+  header,
 }: {
   children: React.ReactNode;
   widget: React.ReactNode;
+  header: React.ReactNode;
 }) {
   return (
     <div className="[--header-height:calc(--spacing(14))]">
@@ -17,6 +19,7 @@ function Layout({
         <div className="flex flex-1">
           <AppSidebar />
           <SidebarInset className="flex-1 min-h-0  pt-14">
+            {header}
             <div className="flex-1 grid-cols-[minmax(0,756px)_minmax(0,316px)] mx-auto grid gap-6">
               {children}
               {widget}

@@ -11,4 +11,6 @@ public interface CommunityRepository {
   List<Community> findAll();
 
   void save(Community community);
+
+  Optional<Community> findByName(String name);
 }

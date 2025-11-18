@@ -1,4 +1,4 @@
-import { PostList } from "./post-list";
+import { AppPostList } from "@/components/app-post-list";
 
 export const iframeHeight = "800px";
 
@@ -18,7 +18,7 @@ export default function Page() {
       <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl" />
 
       <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl" /> */}
-      <PostList />
+      <AppPostList />
     </>
   );
 }
