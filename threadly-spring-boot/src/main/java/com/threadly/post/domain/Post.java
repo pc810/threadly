@@ -43,6 +43,9 @@ public class Post {
   @Column
   private UUID userId;
 
+  @Column
+  private UUID communityId;
+
   @Column(nullable = false)
   private String title;
 
@@ -81,6 +84,7 @@ public class Post {
     var postBuilder = Post.builder()
         .userId(userId)
         .title(request.title())
+        .communityId(request.communityId())
         .type(request.type());
 
     switch (request.type()) {

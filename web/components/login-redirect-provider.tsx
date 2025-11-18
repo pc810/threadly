@@ -20,7 +20,7 @@ export const LoginRedirectProvider = ({
     if (!auth && pathname !== "/login") {
       router.replace("/login");
     } else if (auth && pathname.includes("/login")) {
-      router.replace("/dashboard");
+      router.replace("/");
     }
   }, [auth, pathname, isLoading, router]);
 

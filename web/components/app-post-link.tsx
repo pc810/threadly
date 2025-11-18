@@ -10,37 +10,27 @@ import {
 import { usePostLink } from "@/query/post.query";
 import { Post } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Link2 } from "lucide-react";
-import Link from "next/link";
 import { AppImageMedia } from "@/components/app-image-media";
+import { ExternalLink } from "@/components/external-link";
 
 export const AppPostLink = ({ post }: { post: Post }) => {
   const { data, isLoading } = usePostLink(post.id);
 
   if (isLoading || data == null) return <>Loading</>;
 
+  const postlink = new URL(post.link);
+
   return (
     <>
-      <Button variant="link" asChild>
-        <Link href={post.link} className="flex gap-0.5 items-center">
-          <Link2 />
-          {post.link}
-        </Link>
-      </Button>
-      <Link
-        href={post.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block max-w-lg"
-      >
-        <Card className="p-1.5 gap-2">
-          <CardHeader className="px-2">
+      <ExternalLink href={post.link} className="block" utmId={post.id}>
+        <Card className="gap-2 border-0 shadow-none pt-1 pb-2 bg-transparent">
+          <CardHeader className="px-0">
             <CardTitle className="text-balance">{data.title}</CardTitle>
             <CardDescription className="line-clamp-3">
               {data.description}
             </CardDescription>
           </CardHeader>
-          <CardContent className="relative aspect-square max-h-[min(100%,540px)] min-h-[220px] p-0 overflow-hidden rounded-xl">
+          <CardContent className="relative  aspect-video p-0 overflow-hidden rounded-xl">
             <AppImageMedia
               mediaId={data.mediaId}
               className="absolute inset-0 w-full h-full object-cover blur-2xl brightness-100 scale-110"
@@ -54,7 +44,21 @@ export const AppPostLink = ({ post }: { post: Post }) => {
             />
           </CardContent>
         </Card>
-      </Link>
+      </ExternalLink>
+      <div className="border-t border-border pt-2 -mx-3 flex justify-between px-3 items-center">
+        <div className="font-medium text-sm text-muted-foreground">
+          {postlink.host}
+        </div>
+        <Button variant="outline" className="rounded-full" asChild>
+          <ExternalLink
+            href={post.link}
+            className="flex gap-0.5 items-center"
+            utmId={post.id}
+          >
+            Visit
+          </ExternalLink>
+        </Button>
+      </div>
     </>
   );
 };

@@ -44,6 +44,18 @@ export function usePosts() {
   });
 }
 
+export function usePost(postId: string) {
+  return useQuery({
+    queryKey: [QueryKeys.post, postId],
+    queryFn: async () => {
+      const response = await axios.get<Post>(`/posts/${postId}`, {
+        withCredentials: true,
+      });
+      return response.data;
+    },
+  });
+}
+
 export function usePostLink(postId: string) {
   return useQuery({
     queryKey: [QueryKeys.post, postId, QueryKeys.postLink],

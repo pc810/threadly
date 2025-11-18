@@ -14,6 +14,18 @@ export const useCommunities = () => {
   });
 };
 
+export const useCommunity = (communityId: string) => {
+  return useQuery({
+    queryKey: [QueryKeys.community, communityId],
+    queryFn: async () => {
+      const response = await axios.get<Community>(
+        `/communities/${communityId}`
+      );
+      return response.data;
+    },
+  });
+};
+
 export function useCreateCommunity() {
   const queryClient = useQueryClient();
 

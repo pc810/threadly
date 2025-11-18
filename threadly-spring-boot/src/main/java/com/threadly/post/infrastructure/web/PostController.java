@@ -71,7 +71,7 @@ public class PostController {
           """
   )
   @GetMapping("{id}")
-  ResponseEntity<Post> getPost(@RequestParam UUID id) {
+  ResponseEntity<Post> getPost(@PathVariable UUID id) {
     return postInternalApi.getPost(id).map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
   }

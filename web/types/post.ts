@@ -4,9 +4,10 @@ import { instant } from "./common";
 export interface Post {
   id: string;
   userId: string;
+  communityId: string;
   title: string;
   type: "TEXT" | "MEDIA" | "LINK";
-  contentJson: any;
+  contentJson: Record<string, unknown>;
   contentHtml: string;
   contentText: string;
   link: string;
