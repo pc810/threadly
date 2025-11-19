@@ -14,7 +14,7 @@ export const useCommunities = () => {
   });
 };
 
-export const useCommunity = (communityId: string) => {
+export const useCommunity = (communityId: string | undefined) => {
   return useQuery({
     queryKey: [QueryKeys.community, communityId],
     queryFn: async () => {
@@ -23,6 +23,7 @@ export const useCommunity = (communityId: string) => {
       );
       return response.data;
     },
+    enabled: communityId != null,
   });
 };
 

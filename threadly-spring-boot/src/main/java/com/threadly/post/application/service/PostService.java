@@ -80,6 +80,13 @@ public class PostService implements PostInternalApi {
   }
 
   @Override
+  public List<Post> getAllPostsByCommunityId(int page, int size, UUID communityId) {
+    log.info("fetching posts for community={}", communityId);
+    return postRepository.findByPageAndCommunityId(communityId, PageRequest
+        .of(page, Math.min(size, 10), Sort.by("createdAt").descending()));
+  }
+
+  @Override
   public Optional<PostLink> findPostLinkByPostId(UUID postId) {
     return postLinkRepository.findByPostId(postId);
   }

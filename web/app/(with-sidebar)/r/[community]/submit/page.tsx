@@ -31,8 +31,9 @@ import {
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useCreatePost } from "@/query/post.query";
 import { useCommunities } from "@/query/community.query";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { getCommunityPostCreateLink } from "@/lib/format";
 
 const postSchema = z.object({
   community: z.string().min(1, "Please select a community"),
@@ -54,20 +55,20 @@ const postSchema = z.object({
     .nullable(),
 });
 
-const defaultValues: PostFormValues = {
-  community: "37aad2f4-09a7-4a47-8822-b526b76a8697",
-  type: "link",
-  title: "Test",
-  media: [],
-  link: "http://127.0.0.1:5500/demo/index.html",
-};
 // const defaultValues: PostFormValues = {
-//   community: "",
-//   type: "text",
-//   title: "",
+//   community: "37aad2f4-09a7-4a47-8822-b526b76a8697",
+//   type: "link",
+//   title: "Test",
 //   media: [],
-//   link: "",
+//   link: "http://127.0.0.1:5500/demo/index.html",
 // };
+const defaultValues: PostFormValues = {
+  community: "",
+  type: "text",
+  title: "",
+  media: [],
+  link: "",
+};
 
 type PostFormValues = z.infer<typeof postSchema>;
 
@@ -77,7 +78,9 @@ export default function Page() {
     defaultValues: defaultValues,
   });
 
-  const { communityName } = useParams();
+  const router = useRouter();
+
+  const { community: communityName } = useParams();
 
   const postType = form.watch("type");
 
@@ -104,15 +107,22 @@ export default function Page() {
     if (isLoading) return;
     if (communityName) {
       const community = communities?.find((c) => c.name === communityName);
+      console.log("here", { communityName, communities, community });
       if (community) form.setValue("community", community.id);
       else form.setValue("community", "u/Any_Yellow_123");
     }
   }, [communities, communityName, form, isLoading]);
 
+  function handleCommunityChange(value: string): void {
+    const name = communities?.find((c) => c.id == value)?.name;
+    if (!name) return;
+    form.setValue("community", value);
+    router.push(getCommunityPostCreateLink(name));
+  }
+
   return (
     <div className="w-[80%] mx-auto">
       <h1 className="text-3xl font-extrabold pt-6 pb-4">Create Post</h1>
-      {communityName}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
@@ -122,7 +132,8 @@ export default function Page() {
               <FormItem>
                 <FormLabel>Community</FormLabel>
                 <Select
-                  onValueChange={field.onChange}
+                  onValueChange={handleCommunityChange}
+                  value={field.value}
                   defaultValue={field.value}
                 >
                   <FormControl>

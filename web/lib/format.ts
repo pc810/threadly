@@ -13,6 +13,10 @@ export const getCommunityLink = (name: string) => {
   return `/r/${name}`;
 };
 
+export const getCommunityPostCreateLink = (name: string) => {
+  return `/r/${name}/submit`;
+};
+
 export const formatCommunityName = (name: string) => {
   return `r/${name}`;
 };

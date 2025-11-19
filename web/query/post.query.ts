@@ -56,6 +56,22 @@ export function usePost(postId: string) {
   });
 }
 
+export function useCommunityPosts(communityId: string | null) {
+  return useQuery({
+    queryKey: [QueryKeys.community, communityId, QueryKeys.post],
+    queryFn: async () => {
+      const response = await axios.get<Post[]>(
+        `/posts/communities/${communityId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    },
+    enabled: !!communityId,
+  });
+}
+
 export function usePostLink(postId: string) {
   return useQuery({
     queryKey: [QueryKeys.post, postId, QueryKeys.postLink],

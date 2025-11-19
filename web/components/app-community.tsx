@@ -20,7 +20,7 @@ export const AppCommunity = ({ communityId, ...props }: AppCommunityProps) => {
 
   if (isLoading || community == null)
     return (
-      <AppCommunityCard href={""} {...props}>
+      <AppCommunityCard href={"#"} {...props}>
         <Skeleton className="size-6" />
         <Skeleton className="h-4 w-8" />
       </AppCommunityCard>
@@ -30,7 +30,7 @@ export const AppCommunity = ({ communityId, ...props }: AppCommunityProps) => {
 
   return (
     <AppCommunityCard href={communityLink} {...props}>
-      <AppCommunityAvatar src={"/"} name={community.name} />
+      <AppCommunityAvatar src={"#"} name={community.name} />
       {formatCommunityName(community.name)}
     </AppCommunityCard>
   );

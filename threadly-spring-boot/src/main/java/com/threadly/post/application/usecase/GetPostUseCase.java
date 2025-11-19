@@ -12,4 +12,6 @@ public interface GetPostUseCase {
   List<Post> getAllPosts();
 
   List<Post> getAllPosts(int page, int size);
+
+  List<Post> getAllPostsByCommunityId(int page, int size, UUID communityId);
 }

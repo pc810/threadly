@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { getTwoCharacter } from "@/lib/format";
+import { getCommunityPostCreateLink, getTwoCharacter } from "@/lib/format";
 import { useCommunityByName } from "@/query/community.query";
 import { BellOff, Ellipsis, Plus } from "lucide-react";
 import Link from "next/link";
@@ -30,7 +30,7 @@ export default function Default() {
 
         <div className="ml-auto flex items-end gap-2 self-end">
           <Button variant="outline" className="rounded-full" size="lg" asChild>
-            <Link href={`${communityName}/submit`}>
+            <Link href={getCommunityPostCreateLink(community.name)}>
               <Plus />
               Create Post
             </Link>

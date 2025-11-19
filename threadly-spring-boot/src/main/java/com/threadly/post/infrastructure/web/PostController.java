@@ -114,4 +114,15 @@ public class PostController {
             .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
+
+  @GetMapping("communities/{communityId}")
+  ResponseEntity<List<Post>> getAllPostsByCommunityName(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @PathVariable UUID communityId
+  ) {
+    List<Post> posts = postInternalApi.getAllPostsByCommunityId(page,size,communityId);
+    return ResponseEntity.ok(posts);
+  }
+
 }

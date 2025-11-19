@@ -14,6 +14,8 @@ public interface PostRepository {
 
   List<Post> findByPage(PageRequest pageRequest);
 
+  List<Post> findByPageAndCommunityId(UUID communityId, PageRequest pageRequest);
+
   void save(Post post);
 
 }
