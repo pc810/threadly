@@ -8,3 +8,11 @@ export const getTwoCharacter = (str: string) => {
     .join()
     .toUpperCase();
 };
+
+export const getCommunityLink = (name: string) => {
+  return `/r/${name}`;
+};
+
+export const formatCommunityName = (name: string) => {
+  return `r/${name}`;
+};

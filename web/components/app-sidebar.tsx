@@ -1,62 +1,58 @@
 "use client";
 
+import SimpleBar from "simplebar-react";
 import * as React from "react";
 import {
+  Accessibility,
+  Book,
   BookOpen,
   Bot,
-  Command,
   Frame,
+  Globe,
+  Home,
   LifeBuoy,
+  Mail,
   Map,
+  PersonStanding,
   PieChart,
+  Plus,
   Send,
-  Settings2,
+  ShieldIcon,
   SquareTerminal,
+  TrendingUp,
 } from "lucide-react";
 
-import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
-import { NavSecondary } from "@/components/nav-secondary";
-import { NavUser } from "@/components/nav-user";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
+import { NavMain, NavMainList } from "@/components/nav-main";
+import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
+import { useCommunities } from "@/query/community.query";
+import { formatCommunityName, getCommunityLink } from "@/lib/format";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
+  primary: [
     {
-      title: "Playground",
+      title: "Home",
       url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
+      icon: Home,
     },
     {
-      title: "Models",
+      title: "Popular",
+      url: "#",
+      icon: TrendingUp,
+    },
+    {
+      title: "Explore",
+      url: "#",
+      icon: Globe,
+    },
+    {
+      title: "Start a community",
+      url: "/submit/community",
+      icon: Plus,
+    },
+  ],
+  navMain: [
+    {
+      title: "Custom Feeds",
       url: "#",
       icon: Bot,
       items: [
@@ -75,7 +71,7 @@ const data = {
       ],
     },
     {
-      title: "Documentation",
+      title: "Recent",
       url: "#",
       icon: BookOpen,
       items: [
@@ -97,75 +93,84 @@ const data = {
         },
       ],
     },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
   ],
   navSecondary: [
     {
-      title: "Support",
+      title: "Communities",
       url: "#",
       icon: LifeBuoy,
     },
     {
-      title: "Feedback",
+      title: "Best of Reddit",
       url: "#",
       icon: Send,
     },
   ],
-  projects: [
+  rules: [
     {
-      name: "Design Engineering",
+      title: "Reddit Rules",
       url: "#",
-      icon: Frame,
+      icon: BookOpen,
     },
     {
-      name: "Sales & Marketing",
+      title: "Privacy Policy",
       url: "#",
-      icon: PieChart,
+      icon: BookOpen,
     },
     {
-      name: "Travel",
+      title: "User Agreement",
       url: "#",
-      icon: Map,
+      icon: BookOpen,
+    },
+    {
+      title: "Accessibility",
+      url: "#",
+      icon: PersonStanding,
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: communities } = useCommunities();
+  const moderationNav = {
+    title: "Moderation",
+    url: "#",
+    icon: SquareTerminal,
+    isActive: true,
+    items: [
+      {
+        title: "Mod Queue",
+        url: "#",
+        icon: ShieldIcon,
+      },
+      {
+        title: "Mod Mail",
+        url: "#",
+        icon: Mail,
+      },
+      ...(communities ?? []).map((c) => ({
+        title: formatCommunityName(c.name),
+        url: getCommunityLink(c.name),
+        community: c,
+      })),
+    ],
+  };
+
   return (
     <Sidebar
       className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
       {...props}
     >
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <SimpleBar style={{ maxHeight: "100%" }} className="px-4">
+          <NavMainList items={data.primary} />
+          <NavMain items={[moderationNav, ...data.navMain]} />
+          <div>
+            <NavMainList items={data.navSecondary} />
+            <NavMainList items={data.rules} />
+          </div>
+        </SimpleBar>
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
     </Sidebar>
   );
 }

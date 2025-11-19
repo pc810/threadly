@@ -1,11 +1,17 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  formatCommunityName,
+  getCommunityLink,
+  getTwoCharacter,
+} from "@/lib/format";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useCommunity } from "@/query/community.query";
-import { Skeleton } from "./ui/skeleton";
-import React from "react";
 import clsx from "clsx";
-import { getTwoCharacter } from "@/lib/format";
+import Link, { LinkProps } from "next/link";
+import React from "react";
+import { Button } from "./ui/button";
 
-type AppCommunityProps = React.ComponentProps<"div"> & {
+type AppCommunityProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
   communityId: string;
 };
 
@@ -14,21 +20,18 @@ export const AppCommunity = ({ communityId, ...props }: AppCommunityProps) => {
 
   if (isLoading || community == null)
     return (
-      <AppCommunityCard {...props}>
+      <AppCommunityCard href={""} {...props}>
         <Skeleton className="size-6" />
         <Skeleton className="h-4 w-8" />
       </AppCommunityCard>
     );
 
+  const communityLink = getCommunityLink(community.name);
+
   return (
-    <AppCommunityCard {...props}>
-      <Avatar className="h-8 w-8 rounded-full">
-        <AvatarImage src={"/"} alt={community.name} />
-        <AvatarFallback className="rounded-lg">
-          {getTwoCharacter(community.name)}
-        </AvatarFallback>
-      </Avatar>
-      r/{community.name}
+    <AppCommunityCard href={communityLink} {...props}>
+      <AppCommunityAvatar src={"/"} name={community.name} />
+      {formatCommunityName(community.name)}
     </AppCommunityCard>
   );
 };
@@ -36,14 +39,33 @@ export const AppCommunity = ({ communityId, ...props }: AppCommunityProps) => {
 const AppCommunityCard = ({
   className,
   ...props
-}: React.ComponentProps<"div">) => {
+}: React.AnchorHTMLAttributes<HTMLAnchorElement> & LinkProps) => {
   return (
-    <div
+    <Link
       className={clsx(
-        "flex items-center text-xs max-w-max font-medium gap-1",
+        "flex items-center text-xs max-w-max font-medium gap-1 hover:text-accent-foreground transition-colors",
         className
       )}
       {...props}
     />
+  );
+};
+
+export const AppCommunityAvatar = ({
+  src,
+  name,
+  className,
+}: {
+  src: string;
+  name: string;
+  className?: string;
+}) => {
+  return (
+    <Avatar className={clsx("size-8 rounded-full text-foreground", className)}>
+      <AvatarImage src={src} alt={name} />
+      <AvatarFallback className="rounded-lg">
+        {getTwoCharacter(name)}
+      </AvatarFallback>
+    </Avatar>
   );
 };
