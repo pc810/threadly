@@ -80,6 +80,7 @@ public class PostService implements PostInternalApi {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<Post> getAllPostsByCommunityId(int page, int size, UUID communityId) {
     log.info("fetching posts for community={}", communityId);
     return postRepository.findByPageAndCommunityId(communityId, PageRequest
