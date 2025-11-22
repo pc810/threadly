@@ -32,15 +32,7 @@ public class PostController {
 
   @Operation(
       summary = "Create a new post",
-      description = """
-          Creates a new post authored by the currently authenticated user.
-          The request body must include the post title, type, and content fields 
-          (`contentJson`, `contentHtml`, and `contentText`), which represent the 
-          editor data in multiple formats. 
-          
-          Returns the unique identifier of the newly created post.
-          Authentication is required.
-          """
+      description = "Creates a new post authored by the currently authenticated user."
   )
   @PostMapping
   public ResponseEntity<Void> createPost(
@@ -60,15 +52,7 @@ public class PostController {
 
   @Operation(
       summary = "Get post by ID",
-      description = """
-          Retrieves a post by its unique identifier.
-          Returns detailed information about the post, including its title,
-          content in multiple formats (JSON, HTML, text), author information,
-          and timestamps. 
-          
-          Accessible to all users; however, certain post types or drafts 
-          may be restricted to the author or admins.
-          """
+      description = "Retrieves a post by its unique identifier."
   )
   @GetMapping("{id}")
   ResponseEntity<Post> getPost(@PathVariable UUID id) {
@@ -79,19 +63,7 @@ public class PostController {
 
   @Operation(
       summary = "Get all posts",
-      description = """
-          Retrieves a paginated list of all posts available in the system.
-          Each post includes essential information such as its ID, title,
-          type, author, and timestamps. For text-based posts, content fields 
-          (JSON, HTML, text) are also included.
-          
-          This endpoint is publicly accessible, but may exclude certain 
-          restricted or draft posts depending on visibility settings.
-          
-          Pagination parameters (page, size) and optional filters (e.g. 
-          post type, user ID, or community ID) can be added in future 
-          enhancements for efficient querying.
-          """
+      description = "Retrieves a paginated list of all posts available in the system."
   )
   @GetMapping
   ResponseEntity<List<Post>> getAllPosts(

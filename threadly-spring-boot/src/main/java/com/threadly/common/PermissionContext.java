@@ -1,9 +1,16 @@
 package com.threadly.common;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public record PermissionContext(
-    UUID userId,
-    UUID resourceId,
-    PermissionKey permissionKey
-) {}
+    UserPrincipal principal,
+    List<PermissionKey> permissionKeys,
+    UUID resourceId
+) {
+
+  public UUID actorId() {
+    return principal == null ? null : principal.getUserId();
+  }
+}

@@ -1,25 +1,22 @@
 package com.threadly.common;
 
-import lombok.Getter;
-
-@Getter
 public enum PermissionKey {
-  COMMUNITY_VIEW(ResourceType.COMMUNITY, PermissionAction.VIEW),
-  COMMUNITY_ADD(ResourceType.COMMUNITY, PermissionAction.ADD),
-  COMMUNITY_EDIT(ResourceType.COMMUNITY, PermissionAction.EDIT),
-  COMMUNITY_DELETE(ResourceType.COMMUNITY, PermissionAction.DELETE),
 
-  COMMUNITY_MEMBERSHIP_VIEW(ResourceType.COMMUNITY_MEMBERSHIP, PermissionAction.VIEW),
-  COMMUNITY_MEMBERSHIP_ADD(ResourceType.COMMUNITY_MEMBERSHIP, PermissionAction.ADD),
-  COMMUNITY_MEMBERSHIP_EDIT(ResourceType.COMMUNITY_MEMBERSHIP, PermissionAction.EDIT),
-  COMMUNITY_MEMBERSHIP_DELETE(ResourceType.COMMUNITY_MEMBERSHIP, PermissionAction.DELETE);
+  COMMUNITY_VIEW,
+  COMMUNITY_ADD,
+  COMMUNITY_EDIT,
+  COMMUNITY_DELETE,
 
-  private final ResourceType resource;
-  private final PermissionAction action;
+  COMMUNITY_MEMBERSHIP_VIEW,
+  COMMUNITY_MEMBERSHIP_ADD,
+  COMMUNITY_MEMBERSHIP_EDIT,
+  COMMUNITY_MEMBERSHIP_DELETE,
 
-  PermissionKey(ResourceType resource, PermissionAction action) {
-    this.resource = resource;
-    this.action = action;
+  POST_VIEW,
+  POST_EDIT,
+  POST_DELETE;
+
+  public static PermissionKey of(ResourceType resource, PermissionAction action) {
+    return PermissionKey.valueOf(resource.name() + "_" + action.name());
   }
-
-  }
+}

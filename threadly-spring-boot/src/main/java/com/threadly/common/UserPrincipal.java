@@ -9,4 +9,9 @@ public record UserPrincipal(UUID userId) implements Principal {
   public String getName() {
     return userId.toString();
   }
+
+  public UUID getUserId(){
+    return userId;
+  }
+
 }

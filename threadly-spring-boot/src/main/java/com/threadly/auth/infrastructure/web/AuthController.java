@@ -103,7 +103,7 @@ public class AuthController {
   )
   public ResponseEntity<UserDTO> getUser(@AuthenticationPrincipal UserPrincipal principal) {
 
-    log.info("principal={}",principal);
+//    log.info("principal={}",principal);
 
     var user = userExternalService.getUserById(UUID.fromString(principal.getName()));
 

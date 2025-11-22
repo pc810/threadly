@@ -1,9 +1,11 @@
 package com.threadly.community.application.service;
 
 import com.threadly.community.CommunityCreatedEvent;
+import com.threadly.community.CommunityExternalApi;
 import com.threadly.community.CreateCommunityRequest;
 import com.threadly.community.application.usecase.CommunityInternalApi;
 import com.threadly.community.domain.Community;
+import com.threadly.community.domain.exception.CommunityNotFoundException;
 import com.threadly.community.infrastructure.CommunityRepository;
 import com.threadly.membership.CommunityRole;
 import com.threadly.membership.MembershipExternalApi;
@@ -18,7 +20,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @AllArgsConstructor
 @Service
-class CommunityService implements CommunityInternalApi {
+class CommunityService implements CommunityInternalApi, CommunityExternalApi {
 
   private final CommunityRepository communityRepository;
   private final MembershipExternalApi membershipExternalApi;
@@ -56,5 +58,22 @@ class CommunityService implements CommunityInternalApi {
     log.info("Community created title={} userId={}", community.getTitle(), userId);
 
     return community.getId();
+  }
+
+
+  @Override
+  public boolean canPostInCommunity(UUID communityId, UUID actorId) {
+    var community = getCommunity(communityId)
+        .orElseThrow(() -> new CommunityNotFoundException(communityId));
+
+    if (membershipExternalApi.isMember(communityId, actorId)) {
+      return true;
+    }
+
+    return community.isPublic();
+
+//    if (community.isRestricted()) {
+//      return community.hasMember(actorId);
+//    }
   }
 }
