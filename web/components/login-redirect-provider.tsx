@@ -17,14 +17,12 @@ export const LoginRedirectProvider = ({
   useEffect(() => {
     if (isLoading) return;
 
-    if (!auth && pathname !== "/login") {
+    if (!auth && pathname !== "/login" && pathname !== "/signup") {
       router.replace("/login");
-    } else if (auth && pathname.includes("/login")) {
+    } else if (auth && (pathname === "/login" || pathname === "/signup")) {
       router.replace("/");
     }
   }, [auth, pathname, isLoading, router]);
-
-  //   console.log({ auth, pathname });
 
   if (isLoading)
     return (

@@ -1,5 +1,6 @@
 package com.threadly.auth.infrastructure.web;
 
+import com.threadly.auth.LoginRequest;
 import com.threadly.auth.TokenDTO;
 import com.threadly.auth.application.usecase.AuthInternalApi;
 import com.threadly.auth.domain.RegisterUserRequest;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,14 +38,10 @@ public class AuthController {
   )
   @PostMapping("register")
   public ResponseEntity<TokenDTO> register(
-      @RequestParam String name,
-      @RequestParam String email,
-      @RequestParam String password,
+      @RequestBody RegisterUserRequest registerUserRequest,
       HttpServletResponse response) {
 
-    var tokenDTO = authInternalApi.register(new RegisterUserRequest(
-        email, password
-    ));
+    var tokenDTO = authInternalApi.register(registerUserRequest);
 
     cookieUtil.addCookie(response, "access_token", tokenDTO.accessToken(), tokenDTO.expires());
     cookieUtil.addCookie(response, "refresh_token", tokenDTO.refreshToken(),
@@ -59,11 +57,10 @@ public class AuthController {
   )
   @PostMapping("login")
   public ResponseEntity<TokenDTO> login(
-      @RequestParam String email,
-      @RequestParam String password,
+      @RequestBody LoginRequest loginRequest,
       HttpServletResponse response) {
 
-    TokenDTO tokenDTO = authInternalApi.login(email, password);
+    TokenDTO tokenDTO = authInternalApi.login(loginRequest);
 
     cookieUtil.addCookie(response, "access_token", tokenDTO.accessToken(),
         tokenDTO.expires());

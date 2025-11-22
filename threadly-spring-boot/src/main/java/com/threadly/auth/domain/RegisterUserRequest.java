@@ -2,7 +2,8 @@ package com.threadly.auth.domain;
 
 public record RegisterUserRequest(
     String email,
-    String password
+    String password,
+    String name
 ) {
 
 }

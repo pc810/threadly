@@ -1,5 +1,6 @@
 package com.threadly.auth.application.service;
 
+import com.threadly.auth.LoginRequest;
 import com.threadly.auth.TokenDTO;
 import com.threadly.auth.application.usecase.AuthInternalApi;
 import com.threadly.auth.application.usecase.JwtInternalApi;
@@ -26,11 +27,15 @@ class AuthService implements AuthInternalApi {
 
   @Override
   @Transactional
-  public TokenDTO login(String email, String rawPassword) {
-    var user = userService.getUserDetailsByEmail(email)
+  public TokenDTO login(LoginRequest loginRequest) {
+    var user = userService.getUserDetailsByEmail(loginRequest.email())
         .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
-    if (!passwordEncoder.matches(rawPassword, user.password())) {
+//    if (!passwordEncoder.matches(loginRequest.password(), user.password())) {
+//      throw new RuntimeException("Invalid credentials");
+//    }
+
+    if (!loginRequest.password().equals(user.password())) {
       throw new RuntimeException("Invalid credentials");
     }
 
@@ -40,7 +45,8 @@ class AuthService implements AuthInternalApi {
   @Override
   public TokenDTO register(RegisterUserRequest request) {
     var userId = userService.createUser(
-        new LocalUserCreateRequest(request.email(), request.password(), AuthProvider.LOCAL,
+        new LocalUserCreateRequest(request.email(), request.password(), request.name(),
+            AuthProvider.LOCAL,
             AuthProvider.LOCAL.toString()));
 
     return generateTokens(userId);

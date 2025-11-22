@@ -110,7 +110,7 @@ class UserService implements UserExternalService, UserInternalApi {
   @Transactional
   public UUID createUser(LocalUserCreateRequest request) {
     User user = User.from(request);
-    userRepository.save(user);
+    user = userRepository.saveAndFlush(user);
 
     eventPublisher.publishEvent(new UserCreatedEvent(
         user.getId(),

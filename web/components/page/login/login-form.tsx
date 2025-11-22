@@ -17,6 +17,13 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
+
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useLogin } from "@/query/auth.query";
+import { LoginRequest, loginRequestSchema } from "@/types";
 
 export function LoginForm({
   className,
@@ -25,6 +32,17 @@ export function LoginForm({
   function handleGoogleLogin(): void {
     window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/google`;
   }
+
+  const form = useForm<LoginRequest>({
+    resolver: zodResolver(loginRequestSchema),
+    defaultValues: { email: "", password: "" },
+  });
+
+  const loginMutation = useLogin();
+
+  const onSubmit = (values: LoginRequest) => {
+    loginMutation.mutate(values);
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -35,8 +53,9 @@ export function LoginForm({
             Login with your Apple or Google account
           </CardDescription>
         </CardHeader>
+
         <CardContent>
-          <form>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup>
               <Field>
                 <Button variant="outline" type="button">
@@ -63,18 +82,26 @@ export function LoginForm({
                   Login with Google
                 </Button>
               </Field>
+
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with
               </FieldSeparator>
+
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
                   id="email"
                   type="email"
                   placeholder="m@example.com"
-                  required
+                  {...form.register("email")}
                 />
+                {form.formState.errors.email && (
+                  <p className="text-sm text-red-500">
+                    {form.formState.errors.email.message}
+                  </p>
+                )}
               </Field>
+
               <Field>
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
@@ -85,18 +112,35 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+
+                <Input
+                  id="password"
+                  type="password"
+                  {...form.register("password")}
+                />
+
+                {form.formState.errors.password && (
+                  <p className="text-sm text-red-500">
+                    {form.formState.errors.password.message}
+                  </p>
+                )}
               </Field>
+
               <Field>
-                <Button type="submit">Login</Button>
+                <Button type="submit" disabled={loginMutation.isPending}>
+                  {loginMutation.isPending ? "Logging in..." : "Login"}
+                </Button>
+
                 <FieldDescription className="text-center">
-                  Don&apos;t have an account? <a href="#">Sign up</a>
+                  Don&apos;t have an account?{" "}
+                  <Link href="/signup">Sign up</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
           </form>
         </CardContent>
       </Card>
+
       <FieldDescription className="px-6 text-center">
         By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
         and <a href="#">Privacy Policy</a>.
