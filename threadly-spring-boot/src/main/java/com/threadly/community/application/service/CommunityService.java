@@ -76,4 +76,9 @@ class CommunityService implements CommunityInternalApi, CommunityExternalApi {
 //      return community.hasMember(actorId);
 //    }
   }
+
+  @Override
+  public boolean canViewCommunity(UUID resourceId, UUID actorId) {
+    return true;
+  }
 }

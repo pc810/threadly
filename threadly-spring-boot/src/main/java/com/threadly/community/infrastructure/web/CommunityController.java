@@ -69,7 +69,7 @@ public class CommunityController {
   ResponseEntity<Community> getCommunity(
       PermissionContext permissionContext
   ) {
-    log.info("permissionContext={}", permissionContext);
+
     return communityInternalApi
         .getCommunity(permissionContext.resourceId())
         .map(ResponseEntity::ok)

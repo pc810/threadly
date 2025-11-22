@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @AllArgsConstructor
-public class WebConfig implements WebMvcConfigurer {
+public class PermissionWebConfig implements WebMvcConfigurer {
 
   private final PermissionContextResolver permissionContextResolver;
 

@@ -2,7 +2,9 @@ package com.threadly.auth.infrastructure.web;
 
 import com.threadly.auth.application.service.OAuth2SuccessHandler;
 import com.threadly.auth.application.service.OAuth2UserService;
+import com.threadly.config.RestAccessDeniedHandler;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -24,7 +26,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 class SecurityConfig {
+
+  private final RestAccessDeniedHandler restAccessDeniedHandler;
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -65,6 +70,7 @@ class SecurityConfig {
     http
         .csrf(AbstractHttpConfigurer::disable)
         .cors(Customizer.withDefaults())
+        .exceptionHandling(ex -> ex.accessDeniedHandler(restAccessDeniedHandler))
         .oauth2Login(oauth2 -> oauth2
             .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
             .successHandler(successHandler)
