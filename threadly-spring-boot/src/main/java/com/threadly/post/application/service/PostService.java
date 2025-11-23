@@ -1,8 +1,10 @@
 package com.threadly.post.application.service;
 
+import com.threadly.common.AuthRole;
 import com.threadly.community.CommunityExternalApi;
 import com.threadly.media.CreateMediaEvent;
 import com.threadly.media.MediaExternalApi;
+import com.threadly.membership.CommunityRole;
 import com.threadly.post.CreatePostRequest;
 import com.threadly.post.PostCreatedEvent;
 import com.threadly.post.PostType;
@@ -125,4 +127,34 @@ public class PostService implements PostInternalApi {
       postLinkRepository.save(existingPostLink);
     }
   }
+
+  @Override
+  public Optional<AuthRole> getRole(UUID postId, UUID actorId) {
+    return getPost(postId).map(
+        post -> post.getUserId().equals(actorId) ? AuthRole.AUTHOR : AuthRole.PUBLIC);
+  }
+
+  @Override
+  public Optional<CommunityRole> getCommunityRole(UUID communityId, UUID actorId) {
+    return communityExternalApi.getRole(communityId, actorId);
+  }
+
+  @Override
+  public boolean checkAccess(AuthRole postRole, CommunityRole communityRole) {
+    return postRole == AuthRole.AUTHOR || communityRole == CommunityRole.MOD
+        || communityRole == CommunityRole.AUTHOR;
+  }
+
+  @Override
+  public boolean checkModAccess(AuthRole postRole, CommunityRole communityRole) {
+    return postRole == AuthRole.AUTHOR
+        || communityRole == CommunityRole.MOD
+        || communityRole == CommunityRole.AUTHOR;
+  }
+
+  @Override
+  public boolean checkReadAccess(AuthRole postRole, CommunityRole communityRole) {
+    return postRole == AuthRole.AUTHOR;
+  }
+
 }

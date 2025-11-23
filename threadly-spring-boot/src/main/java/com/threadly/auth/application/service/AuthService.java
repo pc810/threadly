@@ -6,6 +6,7 @@ import com.threadly.auth.application.usecase.AuthInternalApi;
 import com.threadly.auth.application.usecase.JwtInternalApi;
 import com.threadly.auth.domain.RegisterUserRequest;
 import com.threadly.common.AuthProvider;
+import com.threadly.common.AuthRole;
 import com.threadly.user.LocalUserCreateRequest;
 import com.threadly.user.UserExternalService;
 import java.util.Map;
@@ -60,5 +61,10 @@ class AuthService implements AuthInternalApi {
     return new TokenDTO(accessToken, refreshToken, jwtInternalApi.getExpiration(),
         jwtInternalApi.getExpiration() * 2,
         jwtInternalApi.getExpirationDate());
+  }
+
+  @Override
+  public AuthRole getRole(UUID userId) {
+    return userService.getUserRoleById(userId);
   }
 }

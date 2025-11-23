@@ -1,5 +1,6 @@
 package com.threadly.user.application.services;
 
+import com.threadly.common.AuthRole;
 import com.threadly.user.LocalUserCreateRequest;
 import com.threadly.user.UserCreateRequest;
 import com.threadly.user.UserCreatedEvent;
@@ -58,6 +59,11 @@ class UserService implements UserExternalService, UserInternalApi {
   }
 
   @Override
+  public AuthRole getUserRoleById(UUID userId) {
+    return getUserDetailsById(userId).map(u -> AuthRole.USER).orElse(AuthRole.PUBLIC);
+  }
+
+  @Override
   public void deleteUserById(UUID userId) {
 
     log.info("Deleting user with id={}", userId);
@@ -81,7 +87,6 @@ class UserService implements UserExternalService, UserInternalApi {
             User user = User.from(request);
 
             user = userRepository.saveAndFlush(user);
-
 
             eventPublisher.publishEvent(new UserCreatedEvent(
                 user.getId(),

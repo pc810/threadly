@@ -16,4 +16,5 @@ public interface JpaPostRepository extends JpaRepository<Post, UUID>,
   Page<Post> findByCommunityId(UUID communityId, Pageable pageable);
 
   List<Post> findByCommunityId(UUID communityId);
+
 }

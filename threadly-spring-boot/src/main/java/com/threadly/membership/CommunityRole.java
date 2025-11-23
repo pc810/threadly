@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public enum CommunityRole {
-  OWNER(AuthRole.AUTHOR),
+  AUTHOR(AuthRole.AUTHOR),
   MOD(AuthRole.MOD),
   MEMBER(AuthRole.MEMBER),
   USER(AuthRole.USER),

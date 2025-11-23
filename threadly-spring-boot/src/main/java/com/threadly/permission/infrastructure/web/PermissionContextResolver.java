@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.access.AccessDeniedException;
@@ -54,16 +55,13 @@ public class PermissionContextResolver implements HandlerMethodArgumentResolver 
         RequestAttributes.SCOPE_REQUEST);
 
     String idValue = uriVars != null ? uriVars.get("id") : null;
-    var resourceId = idValue != null ? UUID.fromString(idValue) : null;
+    Optional<UUID> resourceId =
+        idValue != null ? Optional.of(UUID.fromString(idValue)) : Optional.empty();
 
     var auth = (UsernamePasswordAuthenticationToken) webRequest.getUserPrincipal();
 
     if (auth == null) {
       throw new AccessDeniedException("User is not authenticated");
-    }
-
-    if (resourceId == null) {
-      throw new IllegalArgumentException("Resource ID not found in path variables");
     }
 
     return new PermissionContext((UserPrincipal) auth.getPrincipal(), keys, resourceId);

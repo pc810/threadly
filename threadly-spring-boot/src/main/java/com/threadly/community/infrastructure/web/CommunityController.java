@@ -71,7 +71,7 @@ public class CommunityController {
   ) {
 
     return communityInternalApi
-        .getCommunity(permissionContext.resourceId())
+        .getCommunity(permissionContext.resourceId().orElseThrow())
         .map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
   }

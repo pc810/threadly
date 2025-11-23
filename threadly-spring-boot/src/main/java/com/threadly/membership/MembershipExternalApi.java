@@ -2,6 +2,7 @@ package com.threadly.membership;
 
 import com.threadly.membership.domain.CommunityMembership;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface MembershipExternalApi {
@@ -18,4 +19,5 @@ public interface MembershipExternalApi {
 
   List<CommunityMembership> getCommunitiesForUser(UUID userId);
 
+  Optional<CommunityRole> getRole(UUID communityId, UUID actorId);
 }

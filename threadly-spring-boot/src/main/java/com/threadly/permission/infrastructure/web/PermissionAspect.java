@@ -22,7 +22,7 @@ public class PermissionAspect {
 
   @Before("@annotation(permissions)")
   public void checkPermission(JoinPoint joinPoint, Permissions permissions) throws Exception {
-    log.info("joinPoint={}", joinPoint.getSignature());
+//    log.info("joinPoint={}", joinPoint.getSignature());
 
     PermissionContext ctx = null;
     for (Object arg : joinPoint.getArgs()) {

@@ -7,6 +7,7 @@ import com.threadly.membership.MembershipExternalApi;
 import com.threadly.membership.domain.CommunityMembership;
 import com.threadly.membership.infrastructure.persistence.CommunityMembershipRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ class MembershipService implements MembershipExternalApi {
 //        .map(role -> role == CommunityRole.OWNER)
 //        .orElse(false);
     return repository.existsIdAndRole(CommunityMembershipId.from(communityId, userId),
-        CommunityRole.OWNER);
+        CommunityRole.AUTHOR);
   }
 
   @Override
@@ -64,5 +65,12 @@ class MembershipService implements MembershipExternalApi {
   @Override
   public List<CommunityMembership> getCommunitiesForUser(UUID userId) {
     return repository.findByUserId(userId);
+  }
+
+  @Override
+  public Optional<CommunityRole> getRole(UUID communityId, UUID actorId) {
+    return repository.findById(CommunityMembershipId.from(communityId, actorId)).map(
+        CommunityMembership::getRole
+    );
   }
 }

@@ -1,5 +1,8 @@
 package com.threadly.post.infrastructure.web;
 
+import com.threadly.common.PermissionContext;
+import com.threadly.common.PermissionKey;
+import com.threadly.common.Permissions;
 import com.threadly.common.UserPrincipal;
 import com.threadly.post.CreatePostRequest;
 import com.threadly.post.application.usecase.PostInternalApi;
@@ -55,8 +58,11 @@ public class PostController {
       description = "Retrieves a post by its unique identifier."
   )
   @GetMapping("{id}")
-  ResponseEntity<Post> getPost(@PathVariable UUID id) {
-    return postInternalApi.getPost(id).map(ResponseEntity::ok)
+  @Permissions({
+      PermissionKey.POST_VIEW
+  })
+  ResponseEntity<Post> getPost(PermissionContext permissionContext) {
+    return postInternalApi.getPost(permissionContext.resourceId().orElseThrow()).map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
   }
 

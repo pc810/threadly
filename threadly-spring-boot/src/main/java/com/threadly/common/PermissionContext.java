@@ -7,7 +7,7 @@ import java.util.UUID;
 public record PermissionContext(
     UserPrincipal principal,
     List<PermissionKey> permissionKeys,
-    UUID resourceId
+    Optional<UUID> resourceId
 ) {
 
   public UUID actorId() {
