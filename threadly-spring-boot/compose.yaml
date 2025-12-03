@@ -1,17 +1,17 @@
 services:
   postgres:
-    image: 'postgres:latest'
+    image: "postgres:latest"
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      - "POSTGRES_DB=mydatabase"
+      - "POSTGRES_PASSWORD=secret"
+      - "POSTGRES_USER=myuser"
     ports:
-      - '5432:5432'
+      - "5432:5432"
   rabbitmq:
-    image: 'rabbitmq:4-management'
+    image: "rabbitmq:4-management"
     ports:
-      - '5672:5672'
-      - '15672:15672'
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -21,14 +21,50 @@ services:
     image: minio/minio:latest
     container_name: local-minio
     ports:
-      - "9000:9000"   # S3 API
-      - "9001:9001"   # MinIO Console UI
+      - "9000:9000" # S3 API
+      - "9001:9001" # MinIO Console UI
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
     command: server /data --console-address ":9001"
     volumes:
       - minio_data:/minio:/data
+  spicedb-migrate:
+    image: authzed/spicedb:latest
+    depends_on:
+      - postgres
+    entrypoint: ["spicedb", "datastore", "migrate", "head"]
+    command:
+      - --datastore-engine=postgres
+      - --datastore-conn-uri=postgres://myuser:secret@postgres:5432/mydatabase?sslmode=disable
+
+  spicedb:
+    image: authzed/spicedb:latest
+    command:
+      [
+        "serve",
+        "--log-level=debug",
+        "--grpc-preshared-key=devkey",
+        "--datastore-engine=postgres",
+        "--datastore-conn-uri=postgres://myuser:secret@postgres:5432/mydatabase?sslmode=disable",
+        "--http-enabled=true",
+      ]
+    ports:
+      - "50051:50051" # gRPC API
+      - "8443:8443" # HTTP Playground + REST API
+    depends_on:
+      - postgres
+
+  spicedb-playground:
+    image: ghcr.io/authzed/spicedb-playground:latest
+    environment:
+      PLAYGROUND_GRPC_ENDPOINT: "spicedb:50051"
+      PLAYGROUND_GRPC_INSECURE: "true"
+      PLAYGROUND_GRPC_PRESHARED_KEY: "devkey"
+    ports:
+      - "3001:3000" # Playground UI
+    depends_on:
+      - spicedb
 volumes:
   rabbitmq_data:
   minio_data:

@@ -1,8 +1,6 @@
 package com.threadly.community.infrastructure.web;
 
-import com.threadly.common.PermissionContext;
-import com.threadly.common.PermissionKey;
-import com.threadly.common.Permissions;
+import com.threadly.common.UserPrincipal;
 import com.threadly.community.CreateCommunityRequest;
 import com.threadly.community.application.usecase.CommunityInternalApi;
 import com.threadly.community.domain.Community;
@@ -10,9 +8,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,14 +33,13 @@ public class CommunityController {
       description = "Creates a new community owned by the authenticated user"
   )
   @PostMapping
-  @Permissions({PermissionKey.COMMUNITY_ADD})
   ResponseEntity<Void> createCommunity(
       @Valid @RequestBody CreateCommunityRequest request,
-      PermissionContext permissionContext
+      @AuthenticationPrincipal UserPrincipal principal
   ) {
-    log.info("creating community={} principal={}", request, permissionContext.actorId());
+    log.info("creating community={} principal={}", request, principal);
 
-    var communityId = communityInternalApi.createCommunity(request, permissionContext.actorId());
+    var communityId = communityInternalApi.createCommunity(request, principal.userId());
 
     log.info("created community id={}", communityId);
 
@@ -62,16 +61,17 @@ public class CommunityController {
       summary = "Get a community by ID",
       description = "Fetches detailed information about a specific community using its unique identifier."
   )
-  @Permissions({
-      PermissionKey.COMMUNITY_VIEW,
-  })
+//  @Permissions({
+//      PermissionKey.COMMUNITY_VIEW,
+//  })
   @GetMapping("{id}")
   ResponseEntity<Community> getCommunity(
-      PermissionContext permissionContext
+      @PathVariable UUID id,
+      @AuthenticationPrincipal UserPrincipal principal
   ) {
 
     return communityInternalApi
-        .getCommunity(permissionContext.resourceId().orElseThrow())
+        .getCommunity(id)
         .map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
   }
