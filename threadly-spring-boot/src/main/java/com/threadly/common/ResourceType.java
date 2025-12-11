@@ -2,6 +2,12 @@ package com.threadly.common;
 
 public enum ResourceType {
   COMMUNITY,
-  COMMUNITY_MEMBERSHIP,
-  POST,
+  USER,
+  SYS,
+  POST;
+
+  public String value() {
+    return name().toLowerCase();
+  }
+
 }

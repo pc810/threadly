@@ -51,3 +51,6 @@ threadly:
       secret: UZjBmGoDLCb0PnAcmnSjZdkcZnNoN35S
       access-ms: 86400000
       refresh-ms: 1209600000
+  spicedb:
+      host: localhost:50051
+      token: devkey

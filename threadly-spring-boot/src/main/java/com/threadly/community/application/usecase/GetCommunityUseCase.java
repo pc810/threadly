@@ -11,4 +11,6 @@ public interface GetCommunityUseCase {
   Optional<Community> getCommunityByName(String name);
 
   List<Community> getAllCommunity();
+
+  List<Community> getAllCommunityByUser(UUID userId);
 }

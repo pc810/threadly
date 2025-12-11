@@ -12,6 +12,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,6 +59,17 @@ public class CommunityController {
   }
 
   @Operation(
+      summary = "Get all communities viewed by user",
+      description = "Retrieves a list of all communities user can view"
+  )
+  @GetMapping("me")
+  ResponseEntity<List<Community>> getUsersCommunities(
+      @AuthenticationPrincipal UserPrincipal principal
+  ) {
+    return ResponseEntity.ok(communityInternalApi.getAllCommunityByUser(principal.userId()));
+  }
+
+  @Operation(
       summary = "Get a community by ID",
       description = "Fetches detailed information about a specific community using its unique identifier."
   )
@@ -65,6 +77,7 @@ public class CommunityController {
 //      PermissionKey.COMMUNITY_VIEW,
 //  })
   @GetMapping("{id}")
+  @PreAuthorize("hasPermission(#id, 'COMMUNITY', 'VIEW')")
   ResponseEntity<Community> getCommunity(
       @PathVariable UUID id,
       @AuthenticationPrincipal UserPrincipal principal

@@ -1,0 +1,38 @@
+definition user {}
+
+definition sys {
+	relation regular_user: user
+	relation admin_user: user
+	permission user = regular_user + admin_user
+	permission auth = regular_user + admin_user
+	permission admin = admin_user
+}
+
+definition community {
+	relation sys: sys
+
+	// normal member flow
+	relation owner: user
+	relation member: user
+
+	// if exists considers community as public community
+	relation public_user: user:*
+	// actions
+	permission view = public_user + follower + owner_privilege
+	permission update = owner_privilege
+	permission delete = sys->admin
+	permission add_post = follower
+	// helpers
+	permission follower = member + owner
+	permission owner_privilege = owner + sys->admin
+}
+
+
+definition post {
+	relation community: community
+	relation author: user
+
+	permission view = community->view
+	permission update = author
+	permission remove = community->owner_privilege + author
+}

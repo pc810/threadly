@@ -54,6 +54,8 @@ public class PostService implements PostInternalApi {
 
     eventPublisher.publishEvent(new PostCreatedEvent(
         post.getId(),
+        request.communityId(),
+        userId,
         post.getTitle(),
         post.getType(),
         post.getType().equals(PostType.LINK) ? Optional.of(post.getLink()) : Optional.empty()

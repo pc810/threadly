@@ -8,7 +8,7 @@ export const useCommunities = () => {
   return useQuery({
     queryKey: [QueryKeys.community],
     queryFn: async () => {
-      const response = await axios.get<Community[]>("/communities");
+      const response = await axios.get<Community[]>("/communities/me");
       return response.data;
     },
   });

@@ -1,6 +1,8 @@
 package com.threadly.community.application.service;
 
 import com.threadly.common.AuthRole;
+import com.threadly.common.ResourcePermission;
+import com.threadly.common.ResourceType;
 import com.threadly.community.CommunityCreatedEvent;
 import com.threadly.community.CommunityExternalApi;
 import com.threadly.community.CreateCommunityRequest;
@@ -10,6 +12,7 @@ import com.threadly.community.domain.exception.CommunityNotFoundException;
 import com.threadly.community.infrastructure.CommunityRepository;
 import com.threadly.membership.CommunityRole;
 import com.threadly.membership.MembershipExternalApi;
+import com.threadly.permission.PermissionClient;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,6 +29,7 @@ class CommunityService implements CommunityInternalApi, CommunityExternalApi {
   private final CommunityRepository communityRepository;
   private final MembershipExternalApi membershipExternalApi;
   private final ApplicationEventPublisher eventPublisher;
+  private final PermissionClient permissionClient;
 
   @Override
   public Optional<Community> getCommunity(UUID id) {
@@ -40,6 +44,18 @@ class CommunityService implements CommunityInternalApi, CommunityExternalApi {
   @Override
   public List<Community> getAllCommunity() {
     return communityRepository.findAll();
+  }
+
+  @Override
+  public List<Community> getAllCommunityByUser(UUID userId) {
+    var communityIdUserCanView = permissionClient.lookupResources(ResourceType.COMMUNITY,
+        ResourcePermission.Community.VIEW,
+        ResourceType.USER, userId);
+//    log.info("resources={}", communityIdUserCanView);
+    return communityIdUserCanView.stream()
+        .map(id->getCommunity(UUID.fromString(id)))
+        .flatMap(Optional::stream)
+        .toList();
   }
 
   @Override

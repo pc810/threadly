@@ -13,6 +13,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +36,7 @@ public class PostController {
       description = "Creates a new post authored by the currently authenticated user."
   )
   @PostMapping
+  @PreAuthorize("hasPermission(#request.communityId, 'COMMUNITY', 'ADD_POST')")
   public ResponseEntity<Void> createPost(
       @Valid @RequestBody CreatePostRequest request,
       @AuthenticationPrincipal UserPrincipal principal

@@ -1,7 +1,8 @@
 package com.threadly.post.application.listener;
 
-import static com.threadly.common.RabbitUtil.POST_QUEUE;
-
+import com.threadly.common.ResourceRelation;
+import com.threadly.common.ResourceType;
+import com.threadly.permission.PermissionClient;
 import com.threadly.post.PostCreatedEvent;
 import com.threadly.post.domain.LinkPostCreated;
 import java.util.UUID;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 class PostListener {
 
   private final RabbitTemplate rabbitTemplate;
+  private final PermissionClient permissionClient;
 
   @EventListener
   public void handlePostCreated(PostCreatedEvent event) {
@@ -34,5 +36,25 @@ class PostListener {
           )
       );
     });
+
+    log.info("Linking Post {} to Community ({}) with relation '{}'",
+        event.id(), event.communityId(), ResourceRelation.Post.COMMUNITY);
+    permissionClient.addRelation(
+        ResourceType.POST,
+        event.id(),
+        ResourceRelation.Post.COMMUNITY,
+        ResourceType.COMMUNITY,
+        event.communityId()
+    );
+
+    log.info("Linking Post {} to User ({}) with relation '{}'",
+        event.id(), event.authorId(), ResourceRelation.Post.AUTHOR);
+    permissionClient.addRelation(
+        ResourceType.POST,
+        event.id(),
+        ResourceRelation.Post.AUTHOR,
+        ResourceType.USER,
+        event.authorId()
+    );
   }
 }
