@@ -76,7 +76,6 @@ public class PostController {
     return ResponseEntity.ok(posts);
   }
 
-
   @GetMapping("{id}/post-link")
   ResponseEntity<PostLink> getPostLinkById(@PathVariable("id") UUID postId) {
     return

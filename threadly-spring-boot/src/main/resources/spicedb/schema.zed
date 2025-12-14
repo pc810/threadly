@@ -22,6 +22,8 @@ definition community {
 	permission update = owner_privilege
 	permission delete = sys->admin
 	permission add_post = follower
+	permission can_follow = public_user - follower
+	permission can_unfollow = member
 	// helpers
 	permission follower = member + owner
 	permission owner_privilege = owner + sys->admin

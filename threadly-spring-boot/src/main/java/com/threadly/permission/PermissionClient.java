@@ -19,6 +19,14 @@ public interface PermissionClient {
       ResourceType subjectType,
       Object subjectId);
 
+  String removeRelation(
+      ResourceType resourceType,
+      Object resourceId,
+      RelationType relation,
+      ResourceType subjectType,
+      Object subjectId);
+
+
 
   boolean checkPermission(ResourceType resourceType, Object resourceId,
       ResourcePermissionType permission,

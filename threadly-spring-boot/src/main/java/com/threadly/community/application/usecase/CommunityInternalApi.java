@@ -1,6 +1,6 @@
 package com.threadly.community.application.usecase;
 
 public interface CommunityInternalApi extends CreateCommunityUseCase, GetCommunityUseCase,
-    CanActionUseCase ,GetCommunityRoleUseCase{
+    CanActionUseCase, GetCommunityRoleUseCase, CommunityMembershipUseCase ,UpdateCommunityUseCase{
 
 }

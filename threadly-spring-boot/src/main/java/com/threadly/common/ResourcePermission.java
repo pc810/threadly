@@ -17,6 +17,8 @@ public class ResourcePermission {
     UPDATE,
     DELETE,
     ADD_POST,
+    CAN_FOLLOW,
+    CAN_UNFOLLOW,
     FOLLOWER,
     OWNER_PRIVILEGE;
 

@@ -18,8 +18,6 @@ import com.authzed.api.v1.WriteSchemaResponse;
 import com.authzed.grpcutil.BearerToken;
 import com.threadly.common.PermissionTypeRegistry;
 import com.threadly.common.RelationType;
-import com.threadly.common.RelationTypeRegistry;
-import com.threadly.common.ResourcePermission;
 import com.threadly.common.ResourcePermissionType;
 import com.threadly.common.ResourceType;
 import com.threadly.config.SpiceDBProperties;
@@ -31,6 +29,7 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -92,11 +91,18 @@ class SpiceDBPermissionClient implements PermissionClient {
         subjectType,
         subjectId);
 
+    return writeRelation(resourceType, resourceId, relation, subjectType, subjectId,
+        Operation.OPERATION_CREATE);
+  }
+
+  @NotNull
+  private String writeRelation(ResourceType resourceType, Object resourceId, RelationType relation,
+      ResourceType subjectType, Object subjectId, Operation operation) {
     var request = WriteRelationshipsRequest
         .newBuilder()
         .addUpdates(
             RelationshipUpdate.newBuilder()
-                .setOperation(Operation.OPERATION_CREATE)
+                .setOperation(operation)
                 .setRelationship(
                     Relationship.newBuilder()
                         .setResource(
@@ -134,6 +140,21 @@ class SpiceDBPermissionClient implements PermissionClient {
   }
 
   @Override
+  public String removeRelation(ResourceType resourceType, Object resourceId, RelationType relation,
+      ResourceType subjectType, Object subjectId) {
+    log.info(
+        "removeRelation: resourceType={}, resourceId={}, relation={}, subjectType={}, subjectId={}",
+        resourceType,
+        resourceId,
+        relation,
+        subjectType,
+        subjectId);
+
+    return writeRelation(resourceType, resourceId, relation, subjectType, subjectId,
+        Operation.OPERATION_DELETE);
+  }
+
+  @Override
   public boolean checkPermission(ResourceType resourceType, Object resourceId,
       ResourcePermissionType permission, ResourceType subjectType, Object subjectId) {
     var checkRequest = CheckPermissionRequest.newBuilder()
@@ -160,7 +181,7 @@ class SpiceDBPermissionClient implements PermissionClient {
                 .build()
         )
         .build();
-  log.info("checkPermissionRequest={}",checkRequest);
+    log.info("checkPermissionRequest={}", checkRequest);
     try {
       var response = permissionsService.checkPermission(checkRequest);
       log.info("CheckPermissionResponse={}",

@@ -1,16 +1,21 @@
 package com.threadly.membership.application.service;
 
 
+import com.threadly.membership.CommunityMembershipCreatedEvent;
 import com.threadly.membership.CommunityMembershipId;
+import com.threadly.membership.CommunityMembershipRemovedEvent;
 import com.threadly.membership.CommunityRole;
 import com.threadly.membership.MembershipExternalApi;
 import com.threadly.membership.domain.CommunityMembership;
+import com.threadly.membership.domain.exception.MembershipNotFoundException;
 import com.threadly.membership.infrastructure.persistence.CommunityMembershipRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 class MembershipService implements MembershipExternalApi {
 
   private final CommunityMembershipRepository repository;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Override
   public boolean ownsCommunity(UUID communityId, UUID userId) {
@@ -48,13 +54,34 @@ class MembershipService implements MembershipExternalApi {
       repository.save(
           CommunityMembership.from(communityMemberId, role, addedBy)
       );
+
+      eventPublisher.publishEvent(new CommunityMembershipCreatedEvent(
+          communityId,
+          userId,
+          role,
+          addedBy
+      ));
     }
   }
 
   @Override
   @Transactional
   public void removeMember(UUID communityId, UUID userId) {
+    var communityMemberId = CommunityMembershipId.from(communityId, userId);
 
+    var communityMembership = repository.findById(communityMemberId)
+        .orElseThrow(() -> MembershipNotFoundException.from(communityMemberId));
+
+    if (communityMembership.getRole() == CommunityRole.AUTHOR) {
+      throw new AccessDeniedException("cannot perform this action");
+    }
+
+    repository.delete(communityMemberId);
+
+    eventPublisher.publishEvent(new CommunityMembershipRemovedEvent(
+        communityMemberId,
+        communityMembership.getRole()
+    ));
   }
 
   @Override

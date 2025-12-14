@@ -90,6 +90,27 @@ public class CommunityController {
   }
 
 
+  @PostMapping("{id}/follow")
+  @PreAuthorize("hasPermission(#id, 'COMMUNITY', 'CAN_FOLLOW')")
+  ResponseEntity<Void> followCommunity(
+      @PathVariable UUID id,
+      @AuthenticationPrincipal UserPrincipal principal
+  ) {
+
+    communityInternalApi.follow(principal.userId(), id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("{id}/unfollow")
+  @PreAuthorize("hasPermission(#id, 'COMMUNITY', 'CAN_UNFOLLOW')")
+  ResponseEntity<Void> unfollowCommunity(
+      @PathVariable UUID id,
+      @AuthenticationPrincipal UserPrincipal principal
+  ) {
+    communityInternalApi.unFollow(principal.userId(), id);
+    return ResponseEntity.noContent().build();
+  }
+
   @Operation(
       summary = "Get a community by ID",
       description = "Fetches detailed information about a specific community using its unique identifier."

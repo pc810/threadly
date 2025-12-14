@@ -5,7 +5,10 @@ import com.threadly.common.ResourcePermission;
 import com.threadly.common.ResourceType;
 import com.threadly.community.CommunityCreatedEvent;
 import com.threadly.community.CommunityExternalApi;
+import com.threadly.community.CommunityVisibility;
 import com.threadly.community.CreateCommunityRequest;
+import com.threadly.community.UpdateCommunityMetaDTO;
+import com.threadly.community.UpdateCommunityVisibilityEvent;
 import com.threadly.community.application.usecase.CommunityInternalApi;
 import com.threadly.community.domain.Community;
 import com.threadly.community.domain.exception.CommunityNotFoundException;
@@ -53,7 +56,7 @@ class CommunityService implements CommunityInternalApi, CommunityExternalApi {
         ResourceType.USER, userId);
 //    log.info("resources={}", communityIdUserCanView);
     return communityIdUserCanView.stream()
-        .map(id->getCommunity(UUID.fromString(id)))
+        .map(id -> getCommunity(UUID.fromString(id)))
         .flatMap(Optional::stream)
         .toList();
   }
@@ -69,6 +72,7 @@ class CommunityService implements CommunityInternalApi, CommunityExternalApi {
     eventPublisher.publishEvent(new CommunityCreatedEvent(
         community.getId(),
         community.getTitle(),
+        community.getVisibility(),
         userId
     ));
 
@@ -148,5 +152,46 @@ class CommunityService implements CommunityInternalApi, CommunityExternalApi {
         .orElseThrow(() -> CommunityNotFoundException.byId(communityId));
 
     return membershipExternalApi.getRole(communityId, actorId);
+  }
+
+  @Override
+  public void follow(UUID communityId, UUID userId) {
+    membershipExternalApi.addMember(communityId, userId, CommunityRole.MEMBER, userId);
+  }
+
+  @Override
+  public void unFollow(UUID communityId, UUID userId) {
+    membershipExternalApi.removeMember(communityId, userId);
+  }
+
+  @Override
+  public void changeVisibility(UUID communityId, CommunityVisibility visibility) {
+    var community = getCommunity(communityId).orElseThrow(
+        () -> CommunityNotFoundException.byId(communityId));
+    var currentVisibility = community.getVisibility();
+    if (!currentVisibility.equals(visibility)) {
+      community.setVisibility(visibility);
+      communityRepository.save(community);
+
+      eventPublisher.publishEvent(
+          new UpdateCommunityVisibilityEvent(
+              communityId,
+              currentVisibility,
+              visibility
+          )
+      );
+    }
+  }
+
+  @Override
+  public void updateCommunityMeta(UUID communityId, UpdateCommunityMetaDTO updateCommunityMetaDTO) {
+    var community = getCommunity(communityId).orElseThrow(
+        () -> CommunityNotFoundException.byId(communityId));
+
+    updateCommunityMetaDTO.title().ifPresent(community::setTitle);
+    updateCommunityMetaDTO.description().ifPresent(community::setDescription);
+    updateCommunityMetaDTO.isNsfw().ifPresent(community::setNsfw);
+
+    communityRepository.save(community);
   }
 }

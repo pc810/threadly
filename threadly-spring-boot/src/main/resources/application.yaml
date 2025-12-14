@@ -1,6 +1,8 @@
 spring:
   application:
     name: threadly-services
+#  flyway:
+#    baseline-on-migrate: true
   output:
     ansi:
       enabled: always

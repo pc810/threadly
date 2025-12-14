@@ -17,4 +17,7 @@ public enum CommunityRole {
     this.authRole = authRole;
   }
 
+  public boolean isAuthor() {
+    return this == AUTHOR;
+  }
 }
