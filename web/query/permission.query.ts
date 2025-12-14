@@ -1,15 +1,14 @@
-import { ResourcePermission, ResourceType } from "@/types";
+import { ResourcePermissions, ResourceType } from "@/types";
 import { QueryKeys } from "./utils";
 import { axios } from "@/lib/axios";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 type PermissionMap<P extends readonly string[]> = {
   [K in P[number]]: boolean;
 };
 export const usePermission = <
   T extends ResourceType,
-  P extends readonly ResourcePermission[T][]
+  P extends readonly (typeof ResourcePermissions)[T][number][]
 >(
   resourceType: T,
   resourceId: string | undefined,
