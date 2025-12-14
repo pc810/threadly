@@ -134,13 +134,18 @@ class SpiceDBPermissionClient implements PermissionClient {
         )
         .build();
 
+    long startTime = System.currentTimeMillis();
     WriteRelationshipsResponse response;
     try {
       response = permissionsService.writeRelationships(request);
+      long endTime = System.currentTimeMillis();
+      log.info("RPC succeeded in {} ms", (endTime - startTime));
     } catch (Exception e) {
-      log.error("RPC failed: {}", e.getMessage());
+      long endTime = System.currentTimeMillis();
+      log.error("RPC failed in {} ms: {}", (endTime - startTime), e.getMessage(), e);
       return "";
     }
+
     log.info("Response: " + response.toString());
     return response.getWrittenAt().getToken();
   }
@@ -161,13 +166,12 @@ class SpiceDBPermissionClient implements PermissionClient {
   }
 
   @Override
-  public boolean checkPermission(ResourceType resourceType, Object resourceId,
-      ResourcePermissionType permission, ResourceType subjectType, Object subjectId) {
+  public boolean checkPermissionWithConsistency(ResourceType resourceType, Object resourceId,
+      ResourcePermissionType permission, ResourceType subjectType, Object subjectId,
+      Consistency consistency) {
     var checkRequest = CheckPermissionRequest.newBuilder()
         .setConsistency(
-            Consistency.newBuilder()
-                .setMinimizeLatency(true)
-                .build()
+            consistency
         )
         .setResource(
             ObjectReference.newBuilder()
@@ -200,6 +204,16 @@ class SpiceDBPermissionClient implements PermissionClient {
   }
 
   @Override
+  public boolean checkPermission(ResourceType resourceType, Object resourceId,
+      ResourcePermissionType permission, ResourceType subjectType, Object subjectId) {
+    return checkPermissionWithConsistency(resourceType, resourceId, permission, subjectType,
+        subjectId,
+        Consistency.newBuilder()
+            .setMinimizeLatency(true)
+            .build());
+  }
+
+  @Override
   public boolean checkPermission(String resourceType, Object resourceId, String permission,
       String subjectType, Object subjectId) {
     return checkPermission(
@@ -210,6 +224,7 @@ class SpiceDBPermissionClient implements PermissionClient {
         subjectId
     );
   }
+
 
   @Override
   public Set<String> lookupResources(ResourceType resourceType, ResourcePermissionType permission,

@@ -55,12 +55,22 @@ class MembershipService implements MembershipExternalApi {
           CommunityMembership.from(communityMemberId, role, addedBy)
       );
 
-      eventPublisher.publishEvent(new CommunityMembershipCreatedEvent(
+      var event = new CommunityMembershipCreatedEvent(
           communityId,
           userId,
           role,
           addedBy
-      ));
+      );
+
+//      permissionClient.addRelation(
+//          ResourceType.COMMUNITY,
+//          event.communityId(),
+//          event.role().isAuthor() ? ResourceRelation.Community.OWNER
+//              : ResourceRelation.Community.MEMBER,
+//          ResourceType.USER,
+//          event.userId()
+//      );
+      eventPublisher.publishEvent(event);
     }
   }
 
@@ -78,10 +88,20 @@ class MembershipService implements MembershipExternalApi {
 
     repository.delete(communityMemberId);
 
-    eventPublisher.publishEvent(new CommunityMembershipRemovedEvent(
+    var event = new CommunityMembershipRemovedEvent(
         communityMemberId,
         communityMembership.getRole()
-    ));
+    );
+
+//    permissionClient.removeRelation(
+//        ResourceType.COMMUNITY,
+//        event.communityMemberId().communityId(),
+//        event.role().isAuthor() ? ResourceRelation.Community.OWNER
+//            : ResourceRelation.Community.MEMBER,
+//        ResourceType.USER,
+//        event.communityMemberId().userId()
+//    );
+    eventPublisher.publishEvent(event);
   }
 
   @Override

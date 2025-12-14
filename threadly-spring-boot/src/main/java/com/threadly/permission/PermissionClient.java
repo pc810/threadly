@@ -1,5 +1,6 @@
 package com.threadly.permission;
 
+import com.authzed.api.v1.Consistency;
 import com.threadly.common.RelationType;
 import com.threadly.common.ResourcePermissionType;
 import com.threadly.common.ResourceType;
@@ -27,10 +28,14 @@ public interface PermissionClient {
       Object subjectId);
 
 
-
   boolean checkPermission(ResourceType resourceType, Object resourceId,
       ResourcePermissionType permission,
       ResourceType subjectType, Object subjectId);
+
+  boolean checkPermissionWithConsistency(ResourceType resourceType, Object resourceId,
+      ResourcePermissionType permission,
+      ResourceType subjectType, Object subjectId,
+      Consistency consistency);
 
   boolean checkPermission(String resourceType, Object resourceId, String permission,
       String subjectType, Object subjectId);

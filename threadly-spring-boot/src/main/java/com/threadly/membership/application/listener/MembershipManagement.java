@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @AllArgsConstructor
-class MembershipManagement {
+public class MembershipManagement {
 
   private final PermissionClient permissionClient;
 
   @EventListener
-  void handleCommunityMembershipCreated(CommunityMembershipCreatedEvent event) {
+  public void handleCommunityMembershipCreated(CommunityMembershipCreatedEvent event) {
     permissionClient.addRelation(
         ResourceType.COMMUNITY,
         event.communityId(),
@@ -31,7 +31,7 @@ class MembershipManagement {
   }
 
   @EventListener
-  void handleCommunityMembershipRemoved(CommunityMembershipRemovedEvent event) {
+  public void handleCommunityMembershipRemoved(CommunityMembershipRemovedEvent event) {
     permissionClient.removeRelation(
         ResourceType.COMMUNITY,
         event.communityMemberId().communityId(),

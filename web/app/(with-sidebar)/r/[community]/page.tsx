@@ -1,4 +1,4 @@
-import { ClientCommunityPage } from "@/components/community/client-community-page";
+import { ClientCommunityPage } from "@/components/community";
 
 export default function Page() {
   return <ClientCommunityPage />;

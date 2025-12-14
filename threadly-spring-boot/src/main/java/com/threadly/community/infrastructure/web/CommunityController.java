@@ -97,7 +97,7 @@ public class CommunityController {
       @AuthenticationPrincipal UserPrincipal principal
   ) {
 
-    communityInternalApi.follow(principal.userId(), id);
+    communityInternalApi.follow(id,principal.userId());
     return ResponseEntity.noContent().build();
   }
 
@@ -107,7 +107,7 @@ public class CommunityController {
       @PathVariable UUID id,
       @AuthenticationPrincipal UserPrincipal principal
   ) {
-    communityInternalApi.unFollow(principal.userId(), id);
+    communityInternalApi.unFollow(id,principal.userId());
     return ResponseEntity.noContent().build();
   }
 

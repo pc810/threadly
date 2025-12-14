@@ -3,6 +3,7 @@ import { Community, CreateCommunityRequest } from "@/types/community";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { QueryKeys } from "./utils";
+import { ResourceTypeEnum } from "@/types";
 
 export const useCommunities = () => {
   return useQuery({
@@ -62,4 +63,52 @@ export function useCreateCommunity() {
       });
     },
   });
+}
+
+export function useFollowUnFollowCommunity(
+  communityId: string,
+  type: "follow" | "unfollow"
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => addCommunityWithDelay(communityId, type),
+    onSuccess: () => {
+      toast(`${type === "follow" ? "Following" : "Unfollowing"} Community 🎉`);
+
+      queryClient.invalidateQueries({
+        queryKey: [
+          QueryKeys.permission,
+          ResourceTypeEnum.COMMUNITY,
+          communityId,
+        ],
+      });
+    },
+    onError: (error: any) => {
+      toast.error(`Error ${type} community`, {
+        description: error.response?.data?.message || "Please try again.",
+      });
+    },
+  });
+}
+
+async function addCommunityWithDelay(
+  communityId: string,
+  type: "follow" | "unfollow"
+) {
+  try {
+    const response = await axios.post(
+      `/communities/${communityId}/${type}`,
+      {},
+      { withCredentials: true }
+    );
+
+    // Wait 2 seconds before returning
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }

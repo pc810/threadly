@@ -1,5 +1,6 @@
 "use client";
 
+import { JoinedModButton } from "@/components/community";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getCommunityPostCreateLink, getTwoCharacter } from "@/lib/format";
@@ -38,9 +39,7 @@ export default function Default() {
           <Button variant="outline" className="rounded-full" size="icon-lg">
             <BellOff />
           </Button>
-          <Button variant="outline" className="rounded-full" size="lg">
-            Joined
-          </Button>
+          <JoinedModButton communityId={community.id} />
           <Button variant="outline" className="rounded-full" size="icon-lg">
             <Ellipsis />
           </Button>
