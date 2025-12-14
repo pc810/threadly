@@ -24,6 +24,7 @@ import com.threadly.config.SpiceDBProperties;
 import com.threadly.permission.PermissionClient;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
@@ -53,6 +54,11 @@ class SpiceDBPermissionClient implements PermissionClient {
         .newBlockingStub(channel)
         .withCallCredentials(bearerToken);
 
+//    applySchema();
+  }
+
+  @PostConstruct
+  public void init() {
     applySchema();
   }
 

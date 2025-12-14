@@ -1,14 +1,25 @@
+version: "3.9"
+
 services:
   postgres:
-    image: "postgres:latest"
+    image: postgres:16
+    container_name: local-postgres
     environment:
-      - "POSTGRES_DB=mydatabase"
-      - "POSTGRES_PASSWORD=secret"
-      - "POSTGRES_USER=myuser"
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: secret
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   rabbitmq:
-    image: "rabbitmq:4-management"
+    image: rabbitmq:4-management
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -17,54 +28,59 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+
   minio:
     image: minio/minio:latest
     container_name: local-minio
     ports:
-      - "9000:9000" # S3 API
-      - "9001:9001" # MinIO Console UI
+      - "9000:9000"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
     command: server /data --console-address ":9001"
     volumes:
-      - minio_data:/minio:/data
+      - minio_data:/data
+
   spicedb-migrate:
-    image: authzed/spicedb:latest
+    image: authzed/spicedb:v1.31.0
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     entrypoint: ["spicedb", "datastore", "migrate", "head"]
     command:
       - --datastore-engine=postgres
       - --datastore-conn-uri=postgres://myuser:secret@postgres:5432/mydatabase?sslmode=disable
+    restart: "no"
 
   spicedb:
-    image: authzed/spicedb:latest
-    command:
-      [
-        "serve",
-        "--log-level=debug",
-        "--grpc-preshared-key=devkey",
-        "--datastore-engine=postgres",
-        "--datastore-conn-uri=postgres://myuser:secret@postgres:5432/mydatabase?sslmode=disable",
-        "--http-enabled=true",
-      ]
-    ports:
-      - "50051:50051" # gRPC API
-      - "8443:8443" # HTTP Playground + REST API
+    image: authzed/spicedb:v1.31.0
     depends_on:
-      - postgres
+      spicedb-migrate:
+        condition: service_completed_successfully
+    command:
+      - serve
+      - --log-level=debug
+      - --grpc-preshared-key=devkey
+      - --datastore-engine=postgres
+      - --datastore-conn-uri=postgres://myuser:secret@postgres:5432/mydatabase?sslmode=disable
+      - --http-enabled=true
+    ports:
+      - "50051:50051"
+      - "8443:8443"
 
   spicedb-playground:
     image: ghcr.io/authzed/spicedb-playground:latest
     environment:
-      PLAYGROUND_GRPC_ENDPOINT: "spicedb:50051"
+      PLAYGROUND_GRPC_ENDPOINT: spicedb:50051
       PLAYGROUND_GRPC_INSECURE: "true"
-      PLAYGROUND_GRPC_PRESHARED_KEY: "devkey"
+      PLAYGROUND_GRPC_PRESHARED_KEY: devkey
     ports:
-      - "3001:3000" # Playground UI
+      - "3001:3000"
     depends_on:
       - spicedb
+
 volumes:
+  postgres_data:
   rabbitmq_data:
   minio_data:

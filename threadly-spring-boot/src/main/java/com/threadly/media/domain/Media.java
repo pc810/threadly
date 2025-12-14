@@ -4,6 +4,8 @@ import com.threadly.common.MediaProvider;
 import com.threadly.media.CreateMediaEvent;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,6 +37,7 @@ public class Media {
   private UUID postId;
 
   @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
   private MediaProvider provider;
 
   @Column(nullable = false)

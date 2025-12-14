@@ -6,14 +6,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.modulith.core.ApplicationModules;
 import org.springframework.modulith.docs.Documenter;
 
-@Import(TestcontainersConfiguration.class)
+//@Import(TestcontainersConfiguration.class)
 @SpringBootTest
 class ThreadlyServicesApplicationTests {
-
 
 	@Test
 	void contextLoads() {
 	}
+
 
 	@Test
 	void modularityTests(){
