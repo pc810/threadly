@@ -4,11 +4,14 @@ import com.threadly.common.ResourceRelation;
 import com.threadly.common.ResourceType;
 import com.threadly.permission.PermissionClient;
 import com.threadly.post.PostCreatedEvent;
+import com.threadly.post.PostSuccessCreatedEvent;
 import com.threadly.post.domain.LinkPostCreated;
+import java.time.Instant;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +22,7 @@ class PostListener {
 
   private final RabbitTemplate rabbitTemplate;
   private final PermissionClient permissionClient;
+  private final ApplicationEventPublisher eventPublisher;
 
   @EventListener
   public void handlePostCreated(PostCreatedEvent event) {
@@ -55,6 +59,10 @@ class PostListener {
         ResourceRelation.Post.AUTHOR,
         ResourceType.USER,
         event.authorId()
+    );
+
+    eventPublisher.publishEvent(
+        new PostSuccessCreatedEvent(event,Instant.now())
     );
   }
 }
