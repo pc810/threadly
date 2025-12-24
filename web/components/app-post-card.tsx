@@ -58,13 +58,13 @@ const PlaceholderCard = () => {
   return (
     <PostCard className="space-y-4">
       <PostCardTitle>
-        <Skeleton className="h-5 w-1/3" />
+        <Skeleton className="h-2 w-1/3" />
       </PostCardTitle>
       <div className="text-sm text-gray-500">
-        <Skeleton className="h-4 w-1/2" />
+        <Skeleton className="h-2 w-1/2" />
       </div>
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="aspect-square w-2/4" />
+      <Skeleton className="h-2 w-full" />
+      <Skeleton className="aspect-video w-full max-h-6" />
     </PostCard>
   );
 };

@@ -34,6 +34,7 @@ import { useCommunities } from "@/query/community.query";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { getCommunityPostCreateLink } from "@/lib/format";
+import { useAuth } from "@/query/auth.query";
 
 const postSchema = z.object({
   community: z.string().min(1, "Please select a community"),
@@ -68,6 +69,22 @@ const defaultValues: PostFormValues = {
   title: "",
   media: [],
   link: "",
+  contentJson: JSON.stringify({
+    json: {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { text: "user1personal1 ", type: "text" },
+            { text: "post1", type: "text", marks: [{ type: "bold" }] },
+          ],
+        },
+      ],
+    },
+  }),
+  contentText: "user1personal1 post1",
+  contentHtml: "<p>user1personal1 <strong>post1</strong></p>",
 };
 
 type PostFormValues = z.infer<typeof postSchema>;
@@ -81,6 +98,8 @@ export default function Page() {
   const router = useRouter();
 
   const { community: communityName } = useParams();
+
+  const { data: auth } = useAuth();
 
   const postType = form.watch("type");
 
@@ -110,8 +129,15 @@ export default function Page() {
       console.log("here", { communityName, communities, community });
       if (community) form.setValue("community", community.id);
       else form.setValue("community", "u/Any_Yellow_123");
+
+      form.setValue(
+        "title",
+        `Post ${communityName} ${new Date().getTime()} ${
+          auth?.name ?? "undefined"
+        }`
+      );
     }
-  }, [communities, communityName, form, isLoading]);
+  }, [communities, communityName, form, auth, isLoading]);
 
   function handleCommunityChange(value: string): void {
     const name = communities?.find((c) => c.id == value)?.name;

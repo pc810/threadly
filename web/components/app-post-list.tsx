@@ -6,18 +6,36 @@ import { useCommunityPosts, usePosts } from "@/query/post.query";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { getCommunityPostCreateLink } from "@/lib/format";
+import { useUserPostFeed } from "@/query/post-feed.query";
+import { Skeleton } from "./ui/skeleton";
 
 export function AppPostList() {
-  const { data: posts, isLoading, error } = usePosts();
+  const {
+    data: feed,
+    isLoading,
+    error,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useUserPostFeed();
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading || feed == null) return <p>Loading...</p>;
   if (error) return <p>Failed to load posts</p>;
+
+  const posts = feed?.pages.flatMap((page) => page.content) ?? [];
 
   return (
     <div className="space-y-4 my-4">
-      {posts?.map((post) => (
-        <AppPostCard key={post.id} postId={post.id} />
+      {posts.map((postFeed) => (
+        <AppPostCard key={postFeed.id} postId={postFeed.postId} />
       ))}
+
+      {hasNextPage && (
+        <Button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
+          {isFetchingNextPage && <Skeleton />}
+          Load more
+        </Button>
+      )}
     </div>
   );
 }

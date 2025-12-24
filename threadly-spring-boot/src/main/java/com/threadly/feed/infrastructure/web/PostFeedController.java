@@ -1,5 +1,6 @@
 package com.threadly.feed.infrastructure.web;
 
+import com.threadly.common.UserPrincipal;
 import com.threadly.feed.domain.PostFeed;
 import com.threadly.feed.infrastructure.PostFeedRepository;
 import java.time.Instant;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,15 +23,15 @@ class PostFeedController {
 
   private final PostFeedRepository postFeedRepository;
 
-  @GetMapping("{userId}")
+  @GetMapping("me")
   public ResponseEntity<Slice<PostFeed>> getUserPostFeed(
-      @PathVariable UUID userId,
+      @AuthenticationPrincipal UserPrincipal userPrincipal,
       @RequestParam(required = false) Instant feedTime,
       @RequestParam(defaultValue = "0") int pageNumber
   ) {
 
     var feed = postFeedRepository.getPostFeed(
-        userId,
+        userPrincipal.userId(),
         feedTime,
         PageRequest.of(
             pageNumber,

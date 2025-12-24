@@ -1,8 +1,9 @@
 export const QueryKeys = {
-  community: "community",
-  post: "post",
   auth: "auth",
-  postLink: "post-link",
+  community: "community",
+  feed: "feed",
   media: "media",
   permission: "permission",
+  post: "post",
+  postLink: "post-link",
 } as const;
