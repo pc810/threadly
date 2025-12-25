@@ -1,9 +1,14 @@
 import { axios } from "@/lib/axios";
-import { Community, CreateCommunityRequest } from "@/types/community";
+import {
+  Community,
+  CommunityMembershipDTOPage,
+  CreateCommunityRequest,
+} from "@/types/community";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { QueryKeys } from "./utils";
 import { ResourceTypeEnum } from "@/types";
+import { useAuth } from "./auth.query";
 
 export const useCommunities = () => {
   return useQuery({
@@ -31,12 +36,7 @@ export const useCommunity = (communityId: string | undefined) => {
 export const useCommunityByName = (communityName: string) => {
   return useQuery({
     queryKey: [QueryKeys.community, communityName],
-    queryFn: async () => {
-      const response = await axios.get<Community>(
-        `/communities/name/${communityName}`
-      );
-      return response.data;
-    },
+    queryFn: () => getCommunityByName(communityName),
   });
 };
 
@@ -92,6 +92,40 @@ export function useFollowUnFollowCommunity(
   });
 }
 
+export const useCommunityMembers = (
+  communityId: string,
+  pageIndex: number,
+  pageSize: number
+) => {
+  const auth = useAuth();
+
+  return useQuery({
+    enabled: !!auth,
+    queryKey: [
+      QueryKeys.community,
+      communityId,
+      QueryKeys.membership,
+      pageIndex,
+      pageSize,
+    ],
+    staleTime: 5000,
+    queryFn: async () => {
+      const res = await axios.get<CommunityMembershipDTOPage>(
+        `/communities/${communityId}/members`,
+        {
+          withCredentials: true,
+          params: {
+            pageNumber: pageIndex,
+            size: pageSize,
+            role: "MEMBER",
+          },
+        }
+      );
+      return res.data;
+    },
+  });
+};
+
 async function addCommunityWithDelay(
   communityId: string,
   type: "follow" | "unfollow"
@@ -112,3 +146,10 @@ async function addCommunityWithDelay(
     throw error;
   }
 }
+
+export const getCommunityByName = async (communityName: string) => {
+  const response = await axios.get<Community>(
+    `/communities/name/${communityName}`
+  );
+  return response.data;
+};

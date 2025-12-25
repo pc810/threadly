@@ -6,15 +6,17 @@ import com.threadly.membership.domain.CommunityMembership;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.domain.Specification;
 
 public interface CommunityMembershipRepository {
 
   Optional<CommunityMembership> findById(CommunityMembershipId id);
 
-  Optional<CommunityMembership> findByIdAndRole(CommunityMembershipId id, CommunityRole role);
-
   List<CommunityMembership> findByCommunityId(UUID communityId);
-
+  
   void save(CommunityMembership communityMembership);
 
   void delete(CommunityMembershipId id);
@@ -24,4 +26,6 @@ public interface CommunityMembershipRepository {
   boolean existsIdAndRole(CommunityMembershipId id, CommunityRole role);
 
   List<CommunityMembership> findByUserId(UUID userId);
+
+  Page<CommunityMembership> findAll(Specification<CommunityMembership> spec, Pageable pageable);
 }

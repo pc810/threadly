@@ -6,5 +6,13 @@ import { useParams } from "next/navigation";
 export function ClientCommunityPage() {
   const { community } = useParams();
 
-  return <AppCommunityPostsList communityName={community?.toString()} />;
+  return (
+    <div>
+      <AppCommunityPostsList communityName={community?.toString()} />
+      <AppCommunityPostsList communityName={community?.toString()} />
+      <AppCommunityPostsList communityName={community?.toString()} />
+      <AppCommunityPostsList communityName={community?.toString()} />
+      <AppCommunityPostsList communityName={community?.toString()} />
+    </div>
+  );
 }

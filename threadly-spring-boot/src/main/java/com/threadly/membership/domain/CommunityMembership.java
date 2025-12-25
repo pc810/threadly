@@ -47,7 +47,8 @@ public class CommunityMembership {
   @Column(nullable = false)
   private Instant updatedAt;
 
-  public static CommunityMembership from(CommunityMembershipId communityMemberId,CommunityRole role, UUID addedBy) {
+  public static CommunityMembership from(CommunityMembershipId communityMemberId,
+      CommunityRole role, UUID addedBy) {
     return
         CommunityMembership.builder()
             .id(communityMemberId)

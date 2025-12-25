@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,11 +25,6 @@ class CommunityMembershipPersistenceAdaptor implements CommunityMembershipReposi
     return repository.findById(id);
   }
 
-  @Override
-  public Optional<CommunityMembership> findByIdAndRole(CommunityMembershipId id,
-      CommunityRole role) {
-    return repository.findByIdAndRole(id, role);
-  }
 
   @Override
   public List<CommunityMembership> findByCommunityId(UUID communityId) {
@@ -41,6 +40,12 @@ class CommunityMembershipPersistenceAdaptor implements CommunityMembershipReposi
   @Override
   public List<CommunityMembership> findByUserId(UUID userId) {
     return repository.findById_UserId(userId);
+  }
+
+  @Override
+  public Page<CommunityMembership> findAll(Specification<CommunityMembership> spec,
+      Pageable pageable) {
+    return repository.findAll(spec, pageable);
   }
 
   @Override

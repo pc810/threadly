@@ -13,6 +13,7 @@ import com.threadly.community.application.usecase.CommunityInternalApi;
 import com.threadly.community.domain.Community;
 import com.threadly.community.domain.exception.CommunityNotFoundException;
 import com.threadly.community.infrastructure.CommunityRepository;
+import com.threadly.membership.CommunityMembershipDTO;
 import com.threadly.membership.CommunityRole;
 import com.threadly.membership.MembershipExternalApi;
 import com.threadly.permission.PermissionClient;
@@ -22,6 +23,8 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -162,6 +165,13 @@ class CommunityService implements CommunityInternalApi, CommunityExternalApi {
   @Override
   public void unFollow(UUID communityId, UUID userId) {
     membershipExternalApi.removeMember(communityId, userId);
+  }
+
+
+  @Override
+  public Slice<CommunityMembershipDTO> getCommunityMemberships(UUID communityId,
+      Pageable pageable, Optional<String> role) {
+    return membershipExternalApi.getMembers(communityId, pageable, role);
   }
 
   @Override

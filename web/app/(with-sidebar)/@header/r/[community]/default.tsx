@@ -39,7 +39,10 @@ export default function Default() {
           <Button variant="outline" className="rounded-full" size="icon-lg">
             <BellOff />
           </Button>
-          <JoinedModButton communityId={community.id} />
+          <JoinedModButton
+            communityId={community.id}
+            communityName={community.name}
+          />
           <Button variant="outline" className="rounded-full" size="icon-lg">
             <Ellipsis />
           </Button>

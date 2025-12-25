@@ -4,18 +4,22 @@ import { Community } from "@/types";
 import { Button } from "@/components/ui/button";
 import { usePermission } from "@/query/permission.query";
 import { useFollowUnFollowCommunity } from "@/query/community.query";
+import Link from "next/link";
+import { getCommunityModLink } from "@/lib/format";
 
 type CommunityButtonProps = {
   communityId: Community["id"];
+  communityName: Community["name"];
 };
 
 export const JoinedModButton = (props: CommunityButtonProps) => {
-  const { isLoading, CAN_FOLLOW, CAN_UNFOLLOW } = usePermission(
-    "COMMUNITY",
-    props.communityId,
-    ["CAN_FOLLOW", "CAN_UNFOLLOW"],
-    "consistency"
-  );
+  const { isLoading, CAN_FOLLOW, CAN_UNFOLLOW, OWNER_PRIVILEGE } =
+    usePermission(
+      "COMMUNITY",
+      props.communityId,
+      ["CAN_FOLLOW", "CAN_UNFOLLOW", "OWNER_PRIVILEGE"],
+      "consistency"
+    );
 
   if (isLoading)
     return (
@@ -27,6 +31,17 @@ export const JoinedModButton = (props: CommunityButtonProps) => {
   if (CAN_FOLLOW) return <FollowButton {...props} />;
 
   if (CAN_UNFOLLOW) return <UnFollowButton {...props} />;
+
+  if (OWNER_PRIVILEGE)
+    return (
+      <Button variant="default" className="rounded-full" size="lg" asChild>
+        <Link href={getCommunityModLink(props.communityName) + "/moderators"}>
+          Mod Tools
+        </Link>
+      </Button>
+    );
+
+  return null;
 };
 
 const FollowButton = (props: CommunityButtonProps) => {

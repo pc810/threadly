@@ -4,6 +4,7 @@ import SimpleBar from "simplebar-react";
 import * as React from "react";
 import {
   Accessibility,
+  ArrowLeft,
   Book,
   BookOpen,
   Bot,
@@ -20,12 +21,18 @@ import {
   ShieldIcon,
   SquareTerminal,
   TrendingUp,
+  Users,
 } from "lucide-react";
 
-import { NavMain, NavMainList } from "@/components/nav-main";
+import { NavbarButton, NavMain, NavMainList } from "@/components/nav-main";
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { useCommunities } from "@/query/community.query";
-import { formatCommunityName, getCommunityLink } from "@/lib/format";
+import {
+  formatCommunityName,
+  getCommunityLink,
+  getCommunityModLink,
+} from "@/lib/format";
+import { useParams } from "next/navigation";
 
 const data = {
   primary: [
@@ -59,14 +66,17 @@ const data = {
         {
           title: "Genesis",
           url: "#",
+          icon: Globe,
         },
         {
           title: "Explorer",
           url: "#",
+          icon: Globe,
         },
         {
           title: "Quantum",
           url: "#",
+          icon: Globe,
         },
       ],
     },
@@ -78,18 +88,22 @@ const data = {
         {
           title: "Introduction",
           url: "#",
+          icon: Globe,
         },
         {
           title: "Get Started",
           url: "#",
+          icon: Globe,
         },
         {
           title: "Tutorials",
           url: "#",
+          icon: Globe,
         },
         {
           title: "Changelog",
           url: "#",
+          icon: Globe,
         },
       ],
     },
@@ -129,6 +143,62 @@ const data = {
     },
   ],
 };
+
+export function AppModSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
+  const { data: communities } = useCommunities();
+  const { community: communityParam } = useParams();
+  const communityName = `${communityParam}`;
+  const moderationNav = {
+    title: "Overview",
+    url: "#",
+    icon: SquareTerminal,
+    isActive: true,
+    items: [
+      {
+        title: "Mods & Members",
+        url: getCommunityModLink(communityName) + "/moderators",
+        icon: Users,
+      },
+      {
+        title: "Mod Queue",
+        url: "#",
+        icon: ShieldIcon,
+      },
+      {
+        title: "Mod Mail",
+        url: "#",
+        icon: Mail,
+      },
+    ],
+  };
+
+  return (
+    <Sidebar
+      className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
+      {...props}
+    >
+      <SidebarContent>
+        <SimpleBar style={{ maxHeight: "100%" }} className="px-4">
+          <div className="pt-4">
+            <NavbarButton
+              icon={ArrowLeft}
+              title="Exit Mod tools"
+              url={getCommunityLink(communityName)}
+            />
+          </div>
+
+          <NavMain items={[moderationNav]} />
+          <div>
+            <NavMainList items={data.navSecondary} />
+            <NavMainList items={data.rules} />
+          </div>
+        </SimpleBar>
+      </SidebarContent>
+    </Sidebar>
+  );
+}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: communities } = useCommunities();

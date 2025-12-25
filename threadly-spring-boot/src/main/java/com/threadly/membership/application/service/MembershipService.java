@@ -2,11 +2,13 @@ package com.threadly.membership.application.service;
 
 
 import com.threadly.membership.CommunityMembershipCreatedEvent;
+import com.threadly.membership.CommunityMembershipDTO;
 import com.threadly.membership.CommunityMembershipId;
 import com.threadly.membership.CommunityMembershipRemovedEvent;
 import com.threadly.membership.CommunityRole;
 import com.threadly.membership.MembershipExternalApi;
 import com.threadly.membership.domain.CommunityMembership;
+import com.threadly.membership.domain.CommunityMembershipSpecs;
 import com.threadly.membership.domain.exception.MembershipNotFoundException;
 import com.threadly.membership.infrastructure.persistence.CommunityMembershipRepository;
 import java.util.List;
@@ -15,6 +17,9 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -107,6 +112,26 @@ class MembershipService implements MembershipExternalApi {
   @Override
   public List<CommunityMembership> getMembers(UUID communityId) {
     return repository.findByCommunityId(communityId);
+  }
+
+  @Override
+  public Page<CommunityMembershipDTO> getMembers(UUID communityId, Pageable pageable,
+      Optional<String> role) {
+
+    Specification<CommunityMembership> spec =
+        Specification.where(CommunityMembershipSpecs.hasCommunityId(communityId));
+
+    if (role.isPresent()) {
+      spec = spec.and(
+          CommunityMembershipSpecs.hasRole(CommunityRole.valueOf(role.get()))
+      );
+    }
+
+    Page<CommunityMembership> page =
+        repository.findAll(spec, pageable);
+
+    return page
+        .map(CommunityMembershipDTO::from);
   }
 
   @Override

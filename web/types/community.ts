@@ -1,4 +1,5 @@
 import z from "zod";
+import { AUTH_ROLE, instant, pageSchema } from "./common";
 
 export enum CommunityVisibility {
   PUBLIC = "PUBLIC",
@@ -39,6 +40,51 @@ export const createCommunityRequestSchema = z.object({
   isNsfw: z.boolean(),
 });
 
+export const communityMembershipIdSchema = z.object({
+  communityId: z.uuid(),
+  userId: z.uuid(),
+});
+
+export const COMMUNITY_ROLE = {
+  AUTHOR: AUTH_ROLE.AUTHOR,
+  MOD: AUTH_ROLE.MOD,
+  MEMBER: AUTH_ROLE.MEMBER,
+  PUBLIC: AUTH_ROLE.USER,
+} as const;
+
+export type CommunityRole = keyof typeof COMMUNITY_ROLE;
+
+export const CommunityRoleLabel: Record<CommunityRole, string> = {
+  PUBLIC: "Public",
+  AUTHOR: "Owner",
+  MEMBER: "Member",
+  MOD: "Moderator",
+};
+
+export const communityRoleSchema = z.enum(
+  Object.values(COMMUNITY_ROLE) as [string, ...string[]]
+);
+
+export const communityMembershipDTOSchema = z.object({
+  id: communityMembershipIdSchema,
+  role: communityRoleSchema,
+  joinedAt: instant,
+});
+
+export const communityMembershipDTOPageSchema = pageSchema(
+  communityMembershipDTOSchema
+);
+
 export type CreateCommunityRequest = z.infer<
   typeof createCommunityRequestSchema
+>;
+
+export type CommunityMembershipDTO = z.infer<
+  typeof communityMembershipDTOSchema
+>;
+
+export type communityMembershipId = z.infer<typeof communityMembershipIdSchema>;
+
+export type CommunityMembershipDTOPage = z.infer<
+  typeof communityMembershipDTOPageSchema
 >;

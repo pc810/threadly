@@ -4,6 +4,8 @@ import com.threadly.membership.domain.CommunityMembership;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 public interface MembershipExternalApi {
 
@@ -16,6 +18,8 @@ public interface MembershipExternalApi {
   void removeMember(UUID communityId, UUID userId);
 
   List<CommunityMembership> getMembers(UUID communityId);
+
+  Slice<CommunityMembershipDTO> getMembers(UUID communityId, Pageable pageable,Optional<String> role);
 
   List<CommunityMembership> getCommunitiesForUser(UUID userId);
 

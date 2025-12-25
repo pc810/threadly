@@ -26,7 +26,7 @@ definition community {
 	permission can_unfollow = member
 	// helpers
 	permission follower = member + owner
-	permission owner_privilege = owner + sys->admin
+    permission owner_privilege = owner + sys->admin
 }
 
 

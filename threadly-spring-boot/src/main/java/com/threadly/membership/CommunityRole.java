@@ -9,7 +9,7 @@ public enum CommunityRole {
   MOD(AuthRole.MOD),
   MEMBER(AuthRole.MEMBER),
   USER(AuthRole.USER),
-  PUBLIC(AuthRole.USER);
+  PUBLIC(AuthRole.PUBLIC);
 
   private final AuthRole authRole;
 
