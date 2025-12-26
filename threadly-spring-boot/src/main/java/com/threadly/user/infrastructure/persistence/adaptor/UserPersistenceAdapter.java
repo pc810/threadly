@@ -6,6 +6,8 @@ import com.threadly.user.infrastructure.persistence.UserRepository;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +19,11 @@ class UserPersistenceAdapter implements UserRepository {
   @Override
   public Optional<User> findById(UUID id) {
     return userRepository.findById(id);
+  }
+
+  @Override
+  public Slice<User> findByName(String query, Pageable pageable) {
+    return userRepository.findByUsernameContainingIgnoreCase(query,pageable);
   }
 
   @Override

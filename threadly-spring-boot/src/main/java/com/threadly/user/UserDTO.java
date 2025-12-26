@@ -7,4 +7,6 @@ import java.util.UUID;
 public record UserDTO(
     @Schema(description = "Unique identifier of the user") UUID id,
     @Schema(description = "Display name of the user") String name
-) {}
+) {
+
+}

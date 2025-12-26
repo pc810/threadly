@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react";
 import {
   ColumnDef,
-  flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -18,37 +17,28 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { AppUser } from "@/components/app-user";
 import { useCommunityMembers } from "@/query/community.query";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
 import { AppTable, AppTablePagination } from "../app-table";
-import { capitalizeWord, formatDate } from "@/lib/format";
-import { CommunityRole, CommunityRoleLabel } from "@/types";
-
-interface CommunityMembershipDTO {
-  id: { userId: string };
-  role: string;
-  joinedAt: string;
-}
+import { formatDate } from "@/lib/format";
+import {
+  CommunityMembershipDTO,
+  CommunityRole,
+  CommunityRoleLabel,
+} from "@/types";
 
 interface Props {
   communityId: string;
+  role: CommunityRole;
 }
 
-export function CommunityMembersTable({ communityId }: Props) {
-  const [search, setSearch] = useState("");
+export function CommunityMembersTable({ communityId, role }: Props) {
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 5,
   });
 
-  const { data, isFetching } = useCommunityMembers(
+  const { data } = useCommunityMembers(
     communityId,
+    role,
     pagination.pageIndex,
     pagination.pageSize
   );

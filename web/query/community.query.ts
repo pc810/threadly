@@ -94,6 +94,7 @@ export function useFollowUnFollowCommunity(
 
 export const useCommunityMembers = (
   communityId: string,
+  communityRole: string,
   pageIndex: number,
   pageSize: number
 ) => {
@@ -105,6 +106,7 @@ export const useCommunityMembers = (
       QueryKeys.community,
       communityId,
       QueryKeys.membership,
+      communityRole,
       pageIndex,
       pageSize,
     ],
@@ -117,7 +119,7 @@ export const useCommunityMembers = (
           params: {
             pageNumber: pageIndex,
             size: pageSize,
-            role: "MEMBER",
+            role: communityRole,
           },
         }
       );

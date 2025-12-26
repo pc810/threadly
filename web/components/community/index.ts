@@ -1,3 +1,4 @@
+export * from "./client-community-members-page";
 export * from "./client-community-page";
 export * from "./client-community-widget-wrapper";
 export * from "./community-members-table";

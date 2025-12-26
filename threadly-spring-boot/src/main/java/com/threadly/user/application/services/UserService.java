@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,12 @@ class UserService implements UserExternalService, UserInternalApi {
   @Override
   public Optional<UserDTO> getUserById(UUID userId) {
     return userRepository.findById(userId).map(UserMapper::toDTO);
+  }
+
+  @Override
+  public Slice<UserDTO> getUsers(String query, Integer pageSize) {
+    return userRepository.findByName(query, Pageable.ofSize(pageSize))
+        .map(UserMapper::toDTO);
   }
 
   @Override

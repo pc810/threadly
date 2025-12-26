@@ -9,6 +9,10 @@ type AppUserProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
   userId: string;
 };
 
+type AppUserItemProps = React.HTMLAttributes<HTMLDivElement> & {
+  userId: string;
+};
+
 export const AppUser = ({ userId, ...props }: AppUserProps) => {
   const { data: user, isLoading } = useUser(userId);
   if (isLoading || user == null)
@@ -29,12 +33,45 @@ export const AppUser = ({ userId, ...props }: AppUserProps) => {
   );
 };
 
+export const AppUserItem = ({ userId, ...props }: AppUserItemProps) => {
+  const { data: user, isLoading } = useUser(userId);
+  if (isLoading || user == null)
+    return (
+      <AppUserItemCard {...props}>
+        <Skeleton className="size-6" />
+        <Skeleton className="h-4 w-8" />
+      </AppUserItemCard>
+    );
+
+  return (
+    <AppUserItemCard {...props}>
+      <AppUserAvatar src={"#"} name={user.name} />
+      {formatUserName(user.name)}
+    </AppUserItemCard>
+  );
+};
+
 const AppUserCard = ({
   className,
   ...props
 }: React.AnchorHTMLAttributes<HTMLAnchorElement> & LinkProps) => {
   return (
     <Link
+      className={clsx(
+        "flex items-center text-xs max-w-max font-medium gap-1 hover:text-accent-foreground transition-colors",
+        className
+      )}
+      {...props}
+    />
+  );
+};
+
+const AppUserItemCard = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => {
+  return (
+    <div
       className={clsx(
         "flex items-center text-xs max-w-max font-medium gap-1 hover:text-accent-foreground transition-colors",
         className
