@@ -1,7 +1,9 @@
 package com.threadly.membership.application.listener;
 
 
+import com.threadly.common.RelationType;
 import com.threadly.common.ResourceRelation;
+import com.threadly.common.ResourceRelation.Community;
 import com.threadly.common.ResourceType;
 import com.threadly.membership.CommunityMembershipCreatedEvent;
 import com.threadly.membership.CommunityMembershipRemovedEvent;
@@ -24,7 +26,7 @@ public class MembershipManagement {
     permissionClient.addRelation(
         ResourceType.COMMUNITY,
         event.communityId(),
-        event.role().isAuthor() ? ResourceRelation.Community.OWNER : ResourceRelation.Community.MEMBER,
+        getRelationType(event.role()),
         ResourceType.USER,
         event.userId()
     );
@@ -35,9 +37,19 @@ public class MembershipManagement {
     permissionClient.removeRelation(
         ResourceType.COMMUNITY,
         event.communityMemberId().communityId(),
-        event.role().isAuthor() ? ResourceRelation.Community.OWNER : ResourceRelation.Community.MEMBER,
+        getRelationType(event.role()),
         ResourceType.USER,
         event.communityMemberId().userId()
     );
+  }
+
+  private RelationType getRelationType(CommunityRole role) {
+    if (role.isAuthor()) {
+      return Community.OWNER;
+    }
+    if (role.isMod()) {
+      return Community.MOD;
+    }
+    return Community.MEMBER;
   }
 }

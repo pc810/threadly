@@ -22,7 +22,8 @@ public class ResourcePermission {
     CAN_INVITE,
     CAN_UPDATE_INVITATION,
     FOLLOWER,
-    OWNER_PRIVILEGE;
+    OWNER_PRIVILEGE,
+    MOD_PRIVILEGE;
 
     public String value() {
       return name().toLowerCase();

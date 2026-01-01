@@ -118,7 +118,7 @@ public class CommunityController {
   }
 
   @GetMapping("{id}/invites")
-  @PreAuthorize("hasPermission(#id, 'COMMUNITY', 'OWNER_PRIVILEGE')")
+  @PreAuthorize("hasPermission(#id, 'COMMUNITY', 'UPDATE')")
   ResponseEntity<Slice<CommunityMembershipInviteDTO>> getCommunityInvites(@PathVariable UUID id,
       @RequestParam(defaultValue = "0") int pageNumber,
       @RequestParam(required = false) String role) {

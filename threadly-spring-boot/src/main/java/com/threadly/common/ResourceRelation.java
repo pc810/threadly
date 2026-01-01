@@ -15,6 +15,7 @@ public class ResourceRelation {
   public enum Community implements RelationType {
     SYS,
     OWNER,
+    MOD,
     MEMBER,
     PUBLIC_USER;
 

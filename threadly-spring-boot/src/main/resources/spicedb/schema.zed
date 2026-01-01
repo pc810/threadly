@@ -13,22 +13,26 @@ definition community {
 
 	// normal member flow
 	relation owner: user
+	relation mod: user
 	relation member: user
 
 	// if exists considers community as public community
 	relation public_user: user:*
+
 	// actions
-	permission view = public_user + follower + owner_privilege
-	permission update = owner_privilege
+	permission view = public_user + follower
+	permission update = mod_privilege
 	permission delete = sys->admin
 	permission add_post = follower
 	permission can_follow = public_user - follower
-	permission can_unfollow = member
-	permission can_invite = owner
-	permission can_update_invitation = owner
+	permission can_unfollow = member + mod
+	permission can_invite = mod_privilege
+	permission can_update_invitation = mod_privilege
+
 	// helpers
-	permission follower = member + owner
+	permission follower = member + mod + owner
   permission owner_privilege = owner + sys->admin
+  permission mod_privilege = owner + mod
 }
 
 
@@ -38,5 +42,5 @@ definition post {
 
 	permission view = community->view
 	permission update = author
-	permission remove = community->owner_privilege + author
+	permission remove = community->mod_privilege + author
 }

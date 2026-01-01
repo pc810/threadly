@@ -13,13 +13,12 @@ type CommunityButtonProps = {
 };
 
 export const JoinedModButton = (props: CommunityButtonProps) => {
-  const { isLoading, CAN_FOLLOW, CAN_UNFOLLOW, OWNER_PRIVILEGE } =
-    usePermission(
-      "COMMUNITY",
-      props.communityId,
-      ["CAN_FOLLOW", "CAN_UNFOLLOW", "OWNER_PRIVILEGE"],
-      "consistency"
-    );
+  const { isLoading, CAN_FOLLOW, CAN_UNFOLLOW, MOD_PRIVILEGE } = usePermission(
+    "COMMUNITY",
+    props.communityId,
+    ["CAN_FOLLOW", "CAN_UNFOLLOW", "MOD_PRIVILEGE"],
+    "consistency"
+  );
 
   if (isLoading)
     return (
@@ -32,7 +31,7 @@ export const JoinedModButton = (props: CommunityButtonProps) => {
 
   if (CAN_UNFOLLOW) return <UnFollowButton {...props} />;
 
-  if (OWNER_PRIVILEGE)
+  if (MOD_PRIVILEGE)
     return (
       <Button variant="default" className="rounded-full" size="lg" asChild>
         <Link href={getCommunityModLink(props.communityName) + "/moderators"}>

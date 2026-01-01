@@ -1,5 +1,10 @@
 # Threadly
 
+## Start order
+- Docker (migrations)
+- Worker (buckets)
+- Springboot (spicedb & schema migrations)
+
 ## Problems
 - Image Storage
     - Secure media support

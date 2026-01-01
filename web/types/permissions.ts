@@ -11,6 +11,7 @@ export const ResourcePermissions = {
     "CAN_UPDATE_INVITATION",
     "FOLLOWER",
     "OWNER_PRIVILEGE",
+    "MOD_PRIVILEGE",
   ] as const,
   POST: ["VIEW", "UPDATE", "REMOVE"] as const,
 } as const;
