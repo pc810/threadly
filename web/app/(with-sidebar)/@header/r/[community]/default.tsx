@@ -1,6 +1,6 @@
 "use client";
 
-import { JoinedModButton } from "@/components/community";
+import { InviteModButton, JoinedModButton } from "@/components/community";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getCommunityPostCreateLink, getTwoCharacter } from "@/lib/format";
@@ -30,6 +30,7 @@ export default function Default() {
         <div className="text-3xl font-bold self-end">r/{community.name}</div>
 
         <div className="ml-auto flex items-end gap-2 self-end">
+          <InviteModButton communityId={community.id} />
           <Button variant="outline" className="rounded-full" size="lg" asChild>
             <Link href={getCommunityPostCreateLink(community.name)}>
               <Plus />
@@ -39,6 +40,7 @@ export default function Default() {
           <Button variant="outline" className="rounded-full" size="icon-lg">
             <BellOff />
           </Button>
+
           <JoinedModButton
             communityId={community.id}
             communityName={community.name}

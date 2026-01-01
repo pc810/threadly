@@ -12,8 +12,11 @@ import com.threadly.community.UpdateCommunityVisibilityEvent;
 import com.threadly.community.application.usecase.CommunityInternalApi;
 import com.threadly.community.domain.Community;
 import com.threadly.community.domain.exception.CommunityNotFoundException;
+import com.threadly.community.domain.exception.MembershipAlreadyExistsException;
+import com.threadly.community.domain.exception.MembershipInviteExistsException;
 import com.threadly.community.infrastructure.CommunityRepository;
 import com.threadly.membership.CommunityMembershipDTO;
+import com.threadly.membership.CommunityMembershipInviteDTO;
 import com.threadly.membership.CommunityRole;
 import com.threadly.membership.MembershipExternalApi;
 import com.threadly.permission.PermissionClient;
@@ -147,6 +150,17 @@ class CommunityService implements CommunityInternalApi, CommunityExternalApi {
     };
   }
 
+  @Override
+  public boolean checkCanInviteModUser(UUID communityId, UUID actorId) {
+    return permissionClient.checkPermission(
+        ResourceType.COMMUNITY,
+        communityId,
+        ResourcePermission.Community.CAN_INVITE,
+        ResourceType.USER,
+        actorId
+    );
+  }
+
 
   @Override
   public Optional<CommunityRole> getRole(UUID communityId, UUID actorId) {
@@ -167,12 +181,57 @@ class CommunityService implements CommunityInternalApi, CommunityExternalApi {
     membershipExternalApi.removeMember(communityId, userId);
   }
 
+  @Override
+  public void inviteModUser(UUID communityId, UUID userId, UUID invitedBy) {
+    var communityMembership = membershipExternalApi.getMembership(communityId, userId);
+
+    communityMembership.ifPresent(membership -> {
+      if (membership.hasModOwnerPrivilege()) {
+        throw MembershipAlreadyExistsException.from(communityId, userId);
+      }
+    });
+
+    if (membershipExternalApi.isUserInvited(communityId, CommunityRole.MOD, userId)) {
+      throw MembershipInviteExistsException.from(communityId, userId);
+    }
+
+    membershipExternalApi.inviteUser(communityId, CommunityRole.MOD, userId, invitedBy);
+  }
 
   @Override
   public Slice<CommunityMembershipDTO> getCommunityMemberships(UUID communityId,
       Pageable pageable, Optional<String> role) {
     return membershipExternalApi.getMembers(communityId, pageable, role);
   }
+
+  @Override
+  public Slice<CommunityMembershipInviteDTO> getCommunityMembershipInvites(UUID communityId,
+      Pageable pageable, Optional<String> role) {
+    return membershipExternalApi.getInvitedMembers(communityId, pageable, role);
+  }
+
+  @Override
+  public Optional<CommunityMembershipInviteDTO> getUserMembershipInvite(UUID communityId,
+      UUID actorId) {
+    return membershipExternalApi.getUserInvited(communityId, actorId)
+        .map(CommunityMembershipInviteDTO::from);
+  }
+
+  @Override
+  public void acceptUserMembershipInvite(UUID communityId, UUID userId) {
+    membershipExternalApi.acceptInvite(communityId, userId);
+  }
+
+  @Override
+  public void rejectUserMembershipInvite(UUID communityId, UUID userId) {
+    membershipExternalApi.rejectInvite(communityId, userId);
+  }
+
+  @Override
+  public void removeUserMembershipInvite(UUID communityId, UUID userId, UUID actorId) {
+    membershipExternalApi.removeInvite(communityId, userId, actorId);
+  }
+
 
   @Override
   public void changeVisibility(UUID communityId, CommunityVisibility visibility) {

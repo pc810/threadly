@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { QueryOptions, useQuery } from "@tanstack/react-query";
 import { QueryKeys } from "./utils";
 import { axios } from "@/lib/axios";
 import { UserDTO, UserDTOSlice } from "@/types";
@@ -15,7 +15,7 @@ export const useUser = (userId: string | undefined) => {
   });
 };
 
-export type UseUsersOpts = { excludeSelf: boolean };
+export type UseUsersOpts = { excludeSelf: boolean; enabled: boolean };
 
 export const useUsers = (query: string, options?: Partial<UseUsersOpts>) => {
   const auth = useAuth();

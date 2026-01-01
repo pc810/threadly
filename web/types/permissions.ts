@@ -7,6 +7,8 @@ export const ResourcePermissions = {
     "ADD_POST",
     "CAN_FOLLOW",
     "CAN_UNFOLLOW",
+    "CAN_INVITE",
+    "CAN_UPDATE_INVITATION",
     "FOLLOWER",
     "OWNER_PRIVILEGE",
   ] as const,

@@ -2,9 +2,13 @@ package com.threadly.community.infrastructure.web;
 
 import com.threadly.common.UserPrincipal;
 import com.threadly.community.CreateCommunityRequest;
+import com.threadly.community.InviteUserDTO;
 import com.threadly.community.application.usecase.CommunityInternalApi;
 import com.threadly.community.domain.Community;
+import com.threadly.community.domain.CommunityMembershipAction;
 import com.threadly.membership.CommunityMembershipDTO;
+import com.threadly.membership.CommunityMembershipInviteDTO;
+import com.threadly.permission.PermissionClient;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -19,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommunityController {
 
   private final CommunityInternalApi communityInternalApi;
+  private final PermissionClient permissionClient;
 
   @Operation(summary = "Create a new community", description = "Creates a new community owned by the authenticated user")
   @PostMapping
@@ -104,9 +110,74 @@ public class CommunityController {
   @GetMapping("{id}/members")
   @PreAuthorize("hasPermission(#id, 'COMMUNITY', 'VIEW')")
   ResponseEntity<Slice<CommunityMembershipDTO>> getCommunityMembers(@PathVariable UUID id,
-      @RequestParam(defaultValue = "0") int pageNumber, @RequestParam(required = false) String role) {
+      @RequestParam(defaultValue = "0") int pageNumber,
+      @RequestParam(required = false) String role) {
     return ResponseEntity.ok(communityInternalApi.getCommunityMemberships(id,
         PageRequest.of(pageNumber, 1, Sort.by(Sort.Direction.DESC, "createdAt")),
         Optional.ofNullable(role)));
+  }
+
+  @GetMapping("{id}/invites")
+  @PreAuthorize("hasPermission(#id, 'COMMUNITY', 'OWNER_PRIVILEGE')")
+  ResponseEntity<Slice<CommunityMembershipInviteDTO>> getCommunityInvites(@PathVariable UUID id,
+      @RequestParam(defaultValue = "0") int pageNumber,
+      @RequestParam(required = false) String role) {
+    return ResponseEntity.ok(communityInternalApi.getCommunityMembershipInvites(id,
+        PageRequest.of(pageNumber, 1, Sort.by(Sort.Direction.DESC, "createdAt")),
+        Optional.ofNullable(role)));
+  }
+
+
+  @GetMapping("{id}/invite")
+  @PreAuthorize("hasPermission(#id, 'COMMUNITY', 'VIEW')")
+  ResponseEntity<Optional<CommunityMembershipInviteDTO>> getUserInvite(@PathVariable UUID id,
+      @AuthenticationPrincipal UserPrincipal principal) {
+    return ResponseEntity.ok(communityInternalApi.getUserMembershipInvite(id, principal.userId()));
+  }
+
+  @PostMapping("{id}/invite")
+  @PreAuthorize("hasPermission(#id, 'COMMUNITY', 'CAN_INVITE')")
+  ResponseEntity<Void> inviteUser(@PathVariable UUID id, @RequestBody InviteUserDTO inviteUserDTO,
+      @AuthenticationPrincipal UserPrincipal principal) {
+//    if (!communityInternalApi.checkCanInviteModUser(id, principal.userId())) {
+//      throw InsufficientPermissionException.fromResourceToSubject(
+//          ResourceType.COMMUNITY,
+//          ResourcePermission.Community.CAN_INVITE,
+//          ResourceType.USER
+//      );
+//    }
+
+    if (inviteUserDTO.role().isMod()) {
+      communityInternalApi.inviteModUser(id, inviteUserDTO.userId(), principal.userId());
+    } else {
+      throw new UnsupportedOperationException("This feature is not supported yet");
+    }
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("{id}/invite/{action}")
+  ResponseEntity<Void> getUserInvite(@PathVariable UUID id,
+      @PathVariable CommunityMembershipAction action,
+      @AuthenticationPrincipal UserPrincipal principal) {
+
+    switch (action) {
+      case ACCEPT -> communityInternalApi.acceptUserMembershipInvite(id, principal.userId());
+      case REJECT -> communityInternalApi.rejectUserMembershipInvite(id, principal.userId());
+      case null, default -> throw new IllegalArgumentException("Invalid action");
+    }
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @DeleteMapping("{id}/invite/{userId}")
+  @PreAuthorize("hasPermission(#id, 'COMMUNITY', 'CAN_UPDATE_INVITATION')")
+  ResponseEntity<Void> getUserInvite(@PathVariable UUID id,
+      @PathVariable UUID userId,
+      @AuthenticationPrincipal UserPrincipal principal) {
+
+    communityInternalApi.removeUserMembershipInvite(id, userId, principal.userId());
+
+    return ResponseEntity.noContent().build();
   }
 }

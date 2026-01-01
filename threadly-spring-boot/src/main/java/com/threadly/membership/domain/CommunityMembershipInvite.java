@@ -17,23 +17,22 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "community_memberships")
+@Table(name = "community_membership_invites")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
 @Setter
 @Slf4j
-public class CommunityMembership {
+public class CommunityMembershipInvite {
 
   @EmbeddedId
   private CommunityMembershipId id;
 
   @Column(nullable = false)
-  private UUID addedBy;
+  private UUID invitedBy;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 20)
@@ -43,25 +42,9 @@ public class CommunityMembership {
   @Column(updatable = false, nullable = false)
   private Instant createdAt;
 
-  @UpdateTimestamp
-  @Column(nullable = false)
-  private Instant updatedAt;
-
-  public static CommunityMembership from(CommunityMembershipId communityMemberId,
-      CommunityRole role, UUID addedBy) {
-    return
-        CommunityMembership.builder()
-            .id(communityMemberId)
-            .role(role)
-            .addedBy(addedBy)
-            .build();
-  }
-
-  public boolean hasModOwnerPrivilege() {
-    return role.isAuthor() || role.isMod();
-  }
-
-  public void updateRole(CommunityRole role) {
-    this.setRole(role);
+  public static CommunityMembershipInvite from(CommunityMembershipId id, CommunityRole role,
+      UUID invitedBy) {
+    return CommunityMembershipInvite.builder().role(role).id(id).invitedBy(invitedBy)
+        .build();
   }
 }

@@ -1,12 +1,16 @@
 import { axios } from "@/lib/axios";
 import {
   Community,
+  CommunityInviteAction,
   CommunityMembershipDTOPage,
+  CommunityMembershipInviteDTO,
+  CommunityMembershipInviteDTOPage,
   CreateCommunityRequest,
+  InviteUserDTO,
 } from "@/types/community";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { QueryKeys } from "./utils";
+import { isLogedIn, QueryKeys } from "./utils";
 import { ResourceTypeEnum } from "@/types";
 import { useAuth } from "./auth.query";
 
@@ -22,6 +26,7 @@ export const useCommunities = () => {
 
 export const useCommunity = (communityId: string | undefined) => {
   return useQuery({
+    enabled: communityId != null,
     queryKey: [QueryKeys.community, communityId],
     queryFn: async () => {
       const response = await axios.get<Community>(
@@ -29,7 +34,144 @@ export const useCommunity = (communityId: string | undefined) => {
       );
       return response.data;
     },
-    enabled: communityId != null,
+  });
+};
+
+export const useHasCommunityInvite = (communityId: string | undefined) => {
+  const auth = useAuth();
+  return useQuery({
+    enabled: communityId != null && isLogedIn(auth),
+    queryKey: [
+      QueryKeys.community,
+      communityId,
+      QueryKeys.membership,
+      QueryKeys.invite,
+      auth.data?.id,
+    ],
+    queryFn: async () => {
+      const response = await axios.get<CommunityMembershipInviteDTO | null>(
+        `/communities/${communityId}/invite`
+      );
+      return response.data;
+    },
+  });
+};
+
+export const useCommunityInvite = (communityId: string | undefined) => {
+  const queryClient = useQueryClient();
+  const auth = useAuth();
+  return useMutation({
+    mutationKey: [
+      QueryKeys.community,
+      communityId,
+      QueryKeys.invite,
+      auth.data?.id,
+    ],
+    mutationFn: async (payload: InviteUserDTO) => {
+      const response = await axios.post<void>(
+        `/communities/${communityId}/invite`,
+        payload,
+        { withCredentials: true }
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      toast("Community Invitation sent successfully 🎉");
+
+      queryClient.invalidateQueries({
+        queryKey: [
+          QueryKeys.community,
+          communityId,
+          QueryKeys.membership,
+          QueryKeys.invite,
+        ],
+      });
+    },
+    onError: (error: any) => {
+      const message =
+        error.response?.data?.message ||
+        "Failed to sent invitation. Please try again.";
+      toast.error("Failed to Invite", {
+        description: message,
+      });
+    },
+  });
+};
+
+export const useCommunityInviteAction = (communityId: string | undefined) => {
+  const queryClient = useQueryClient();
+  const auth = useAuth();
+  return useMutation({
+    mutationKey: [
+      QueryKeys.community,
+      communityId,
+      QueryKeys.invite,
+      auth.data?.id,
+    ],
+    mutationFn: async (action: CommunityInviteAction) => {
+      const response = await axios.post<void>(
+        `/communities/${communityId}/invite/${action}`,
+        {},
+        { withCredentials: true }
+      );
+      return response.data;
+    },
+    onSuccess: (data, variables) => {
+      if (variables == "ACCEPT") {
+        toast("Community joined successfully 🎉");
+      } else {
+        toast("Community invitation rejected successfully");
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: [
+          QueryKeys.community,
+          communityId,
+          QueryKeys.membership,
+          QueryKeys.invite,
+        ],
+      });
+    },
+    onError: (error: any) => {
+      const message =
+        error.response?.data?.message ||
+        "Failed to membership action on community. Please try again.";
+      toast.error("Failed to membership action", {
+        description: message,
+      });
+    },
+  });
+};
+
+export const useCommunityInviteRemove = (communityId: string | undefined) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: [QueryKeys.community, communityId, QueryKeys.removeInvite],
+    mutationFn: async (invite: CommunityMembershipInviteDTO) => {
+      const response = await axios.delete<void>(
+        `/communities/${invite.id.communityId}/invite/${invite.id.userId}`
+      );
+      return response.data;
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          QueryKeys.community,
+          communityId,
+          QueryKeys.membership,
+          QueryKeys.invite,
+        ],
+      });
+    },
+    onError: (error: any) => {
+      const message =
+        error.response?.data?.message ||
+        "Failed to remove membership invite on community. Please try again.";
+      toast.error("Failed to remove invite", {
+        description: message,
+      });
+    },
   });
 };
 
@@ -101,7 +243,7 @@ export const useCommunityMembers = (
   const auth = useAuth();
 
   return useQuery({
-    enabled: !!auth,
+    enabled: isLogedIn(auth),
     queryKey: [
       QueryKeys.community,
       communityId,
@@ -114,6 +256,43 @@ export const useCommunityMembers = (
     queryFn: async () => {
       const res = await axios.get<CommunityMembershipDTOPage>(
         `/communities/${communityId}/members`,
+        {
+          withCredentials: true,
+          params: {
+            pageNumber: pageIndex,
+            size: pageSize,
+            role: communityRole,
+          },
+        }
+      );
+      return res.data;
+    },
+  });
+};
+
+export const useCommunityInvites = (
+  communityId: string,
+  communityRole: string | undefined,
+  pageIndex: number,
+  pageSize: number
+) => {
+  const auth = useAuth();
+
+  return useQuery({
+    enabled: isLogedIn(auth),
+    queryKey: [
+      QueryKeys.community,
+      communityId,
+      QueryKeys.membership,
+      QueryKeys.invite,
+      communityRole ?? "all",
+      pageIndex,
+      pageSize,
+    ],
+    staleTime: 5000,
+    queryFn: async () => {
+      const res = await axios.get<CommunityMembershipInviteDTOPage>(
+        `/communities/${communityId}/invites`,
         {
           withCredentials: true,
           params: {

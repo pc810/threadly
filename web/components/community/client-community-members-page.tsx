@@ -6,18 +6,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AppPageTitle } from "@/components/app-page-title";
 import { CommunityMembersTable } from "@/components/community";
 
-import { useCommunityByName } from "@/query/community.query";
-import { Community } from "@/types";
+import {
+  useCommunityByName,
+  useCommunityInvite,
+} from "@/query/community.query";
+import { Community, InviteUserDTO } from "@/types";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { getCommunityModLink } from "@/lib/format";
 import { useState } from "react";
 import { CommunityInviteModal } from "./community-invite-modal";
+import { CommunityInvitesTable } from "./community-invites-table";
 
 const COMMUNITY_MEMBERS_PAGE = {
   Moderators: "Moderators",
   ApprovedUsers: "ApprovedUsers",
+  Invites: "Invites",
 };
 
 type CommunityMembersPageType = keyof typeof COMMUNITY_MEMBERS_PAGE;
@@ -46,12 +51,25 @@ export function ClientCommunityMembersPage({
       {type == COMMUNITY_MEMBERS_PAGE.ApprovedUsers && (
         <ApprovedUsers community={community} />
       )}
+      {type == COMMUNITY_MEMBERS_PAGE.Invites && (
+        <InvitedUsers community={community} />
+      )}
     </div>
   );
 }
 
 const Moderator = ({ community }: { community: Community }) => {
   const [openInviteMod, setOpenInviteMod] = useState(false);
+
+  const { mutateAsync: inviteUserToCommunity, isPending } = useCommunityInvite(
+    community.id
+  );
+
+  const handleInviteUser = async (payload: InviteUserDTO) => {
+    await inviteUserToCommunity(payload);
+    setOpenInviteMod(false);
+  };
+
   return (
     <>
       <CommunityMembersTabs defaultValue="Moderators" />
@@ -65,6 +83,8 @@ const Moderator = ({ community }: { community: Community }) => {
         title="Invite Mod"
         open={openInviteMod}
         onOpenChange={setOpenInviteMod}
+        onSuccess={handleInviteUser}
+        isPending={isPending}
       />
     </>
   );
@@ -89,20 +109,36 @@ const ApprovedUsers = ({ community }: { community: Community }) => {
   );
 };
 
+const InvitedUsers = ({ community }: { community: Community }) => {
+  return (
+    <>
+      <CommunityMembersTabs defaultValue="Invites" className="mb-4" />
+      <CommunityInvitesTable communityId={community.id} />
+    </>
+  );
+};
+
 const CommunityMembersTabs = ({
   defaultValue,
+  className,
 }: {
   defaultValue: CommunityMembersPageType;
+  className?: string;
 }) => {
   const router = useRouter();
   const { community } = useParams();
   return (
     <Tabs
+      className={className}
       defaultValue={defaultValue}
-      onValueChange={() =>
+      onValueChange={(updatedValue) =>
         router.push(
           `${getCommunityModLink(`${community}`)}/${
-            defaultValue != "ApprovedUsers" ? "approved-users" : "moderators"
+            updatedValue == "ApprovedUsers"
+              ? "approved-users"
+              : updatedValue == "Invites"
+              ? "invites"
+              : "moderators"
           }`
         )
       }
@@ -113,6 +149,9 @@ const CommunityMembersTabs = ({
         </TabsTrigger>
         <TabsTrigger value={COMMUNITY_MEMBERS_PAGE.ApprovedUsers}>
           Approved Users
+        </TabsTrigger>
+        <TabsTrigger value={COMMUNITY_MEMBERS_PAGE.Invites}>
+          Invites
         </TabsTrigger>
       </TabsList>
     </Tabs>

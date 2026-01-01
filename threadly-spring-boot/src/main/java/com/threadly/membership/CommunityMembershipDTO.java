@@ -1,6 +1,7 @@
 package com.threadly.membership;
 
 import com.threadly.membership.domain.CommunityMembership;
+import com.threadly.membership.domain.CommunityMembershipInvite;
 import java.time.Instant;
 
 public record CommunityMembershipDTO(

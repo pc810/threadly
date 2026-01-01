@@ -24,9 +24,11 @@ definition community {
 	permission add_post = follower
 	permission can_follow = public_user - follower
 	permission can_unfollow = member
+	permission can_invite = owner
+	permission can_update_invitation = owner
 	// helpers
 	permission follower = member + owner
-    permission owner_privilege = owner + sys->admin
+  permission owner_privilege = owner + sys->admin
 }
 
 

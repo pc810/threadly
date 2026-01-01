@@ -12,4 +12,6 @@ public interface CanActionUseCase {
   boolean checkOwnerAccess(UUID communityId, AuthRole authRole);
 
   boolean checkMembershipViewAccess(UUID id, AuthRole authRole);
+
+  boolean checkCanInviteModUser(UUID communityId, UUID actorId);
 }

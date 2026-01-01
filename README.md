@@ -11,3 +11,8 @@
     - Initial implementation using PermissionResolver not scalable
       - involed @Permission annotation which works uses Aspect to resolve PermissionContext & perform all checks          
     - Moved to spicedb
+
+```
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+```

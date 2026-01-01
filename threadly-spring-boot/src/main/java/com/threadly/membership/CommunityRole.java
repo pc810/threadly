@@ -20,4 +20,8 @@ public enum CommunityRole {
   public boolean isAuthor() {
     return this == AUTHOR;
   }
+
+  public boolean isMod() {
+    return this == MOD;
+  }
 }

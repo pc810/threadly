@@ -1,98 +1,115 @@
-import { useUsers, UseUsersOpts } from "@/query/user.query";
-import { UserDTO } from "@/types";
-import {
-  ComboboxAnchor,
-  ComboboxInput,
-  ComboboxTrigger,
-  ComboboxContent,
-  ComboboxLoading,
-  ComboboxEmpty,
-  ComboboxItem,
-} from "@/components/ui/combobox";
-import { X, ChevronDown } from "lucide-react";
-import { useState } from "react";
-import { AppUserItem } from "@/components/app-user";
-import { Combobox } from "@/components/ui/combobox";
+"use client";
 
-interface UserSearchComboboxProps {
-  value: string;
-  onChange: (user: string | null) => void;
-  options: Partial<UseUsersOpts>;
+import * as React from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+import { useUsers } from "@/query/user.query";
+import { AppUserItem } from "../app-user";
+
+type User = {
+  id: string;
+  name: string;
+};
+
+interface UserComboboxOptions {
+  excludeSelf?: boolean;
 }
 
-export const UserSearchCombobox = ({
-  value,
-  onChange,
-  options,
-}: UserSearchComboboxProps) => {
-  const [search, setSearch] = useState("");
-  const [selectedUser, setSelectedUser] = useState<UserDTO | null>(null);
+interface UserComboboxProps {
+  value?: string;
+  onChange?: (user: User | null) => void;
+  options?: UserComboboxOptions;
+}
 
-  const { data: users, isLoading } = useUsers(search, options);
+export function UserCombobox({ value, onChange, options }: UserComboboxProps) {
+  const [open, setOpen] = React.useState(false);
+  const [search, setSearch] = React.useState("");
 
-  const clearSelection = () => {
-    setSearch("");
-    setSelectedUser(null);
-    onChange(null);
-  };
+  const { data: users, isLoading } = useUsers(search, {
+    enabled: open,
+    ...options,
+  });
 
   return (
-    <Combobox
-      value={value}
-      onValueChange={(v) => {
-        const user = users?.content.find((u) => u.id === v) ?? null;
-        setSelectedUser(user);
-        setSearch("");
-        onChange(user?.id ?? null);
-      }}
-      inputValue={search}
-      onInputValueChange={setSearch}
-      manualFiltering
-    >
-      <ComboboxAnchor className="h-12">
-        {selectedUser ? (
-          <div className="flex items-center justify-between gap-2 py-2 w-full">
-            <AppUserItem userId={selectedUser.id} />
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="justify-between"
+        >
+          {value ? (
+            <AppUserItem userId={value} />
+          ) : (
+            <span className="text-muted-foreground">Select user...</span>
+          )}
 
-            <button
-              type="button"
-              onClick={clearSelection}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        ) : (
-          <>
-            <ComboboxInput placeholder="Search user" value={search} />
-            <ComboboxTrigger>
-              <ChevronDown className="h-4 w-4" />
-            </ComboboxTrigger>
-          </>
-        )}
-      </ComboboxAnchor>
+          <ChevronsUpDown className="opacity-50" />
+        </Button>
+      </PopoverTrigger>
 
-      <ComboboxContent>
-        {isLoading && <ComboboxLoading label="Searching users..." />}
+      <PopoverContent className="w-[260px] p-0">
+        <Command shouldFilter={false}>
+          <CommandInput
+            placeholder="Search users..."
+            value={search}
+            onValueChange={setSearch}
+            className="h-9"
+          />
 
-        {!isLoading && search.length >= 2 && users?.content.length === 0 && (
-          <ComboboxEmpty>No users found.</ComboboxEmpty>
-        )}
+          <CommandList>
+            {isLoading && (
+              <div className="px-3 py-2 text-sm text-muted-foreground">
+                Loading users...
+              </div>
+            )}
 
-        {search.length < 2 && (
-          <div className="px-3 py-2 text-sm text-muted-foreground">
-            Type at least 2 characters
-          </div>
-        )}
+            {!isLoading && <CommandEmpty>No users found.</CommandEmpty>}
 
-        {!isLoading &&
-          search.length >= 2 &&
-          users?.content.map((user) => (
-            <ComboboxItem key={user.id} value={user.id} className="px-0">
-              <AppUserItem userId={user.id} />
-            </ComboboxItem>
-          ))}
-      </ComboboxContent>
-    </Combobox>
+            <CommandGroup>
+              {users?.content.map((user) => (
+                <CommandItem
+                  key={user.id}
+                  value={user.id}
+                  onSelect={(v) => {
+                    const selected =
+                      users?.content.find((u) => u.id === v) ?? null;
+
+                    onChange?.(selected);
+                    setOpen(false);
+                    setSearch("");
+                  }}
+                >
+                  <AppUserItem userId={user.id} />
+                  <Check
+                    className={cn(
+                      "ml-auto",
+                      value === user.id ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
-};
+}

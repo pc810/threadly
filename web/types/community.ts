@@ -52,6 +52,11 @@ export const COMMUNITY_ROLE = {
   PUBLIC: AUTH_ROLE.USER,
 } as const;
 
+export const COMMUNITY_INVITE_ACTION = {
+  ACCEPT: "ACCEPT",
+  REJECT: "REJECT",
+} as const;
+
 export type CommunityRole = keyof typeof COMMUNITY_ROLE;
 
 export const CommunityRoleLabel: Record<CommunityRole, string> = {
@@ -71,9 +76,29 @@ export const communityMembershipDTOSchema = z.object({
   joinedAt: instant,
 });
 
+export const communityMembershipInviteDTOSchema = z.object({
+  id: communityMembershipIdSchema,
+  role: communityRoleSchema,
+  invitedBy: z.uuid(),
+  createdAt: instant,
+});
+
 export const communityMembershipDTOPageSchema = pageSchema(
   communityMembershipDTOSchema
 );
+export const communityMembershipInviteDTOPageSchema = pageSchema(
+  communityMembershipInviteDTOSchema
+);
+
+export const inviteUserDTOSchema = z.object({
+  userId: z.uuid(),
+  role: communityRoleSchema,
+});
+
+export const communityInviteActionSchema = z.enum([
+  COMMUNITY_INVITE_ACTION.ACCEPT,
+  COMMUNITY_INVITE_ACTION.REJECT,
+]);
 
 export type CreateCommunityRequest = z.infer<
   typeof createCommunityRequestSchema
@@ -88,3 +113,14 @@ export type communityMembershipId = z.infer<typeof communityMembershipIdSchema>;
 export type CommunityMembershipDTOPage = z.infer<
   typeof communityMembershipDTOPageSchema
 >;
+
+export type CommunityMembershipInviteDTOPage = z.infer<
+  typeof communityMembershipInviteDTOPageSchema
+>;
+
+export type InviteUserDTO = z.infer<typeof inviteUserDTOSchema>;
+
+export type CommunityMembershipInviteDTO = z.infer<
+  typeof communityMembershipInviteDTOSchema
+>;
+export type CommunityInviteAction = z.infer<typeof communityInviteActionSchema>;
