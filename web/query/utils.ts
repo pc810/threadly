@@ -3,6 +3,7 @@ import { UseQueryResult } from "@tanstack/react-query";
 export const QueryKeys = {
   auth: "auth",
   community: "community",
+  name: "name",
   membership: "membership",
   feed: "feed",
   media: "media",

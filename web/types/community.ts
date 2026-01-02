@@ -100,6 +100,12 @@ export const communityInviteActionSchema = z.enum([
   COMMUNITY_INVITE_ACTION.REJECT,
 ]);
 
+export const updateCommunityMetaDTOSchema = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  isNsfw: z.boolean().optional(),
+});
+
 export type CreateCommunityRequest = z.infer<
   typeof createCommunityRequestSchema
 >;
@@ -124,3 +130,7 @@ export type CommunityMembershipInviteDTO = z.infer<
   typeof communityMembershipInviteDTOSchema
 >;
 export type CommunityInviteAction = z.infer<typeof communityInviteActionSchema>;
+
+export type UpdateCommunityMetaDTO = z.infer<
+  typeof updateCommunityMetaDTOSchema
+>;

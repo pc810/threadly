@@ -257,9 +257,15 @@ class CommunityService implements CommunityInternalApi, CommunityExternalApi {
     var community = getCommunity(communityId).orElseThrow(
         () -> CommunityNotFoundException.byId(communityId));
 
-    updateCommunityMetaDTO.title().ifPresent(community::setTitle);
-    updateCommunityMetaDTO.description().ifPresent(community::setDescription);
-    updateCommunityMetaDTO.isNsfw().ifPresent(community::setNsfw);
+    if (updateCommunityMetaDTO.title() != null) {
+      community.setTitle(updateCommunityMetaDTO.title());
+    }
+    if (updateCommunityMetaDTO.description() != null) {
+      community.setDescription(updateCommunityMetaDTO.description());
+    }
+    if (updateCommunityMetaDTO.isNsfw() != null) {
+      community.setNsfw(updateCommunityMetaDTO.isNsfw());
+    }
 
     communityRepository.save(community);
   }

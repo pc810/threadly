@@ -1,7 +1,7 @@
 "use client";
 
 import { AppPostCard } from "@/components/app-post-card";
-import { useCommunity } from "@/query/community.query";
+import { useCommunity, useCommunityByName } from "@/query/community.query";
 import { useCommunityPosts, usePosts } from "@/query/post.query";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -45,7 +45,7 @@ export function AppCommunityPostsList({
 }: {
   communityName?: string;
 }) {
-  const { data: community } = useCommunity(communityName);
+  const { data: community } = useCommunityByName(communityName ?? "");
 
   const {
     data: posts,

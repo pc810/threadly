@@ -1,11 +1,13 @@
 package com.threadly.community;
 
-import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record UpdateCommunityMetaDTO(
-    Optional<String> title,
-    Optional<String> description,
-    Optional<Boolean> isNsfw
+    String title,
+    String description,
+    Boolean isNsfw
 ) {
 
 }

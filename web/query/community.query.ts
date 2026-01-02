@@ -7,6 +7,7 @@ import {
   CommunityMembershipInviteDTOPage,
   CreateCommunityRequest,
   InviteUserDTO,
+  UpdateCommunityMetaDTO,
 } from "@/types/community";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -177,8 +178,9 @@ export const useCommunityInviteRemove = (communityId: string | undefined) => {
 
 export const useCommunityByName = (communityName: string) => {
   return useQuery({
-    queryKey: [QueryKeys.community, communityName],
+    queryKey: [QueryKeys.community, QueryKeys.name, communityName],
     queryFn: () => getCommunityByName(communityName),
+    enabled: communityName.length > 0,
   });
 };
 
@@ -201,6 +203,37 @@ export function useCreateCommunity() {
         error.response?.data?.message ||
         "Failed to create community. Please try again.";
       toast.error("Error creating community", {
+        description: message,
+      });
+    },
+  });
+}
+
+export function useUpdateCommunity(id: string, communityName: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: UpdateCommunityMetaDTO) => {
+      const response = await axios.patch(`/communities/${id}`, data);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      toast("Community updated successfully 🎉");
+
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.community, id],
+        exact: true,
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.community, QueryKeys.name, communityName],
+        refetchType: "all",
+      });
+    },
+    onError: (error: any) => {
+      const message =
+        error.response?.data?.message ||
+        "Failed to update community. Please try again.";
+      toast.error("Error update community", {
         description: message,
       });
     },

@@ -3,6 +3,7 @@ package com.threadly.community.infrastructure.web;
 import com.threadly.common.UserPrincipal;
 import com.threadly.community.CreateCommunityRequest;
 import com.threadly.community.InviteUserDTO;
+import com.threadly.community.UpdateCommunityMetaDTO;
 import com.threadly.community.application.usecase.CommunityInternalApi;
 import com.threadly.community.domain.Community;
 import com.threadly.community.domain.CommunityMembershipAction;
@@ -25,6 +26,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -80,6 +82,14 @@ public class CommunityController {
 
     return communityInternalApi.getCommunity(id).map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
+  }
+
+  @PatchMapping("{id}")
+  @PreAuthorize("hasPermission(#id, 'COMMUNITY', 'UPDATE')")
+  ResponseEntity<Void> updateCommunity(@PathVariable UUID id,
+      @RequestBody UpdateCommunityMetaDTO updateCommunityMetaDTO) {
+    communityInternalApi.updateCommunityMeta(id, updateCommunityMetaDTO);
+    return ResponseEntity.ok().build();
   }
 
 

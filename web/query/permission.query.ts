@@ -1,7 +1,7 @@
 import { ResourcePermissions, ResourceType } from "@/types";
 import { QueryKeys } from "./utils";
 import { axios } from "@/lib/axios";
-import { useQuery } from "@tanstack/react-query";
+import { QueryOptions, useQuery } from "@tanstack/react-query";
 
 type PermissionMap<P extends readonly string[]> = {
   [K in P[number]]: boolean;
@@ -19,7 +19,12 @@ export const usePermission = <
   error: unknown;
 } => {
   const query = useQuery({
-    queryKey: [QueryKeys.permission, resourceType, resourceId],
+    queryKey: [
+      QueryKeys.permission,
+      resourceType,
+      resourceId,
+      JSON.stringify(permissions),
+    ],
     enabled: !!resourceId && permissions.length > 0,
     queryFn: async (): Promise<PermissionMap<P>> => {
       const res = await axios.get<PermissionMap<P>>("/permissions", {
