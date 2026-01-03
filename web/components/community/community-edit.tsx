@@ -70,9 +70,11 @@ export const CommunityEdit = ({ community }: { community: Community }) => {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger>
-        <Edit />
-        <div className="sr-only">Edit community</div>
+      <DialogTrigger asChild>
+        <Button size="icon-sm" variant="secondary">
+          <Edit />
+          <div className="sr-only">Edit community</div>
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>Edit community details wid get</DialogTitle>
