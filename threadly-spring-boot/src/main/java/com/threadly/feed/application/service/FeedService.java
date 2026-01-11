@@ -24,8 +24,9 @@ class PostFeedService implements PostFeedInternalApi {
   }
 
   @Override
-  public void createPostFeed(UUID postId, UUID userId) {
-    log.info("Creating post feed for postId={} userId={}", postId, userId);
-    postFeedRepository.save(PostFeed.from(postId, userId));
+  public void createPostFeed(UUID communityId, UUID postId, UUID userId) {
+    log.info("Creating post feed in communityId={} for postId={} userId={}", communityId, postId,
+        userId);
+    postFeedRepository.save(PostFeed.from(communityId, postId, userId));
   }
 }

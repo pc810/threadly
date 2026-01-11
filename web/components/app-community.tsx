@@ -9,7 +9,6 @@ import { useCommunity } from "@/query/community.query";
 import clsx from "clsx";
 import Link, { LinkProps } from "next/link";
 import React from "react";
-import { Button } from "./ui/button";
 
 type AppCommunityProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
   communityId: string;

@@ -37,18 +37,22 @@ public class PostFeed {
   @Column(nullable = false)
   private UUID postId;
 
+  @Column(nullable = false)
+  private UUID communityId;
+
   @CreationTimestamp
   @Column(updatable = false, nullable = false)
-  private Instant createdAt;
+  private Instant createdAt;  
 
   @Version
   @Column(nullable = false)
   private Long version;
 
-  public static PostFeed from(UUID postId, UUID userId) {
+  public static PostFeed from(UUID communityId,UUID postId, UUID userId) {
     return PostFeed.builder()
         .userId(userId)
         .postId(postId)
+        .communityId(communityId)
         .build();
   }
 }

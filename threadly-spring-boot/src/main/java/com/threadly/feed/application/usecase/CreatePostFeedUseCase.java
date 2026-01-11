@@ -4,5 +4,5 @@ import java.util.UUID;
 
 interface CreatePostFeedUseCase {
 
-  void createPostFeed(UUID postId, UUID userId);
+  void createPostFeed(UUID communityId, UUID postId, UUID userId);
 }
