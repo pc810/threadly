@@ -6,6 +6,9 @@
 - Springboot (spicedb & schema migrations)
 
 ## Problems
+- Worker
+    - handling async media download from html
+    - handling redirect link response when downloading image
 - Image Storage
     - Secure media support
 - Post

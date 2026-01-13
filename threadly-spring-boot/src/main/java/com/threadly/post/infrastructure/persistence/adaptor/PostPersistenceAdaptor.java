@@ -42,4 +42,9 @@ public class PostPersistenceAdaptor implements PostRepository {
   public void save(Post post) {
     repository.save(post);
   }
+
+  @Override
+  public void deleteById(UUID id) {
+    repository.deleteById(id);
+  }
 }

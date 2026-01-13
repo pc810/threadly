@@ -11,4 +11,8 @@ public interface PostLinkRepository {
   Optional<PostLink> findByPostId(UUID postId);
 
   void save(PostLink postLink);
+
+  void deleteByPostId(UUID postId);
+
+  void deleteById(UUID id);
 }

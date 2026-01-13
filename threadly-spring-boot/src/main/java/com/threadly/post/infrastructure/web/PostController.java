@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,6 +61,20 @@ public class PostController {
   ResponseEntity<Post> getPost(@PathVariable UUID id) {
     return postInternalApi.getPost(id).map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
+  }
+
+
+  @Operation(
+      summary = "Delete post by ID"
+  )
+  @DeleteMapping("{id}")
+  @PreAuthorize("hasPermission(#id, 'POST', 'REMOVE')")
+  ResponseEntity<Void> deletePost(@PathVariable UUID id,
+      @AuthenticationPrincipal UserPrincipal principal) {
+
+    return postInternalApi.deletePost(id, principal.getUserId())
+        ? ResponseEntity.noContent().build()
+        : ResponseEntity.notFound().build();
   }
 
 

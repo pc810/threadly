@@ -12,7 +12,7 @@ import type {
 	InviteUserDTO,
 	UpdateCommunityMetaDTO,
 } from "@/types/community";
-import { Post, PostLink } from "@/types/post";
+import type { Post, PostLink } from "@/types/post";
 import { useAuth } from "./auth";
 import { queryKeys } from "./keys";
 import { isLogedIn } from "./utils";
@@ -292,6 +292,25 @@ export function usePostLink(communityId: string, postId: string) {
 			axios
 				.get<PostLink>(`/posts/${postId}/post-link`)
 				.then(({ data }) => data),
+	});
+}
+
+export function usePostRemove(communityId: string, postId: string) {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: () => axios.delete(`/posts/${postId}`),
+		onSuccess: (_data) => {
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.feed.list(),
+			});
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.community.posts(communityId),
+			});
+			toast.info("Successfully Deleted post");
+		},
+		onError: () => {
+			toast.error("Unable to delete Post");
+		},
 	});
 }
 

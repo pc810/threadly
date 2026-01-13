@@ -10,4 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface JpaPostFeedRepository extends JpaRepository<PostFeed, Long> {
 
   Slice<PostFeed> findByUserIdAndCreatedAtLessThanOrderByCreatedAtDesc(UUID userId, Instant cursorTime, Pageable pageable);
+
+  void deleteByPostId(UUID postId);
 }

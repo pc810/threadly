@@ -29,4 +29,9 @@ class PostFeedPersistenceAdaptor implements PostFeedRepository {
   public void save(PostFeed postFeed) {
     repository.save(postFeed);
   }
+
+  @Override
+  public void deleteByPostId(UUID postId) {
+    repository.deleteByPostId(postId);
+  }
 }

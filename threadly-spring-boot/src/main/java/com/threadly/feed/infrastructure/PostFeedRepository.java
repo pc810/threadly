@@ -11,4 +11,6 @@ public interface PostFeedRepository {
   Slice<PostFeed> getPostFeed(UUID userId, Instant cursorTime, Pageable pageable);
 
   void save(PostFeed postFeed);
+
+  void deleteByPostId(UUID postId);
 }

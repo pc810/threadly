@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface JpaPostLinkRepository extends JpaRepository<PostLink, UUID> {
 
   Optional<PostLink> findByPostId(UUID postId);
+
+  void deleteByPostId(UUID postId);
 }

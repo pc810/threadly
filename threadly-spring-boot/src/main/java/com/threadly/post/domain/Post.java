@@ -105,4 +105,16 @@ public class Post {
     return postBuilder
         .build();
   }
+
+  public boolean isLinkType() {
+    return this.type.equals(PostType.LINK);
+  }
+
+  public boolean isTextType() {
+    return this.type.equals(PostType.TEXT);
+  }
+
+  public boolean isMediaType() {
+    return this.type.equals(PostType.MEDIA);
+  }
 }

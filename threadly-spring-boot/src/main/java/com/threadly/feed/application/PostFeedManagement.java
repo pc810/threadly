@@ -3,6 +3,7 @@ package com.threadly.feed.application;
 import com.threadly.feed.application.usecase.PostFeedInternalApi;
 import com.threadly.membership.MembershipExternalApi;
 import com.threadly.permission.PermissionClient;
+import com.threadly.post.PostDeletedEvent;
 import com.threadly.post.PostSuccessCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,5 +39,10 @@ class PostFeedManagement {
         .map(membership -> membership.getId().userId())
         .forEach((userId) -> postFeedInternalApi.createPostFeed(event.communityId(), event.id(),
             userId));
+  }
+
+  public void handlePostDeletedEvent(PostDeletedEvent event) {
+    log.info("PostFeedManagement PostDeletedEvent {}", event);
+    postFeedInternalApi.deletePostById(event.postId());
   }
 }

@@ -18,4 +18,5 @@ public interface PostRepository {
 
   void save(Post post);
 
+  void deleteById(UUID id);
 }

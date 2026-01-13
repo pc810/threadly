@@ -29,4 +29,9 @@ class PostFeedService implements PostFeedInternalApi {
         userId);
     postFeedRepository.save(PostFeed.from(communityId, postId, userId));
   }
+
+  @Override
+  public void deletePostById(UUID postId) {
+    postFeedRepository.deleteByPostId(postId);
+  }
 }

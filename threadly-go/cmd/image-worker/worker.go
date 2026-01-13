@@ -238,7 +238,7 @@ func (w *ImageWorker) downloadImages(event *LinkPostCompletedEvent) {
 
 	collyService.Wait()
 
-	// w.log.Info("Images", zap.Any("images", allWebsiteImageEvents))
+	w.log.Info("all Extracted Images", zap.Any("images", allWebsiteImageEvents))
 
 	if !hasMeta {
 		sort.Slice(allWebsiteImageEvents, func(i, j int) bool {
@@ -247,6 +247,14 @@ func (w *ImageWorker) downloadImages(event *LinkPostCompletedEvent) {
 
 			return di < dj
 		})
+	}
+
+	if len(allWebsiteImageEvents) == 0 {
+		w.log.Warn("No images could be downloaded",
+			zap.String("eventId", event.Id),
+			zap.Int("seoImages", len(event.Website.SEO.Images)),
+		)
+		return
 	}
 
 	bestImage := allWebsiteImageEvents[0]

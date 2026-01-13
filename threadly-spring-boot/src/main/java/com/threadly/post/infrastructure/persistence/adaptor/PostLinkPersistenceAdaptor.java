@@ -29,4 +29,14 @@ public class PostLinkPersistenceAdaptor implements PostLinkRepository {
   public void save(PostLink postLink) {
     repository.save(postLink);
   }
+
+  @Override
+  public void deleteByPostId(UUID postId) {
+    repository.deleteByPostId(postId);
+  }
+
+  @Override
+  public void deleteById(UUID id) {
+    repository.deleteById(id);
+  }
 }

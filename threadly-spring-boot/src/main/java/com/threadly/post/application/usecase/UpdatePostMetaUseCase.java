@@ -6,3 +6,4 @@ public interface UpdatePostMetaUseCase {
 
   void updatePostMeta(PostMetaUpdateEvent event);
 }
+

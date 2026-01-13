@@ -7,6 +7,7 @@ import com.threadly.media.MediaExternalApi;
 import com.threadly.membership.CommunityRole;
 import com.threadly.post.CreatePostRequest;
 import com.threadly.post.PostCreatedEvent;
+import com.threadly.post.PostDeletedEvent;
 import com.threadly.post.PostType;
 import com.threadly.post.application.usecase.PostInternalApi;
 import com.threadly.post.domain.Post;
@@ -44,22 +45,17 @@ public class PostService implements PostInternalApi {
     if (!communityExternalApi.canPostInCommunity(request.communityId(), userId)) {
       throw new AccessDeniedException(
           String.format("Cannot post in community user=%s community=%s", userId,
-              request.communityId())
-      );
+              request.communityId()));
     }
 
     var post = Post.from(request, userId);
 
     postRepository.save(post);
 
-    eventPublisher.publishEvent(new PostCreatedEvent(
-        post.getId(),
-        request.communityId(),
-        userId,
-        post.getTitle(),
-        post.getType(),
-        post.getType().equals(PostType.LINK) ? Optional.of(post.getLink()) : Optional.empty()
-    ));
+    eventPublisher.publishEvent(
+        new PostCreatedEvent(post.getId(), request.communityId(), userId, post.getTitle(),
+            post.getType(),
+            post.getType().equals(PostType.LINK) ? Optional.of(post.getLink()) : Optional.empty()));
 
     log.info("Post created title={} userId={}", post.getId(), userId);
 
@@ -73,22 +69,21 @@ public class PostService implements PostInternalApi {
 
   @Override
   public List<Post> getAllPosts() {
-    return postRepository
-        .findAll();
+    return postRepository.findAll();
   }
 
   @Override
   public List<Post> getAllPosts(int page, int size) {
-    return postRepository.findByPage(PageRequest
-        .of(page, Math.min(size, 10), Sort.by("createdAt").descending()));
+    return postRepository.findByPage(
+        PageRequest.of(page, Math.min(size, 10), Sort.by("createdAt").descending()));
   }
 
   @Override
   @Transactional(readOnly = true)
   public List<Post> getAllPostsByCommunityId(int page, int size, UUID communityId) {
     log.info("fetching posts for community={}", communityId);
-    return postRepository.findByPageAndCommunityId(communityId, PageRequest
-        .of(page, Math.min(size, 10), Sort.by("createdAt").descending()));
+    return postRepository.findByPageAndCommunityId(communityId,
+        PageRequest.of(page, Math.min(size, 10), Sort.by("createdAt").descending()));
   }
 
   @Override
@@ -105,14 +100,10 @@ public class PostService implements PostInternalApi {
 //      throw new IllegalArgumentException("Mismatch postType");
 //    }
 
-    var mediaID = mediaExternalApi.createMedia(new CreateMediaEvent(
-        event.postId(),
-        event.seo().image().basePath(),
-        event.seo().image().provider(),
-        event.seo().image().filename(),
-        event.seo().image().contentType(),
-        event.seo().image().dimension()
-    ));
+    var mediaID = mediaExternalApi.createMedia(
+        new CreateMediaEvent(event.postId(), event.seo().image().basePath(),
+            event.seo().image().provider(), event.seo().image().filename(),
+            event.seo().image().contentType(), event.seo().image().dimension()));
 
     var postLink = postLinkRepository.findByPostId(event.postId());
 
@@ -149,8 +140,7 @@ public class PostService implements PostInternalApi {
 
   @Override
   public boolean checkModAccess(AuthRole postRole, CommunityRole communityRole) {
-    return postRole == AuthRole.AUTHOR
-        || communityRole == CommunityRole.MOD
+    return postRole == AuthRole.AUTHOR || communityRole == CommunityRole.MOD
         || communityRole == CommunityRole.AUTHOR;
   }
 
@@ -159,4 +149,22 @@ public class PostService implements PostInternalApi {
     return postRole == AuthRole.AUTHOR;
   }
 
+  @Override
+  public boolean deletePost(UUID postId, UUID actorId) {
+    log.info("deleting post={} by actorId={}", postId, actorId);
+
+    return postRepository.findById(postId)
+        .map(post -> {
+
+          if (post.getType() == PostType.LINK) {
+            postLinkRepository.deleteByPostId(postId);
+          }
+
+          postRepository.deleteById(postId);
+
+          eventPublisher.publishEvent(PostDeletedEvent.from(post, actorId));
+
+          return true;
+        }).orElse(false);
+  }
 }
