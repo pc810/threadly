@@ -121,10 +121,10 @@ export const PostCardActions = ({
 	className,
 	...props
 }: PostCardActionProps) => {
-	const { UPDATE: canUpdate, REMOVE: canRemove } = usePermission(
+	const { REMOVE: canRemove } = usePermission(
 		"POST",
 		post.id,
-		["UPDATE", "REMOVE"],
+		["REMOVE"],
 		"latency",
 	);
 
@@ -133,23 +133,10 @@ export const PostCardActions = ({
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
-	const handleEdit = useCallback(() => {
-		console.log("edit", post.id);
-	}, [post.id]);
-
 	const handleDelete = useCallback(() => {
 		removePostMutation.mutate();
 		setConfirmDeleteOpen(false);
 	}, [removePostMutation]);
-
-	useHotkeys(
-		"ctrl+e",
-		(event) => {
-			event.preventDefault();
-			handleEdit();
-		},
-		{ enabled: menuOpen },
-	);
 
 	useHotkeys(
 		"delete",
@@ -161,12 +148,6 @@ export const PostCardActions = ({
 	);
 
 	const allActions: DropdownAction[] = [
-		{
-			label: "Edit",
-			handler: handleEdit,
-			hasPermission: canUpdate,
-			shortcut: "⌘E",
-		},
 		{
 			label: "Delete",
 			handler: () => setConfirmDeleteOpen(true),
