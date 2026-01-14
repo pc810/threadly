@@ -1,3 +1,4 @@
+import { Edit } from "lucide-react";
 import { AppWidgetLayout } from "@/components/app-layout";
 import {
 	Card,
@@ -7,10 +8,12 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useModal } from "@/hooks/modal";
 import { useCommunity } from "@/query/community";
 import { usePermission } from "@/query/permission";
 import type { Community } from "@/types/community";
-import { CommunityEdit } from "./edit";
+import { CommunityEdit } from "../modals/community-edit";
+import { Button } from "../ui/button";
 import { CommunityStatsList } from "./stats-list";
 
 export const CommunityDetailsWidget = ({
@@ -18,6 +21,7 @@ export const CommunityDetailsWidget = ({
 }: {
 	communityId: Community["id"];
 }) => {
+	const { openModal } = useModal();
 	const { data: community } = useCommunity(communityId);
 
 	const { UPDATE: canUpdateCommunity, isLoading } = usePermission(
@@ -35,7 +39,14 @@ export const CommunityDetailsWidget = ({
 					<div className="flex items-center justify-between">
 						<CardTitle>{community.title}</CardTitle>
 						{!isLoading && canUpdateCommunity && (
-							<CommunityEdit community={community} />
+							<Button
+								size="icon-sm"
+								variant="secondary"
+								onClick={() => openModal("CommunityEdit")}
+							>
+								<Edit />
+								<div className="sr-only">Edit community</div>
+							</Button>
 						)}
 					</div>
 					<CardDescription>{community.description}</CardDescription>

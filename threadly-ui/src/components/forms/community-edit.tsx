@@ -1,19 +1,18 @@
 import { useAppForm } from "@/hooks/form";
 import { pickDirtyValues } from "@/lib/utils";
-import { useUpdateCommunity } from "@/query/community";
-import { type Community, updateCommunityFormSchema } from "@/types/community";
+import {
+	type Community,
+	type UpdateCommunityMetaDTO,
+	updateCommunityFormSchema,
+} from "@/types/community";
 
 export const CommunityEditForm = ({
 	defaultValues,
 	onSuccess,
-	onClose,
 }: {
 	defaultValues: Community;
-	onSuccess: () => void;
-	onClose: () => void;
+	onSuccess?: (values: Partial<UpdateCommunityMetaDTO>) => Promise<void>;
 }) => {
-	const updateCommunityMutation = useUpdateCommunity(defaultValues.id);
-
 	const form = useAppForm({
 		defaultValues: {
 			title: defaultValues.title,
@@ -22,12 +21,7 @@ export const CommunityEditForm = ({
 		},
 		onSubmit: async ({ value, formApi }) => {
 			const dirty = pickDirtyValues(value, formApi);
-			try {
-				await updateCommunityMutation.mutateAsync(dirty);
-				onSuccess();
-			} catch (error) {
-				onClose();
-			}
+			await onSuccess?.(dirty);
 		},
 		validators: {
 			onChange: updateCommunityFormSchema,

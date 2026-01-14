@@ -12,7 +12,7 @@ import {
 } from "@/components/form-components";
 import { fieldContext, formContext } from "@/hooks/form-context";
 
-export const { useAppForm } = createFormHook({
+export const { useAppForm,withForm } = createFormHook({
 	fieldComponents: {
 		Checkbox,
 		CommunityCombobox,

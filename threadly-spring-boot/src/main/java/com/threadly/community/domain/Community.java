@@ -1,5 +1,6 @@
 package com.threadly.community.domain;
 
+import com.threadly.community.CommunityTopic;
 import com.threadly.community.CommunityVisibility;
 import com.threadly.community.CreateCommunityRequest;
 import jakarta.persistence.Column;
@@ -49,6 +50,10 @@ public class Community {
   @Column(nullable = false, length = 20)
   private CommunityVisibility visibility;
 
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 32)
+  private CommunityTopic topic;
+
   @Column(nullable = false)
   private boolean isNsfw;
 
@@ -68,6 +73,7 @@ public class Community {
     return Community.builder()
         .name(request.name())
         .title(request.title())
+        .topic(request.topic())
         .description(request.description())
         .visibility(request.visibility())
         .isNsfw(request.isNsfw())

@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
-import { Route as AppSubmitCommunityRouteImport } from './routes/_app.submit.community'
 import { Route as AppRCommunityNameRouteImport } from './routes/_app.r.$communityName'
 import { Route as AppModCommunityNameRouteImport } from './routes/_app.mod.$communityName'
 import { Route as AppRCommunityNameIndexRouteImport } from './routes/_app.r.$communityName.index'
@@ -34,11 +33,6 @@ const AppRoute = AppRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSubmitCommunityRoute = AppSubmitCommunityRouteImport.update({
-  id: '/submit/community',
-  path: '/submit/community',
   getParentRoute: () => AppRoute,
 } as any)
 const AppRCommunityNameRoute = AppRCommunityNameRouteImport.update({
@@ -91,7 +85,6 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/mod/$communityName': typeof AppModCommunityNameRouteWithChildren
   '/r/$communityName': typeof AppRCommunityNameRouteWithChildren
-  '/submit/community': typeof AppSubmitCommunityRoute
   '/mod/$communityName/approved-users': typeof AppModCommunityNameApprovedUsersRoute
   '/mod/$communityName/invites': typeof AppModCommunityNameInvitesRoute
   '/mod/$communityName/moderators': typeof AppModCommunityNameModeratorsRoute
@@ -102,7 +95,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/': typeof AppIndexRoute
-  '/submit/community': typeof AppSubmitCommunityRoute
   '/mod/$communityName/approved-users': typeof AppModCommunityNameApprovedUsersRoute
   '/mod/$communityName/invites': typeof AppModCommunityNameInvitesRoute
   '/mod/$communityName/moderators': typeof AppModCommunityNameModeratorsRoute
@@ -117,7 +109,6 @@ export interface FileRoutesById {
   '/_app/': typeof AppIndexRoute
   '/_app/mod/$communityName': typeof AppModCommunityNameRouteWithChildren
   '/_app/r/$communityName': typeof AppRCommunityNameRouteWithChildren
-  '/_app/submit/community': typeof AppSubmitCommunityRoute
   '/_app/mod/$communityName/approved-users': typeof AppModCommunityNameApprovedUsersRoute
   '/_app/mod/$communityName/invites': typeof AppModCommunityNameInvitesRoute
   '/_app/mod/$communityName/moderators': typeof AppModCommunityNameModeratorsRoute
@@ -132,7 +123,6 @@ export interface FileRouteTypes {
     | '/'
     | '/mod/$communityName'
     | '/r/$communityName'
-    | '/submit/community'
     | '/mod/$communityName/approved-users'
     | '/mod/$communityName/invites'
     | '/mod/$communityName/moderators'
@@ -143,7 +133,6 @@ export interface FileRouteTypes {
   to:
     | '/login'
     | '/'
-    | '/submit/community'
     | '/mod/$communityName/approved-users'
     | '/mod/$communityName/invites'
     | '/mod/$communityName/moderators'
@@ -157,7 +146,6 @@ export interface FileRouteTypes {
     | '/_app/'
     | '/_app/mod/$communityName'
     | '/_app/r/$communityName'
-    | '/_app/submit/community'
     | '/_app/mod/$communityName/approved-users'
     | '/_app/mod/$communityName/invites'
     | '/_app/mod/$communityName/moderators'
@@ -192,13 +180,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/submit/community': {
-      id: '/_app/submit/community'
-      path: '/submit/community'
-      fullPath: '/submit/community'
-      preLoaderRoute: typeof AppSubmitCommunityRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/r/$communityName': {
@@ -294,14 +275,12 @@ interface AppRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppModCommunityNameRoute: typeof AppModCommunityNameRouteWithChildren
   AppRCommunityNameRoute: typeof AppRCommunityNameRouteWithChildren
-  AppSubmitCommunityRoute: typeof AppSubmitCommunityRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppModCommunityNameRoute: AppModCommunityNameRouteWithChildren,
   AppRCommunityNameRoute: AppRCommunityNameRouteWithChildren,
-  AppSubmitCommunityRoute: AppSubmitCommunityRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

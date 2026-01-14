@@ -12,6 +12,7 @@ import { SiteHeader } from "@/components/header";
 import {
 	NavbarButton,
 	NavCollapsibleList,
+	type NavItem,
 	NavList,
 } from "@/components/nav-list";
 import { Sidebar, SidebarContent, SidebarInset } from "@/components/ui/sidebar";
@@ -57,25 +58,28 @@ function RouteComponent() {
 function AppModSidebar() {
 	const { communityName } = Route.useParams();
 
-	const moderationNav = {
+	const moderationNav: NavItem = {
 		title: "Overview",
-		url: "#",
+		navType: "root",
 		icon: SquareTerminal,
 		isActive: true,
 		items: [
 			{
 				title: "Mods & Members",
 				url: getCommunityModLink(communityName) + "/moderators",
+				navType: "url",
 				icon: Users,
 			},
 			{
 				title: "Mod Queue",
 				url: "#",
+				navType: "url",
 				icon: ShieldIcon,
 			},
 			{
 				title: "Mod Mail",
 				url: "#",
+				navType: "url",
 				icon: Mail,
 			},
 		],
@@ -87,6 +91,7 @@ function AppModSidebar() {
 				<div style={{ maxHeight: "100%" }} className="px-4">
 					<div className="pt-4">
 						<NavbarButton
+							navType="url"
 							icon={ArrowLeft}
 							title="Exit Mod tools"
 							url={getCommunityLink(communityName)}

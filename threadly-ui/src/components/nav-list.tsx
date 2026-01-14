@@ -12,19 +12,33 @@ import {
 	AccordionItem,
 } from "./ui/accordion";
 
-type NavButtonProps = {
-	title: string;
+type NavLinkItem = {
+	navType: "url";
 	url: string;
+};
+type NavButtonItem = {
+	navType: "button";
+	onClick?: () => void;
+};
+type NavButtonCollapsibeTriggerItem = {
+	navType: "root";
+	isActive: boolean;
+	items?: NavButtonProps[];
+};
+type NavLinkButtonItem =
+	| NavLinkItem
+	| NavButtonItem
+	| NavButtonCollapsibeTriggerItem;
+
+export type NavButtonProps = NavLinkButtonItem & {
+	title: string;
 	icon?: LucideIcon;
 	community?: Community;
 };
 
-type NavItem = {
+export type NavItem = NavLinkButtonItem & {
 	title: string;
-	url: string;
 	icon: LucideIcon;
-	isActive?: boolean;
-	items?: NavButtonProps[];
 };
 
 export function NavList({ items }: { items: NavItem[] }) {
@@ -50,7 +64,7 @@ export function NavCollapsibleList({
 		<Accordion
 			type="multiple"
 			className={clsx("w-full", className)}
-			defaultValue={items.filter((i) => i.isActive).map((i) => i.title)}
+			defaultValue={items.map((i) => i.title)}
 		>
 			{items.map((item) => (
 				<AccordionItem value={item.title} key={item.title} className="py-3">
@@ -58,9 +72,10 @@ export function NavCollapsibleList({
 						{item.title}
 					</AccordionGhostTrigger>
 					<AccordionContent className="flex flex-col text-balance p-1">
-						{item.items?.map((subItem) => (
-							<NavbarButton key={subItem.title} {...subItem} />
-						))}
+						{item.navType === "root" &&
+							item.items?.map((subItem) => (
+								<NavbarButton key={subItem.title} {...subItem} />
+							))}
 					</AccordionContent>
 				</AccordionItem>
 			))}
@@ -68,34 +83,51 @@ export function NavCollapsibleList({
 	);
 }
 
-export const NavbarButton = ({
-	title,
-	url,
-	icon,
-	community,
-}: NavButtonProps) => {
+export const NavbarButton = (props: NavButtonProps) => {
+	const { title, icon, community, navType } = props;
+
 	const Icon = icon ?? React.Fragment;
 
 	const ImageIcon =
 		community != null ? (
 			<CommunityAvatar src={"/"} className="size-8" name={community.name} />
 		) : null;
-	return (
-		<Button
-			asChild
-			key={title}
-			variant="ghost"
-			className="justify-start w-full"
-		>
-			<Link to={url}>
-				{ImageIcon ?? (
-					<div className="size-8 grid place-content-center">
-						<Icon className="size-5" />
-					</div>
-				)}
 
-				{title}
-			</Link>
-		</Button>
+	const children = (
+		<>
+			{ImageIcon ?? (
+				<div className="size-8 grid place-content-center">
+					<Icon className="size-5" />
+				</div>
+			)}
+
+			{title}
+		</>
 	);
+
+	if (navType === "url") {
+		return (
+			<Button
+				asChild
+				key={title}
+				variant="ghost"
+				className="justify-start w-full"
+			>
+				<Link to={props.url}>{children}</Link>
+			</Button>
+		);
+	}
+	if (navType === "button")
+		return (
+			<Button
+				key={title}
+				variant="ghost"
+				className="justify-start w-full"
+				onClick={props.onClick}
+			>
+				{children}
+			</Button>
+		);
+
+	return null;
 };

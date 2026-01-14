@@ -13,14 +13,74 @@ export const COMMUNITY_INVITE_ACTION = {
 	REJECT: "REJECT",
 } as const;
 
+export enum CommunityTopic {
+	ART = "ART",
+	BUSINESS_FINANCE = "BUSINESS_FINANCE",
+	COLLECTIBLES = "COLLECTIBLES",
+	EDUCATION_CAREER = "EDUCATION_CAREER",
+	FASHION_BEAUTY = "FASHION_BEAUTY",
+	FOOD_DRINKS = "FOOD_DRINKS",
+	GAMES = "GAMES",
+	HEALTH = "HEALTH",
+	HOME_GARDEN = "HOME_GARDEN",
+	HUMANITIES_LAW = "HUMANITIES_LAW",
+	IDENTITY_RELATIONSHIPS = "IDENTITY_RELATIONSHIPS",
+	INTERNET_CULTURE = "INTERNET_CULTURE",
+	MOVIES_TV = "MOVIES_TV",
+	MUSIC = "MUSIC",
+	NATURE_OUTDOORS = "NATURE_OUTDOORS",
+	NEWS_POLITICS = "NEWS_POLITICS",
+	PLACES_TRAVEL = "PLACES_TRAVEL",
+	POP_CULTURE = "POP_CULTURE",
+	QAS_STORIES = "QAS_STORIES",
+	READING_WRITING = "READING_WRITING",
+	SCIENCES = "SCIENCES",
+	SPOOKY = "SPOOKY",
+	SPORTS = "SPORTS",
+	TECHNOLOGY = "TECHNOLOGY",
+	VEHICLES = "VEHICLES",
+	WELLNESS = "WELLNESS",
+	// MATURE_TOPICS = "MATURE_TOPICS",
+}
+
 export enum CommunityVisibility {
 	PUBLIC = "PUBLIC",
 	PRIVATE = "PRIVATE",
 }
 
-const communityVisibilitySchema = z.enum([
+export const communityVisibilitySchema = z.enum([
 	CommunityVisibility.PRIVATE,
 	CommunityVisibility.PUBLIC,
+]);
+
+export const communityTopicSchema = z.enum([
+	CommunityTopic.ART,
+	CommunityTopic.BUSINESS_FINANCE,
+	CommunityTopic.COLLECTIBLES,
+	CommunityTopic.EDUCATION_CAREER,
+	CommunityTopic.FASHION_BEAUTY,
+	CommunityTopic.FOOD_DRINKS,
+	CommunityTopic.GAMES,
+	CommunityTopic.HEALTH,
+	CommunityTopic.HOME_GARDEN,
+	CommunityTopic.HUMANITIES_LAW,
+	CommunityTopic.IDENTITY_RELATIONSHIPS,
+	CommunityTopic.INTERNET_CULTURE,
+	CommunityTopic.MOVIES_TV,
+	CommunityTopic.MUSIC,
+	CommunityTopic.NATURE_OUTDOORS,
+	CommunityTopic.NEWS_POLITICS,
+	CommunityTopic.PLACES_TRAVEL,
+	CommunityTopic.POP_CULTURE,
+	CommunityTopic.QAS_STORIES,
+	CommunityTopic.READING_WRITING,
+	CommunityTopic.SCIENCES,
+	CommunityTopic.SPOOKY,
+	CommunityTopic.SPORTS,
+	CommunityTopic.TECHNOLOGY,
+	CommunityTopic.VEHICLES,
+	CommunityTopic.WELLNESS,
+	// CommunityTopic.MATURE_TOPICS,
 ]);
 
 const communitySchema = z.object({
@@ -30,6 +90,7 @@ const communitySchema = z.object({
 	title: z.string(),
 	description: z.string(),
 	nsfw: z.boolean(),
+	topic: communityTopicSchema,
 	visibility: communityVisibilitySchema,
 	updatedAt: z.string(),
 	createdAt: z.string(),
@@ -49,6 +110,7 @@ export const createCommunityRequestSchema = z.object({
 		.string()
 		.min(3, "Title must be at least 3 characters long")
 		.max(128, "Title must be at most 128 characters long"),
+	topic: communityTopicSchema,
 	description: z
 		.string()
 		.min(10, "Description must be at least 10 characters long")

@@ -5,6 +5,7 @@ public record CreateCommunityRequest(
     String title,
     String description,
     CommunityVisibility visibility,
+    CommunityTopic topic,
     boolean isNsfw
 ) {
 
