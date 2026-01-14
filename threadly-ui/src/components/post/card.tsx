@@ -19,9 +19,12 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { formatAgo } from "@/lib/date";
+import { kwId } from "@/lib/utils";
 import { usePost, usePostRemove } from "@/query/community";
 import { usePermission } from "@/query/permission";
+import type { ShortcutKey } from "@/types/common";
 import type { Post } from "@/types/post";
+import { KeyboardShortcut } from "../keyboard-shortcut";
 
 type PostIdProps = {
 	postId: string;
@@ -37,7 +40,7 @@ type DropdownAction = {
 	loading?: boolean;
 	handler: () => void;
 	hasPermission: boolean;
-	shortcut: string;
+	shortcut: ShortcutKey[];
 	variant?: DropdownMenuItemVariant;
 };
 
@@ -144,7 +147,7 @@ export const PostCardActions = ({
 			event.preventDefault();
 			setConfirmDeleteOpen(true);
 		},
-		{ enabled: menuOpen },
+		{ enabled: menuOpen && canRemove },
 	);
 
 	const allActions: DropdownAction[] = [
@@ -152,7 +155,7 @@ export const PostCardActions = ({
 			label: "Delete",
 			handler: () => setConfirmDeleteOpen(true),
 			hasPermission: canRemove,
-			shortcut: "⌘D",
+			shortcut: ["delete"],
 			variant: "destructive",
 			loading: removePostMutation.isPending,
 		},
@@ -176,16 +179,17 @@ export const PostCardActions = ({
 				<DropdownMenuContent className="w-56" align="start">
 					<DropdownMenuLabel>Post Actions</DropdownMenuLabel>
 					<DropdownMenuGroup>
-						{actions.map((action) => (
+						{actions.map((action, i) => (
 							<DropdownMenuItem
-								key={action.shortcut}
+								key={kwId(`action-${post.id}`, i)}
 								variant={action.variant}
 								onSelect={action.handler}
 								disabled={loadingActions}
 							>
 								{action.loading && <Spinner />}
 								{action.label}
-								<span className="ml-auto">{action.shortcut}</span>
+
+								<KeyboardShortcut keys={action.shortcut} className="ml-auto" />
 							</DropdownMenuItem>
 						))}
 					</DropdownMenuGroup>

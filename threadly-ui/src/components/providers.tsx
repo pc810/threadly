@@ -12,7 +12,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
 			enableSystem
 			disableTransitionOnChange
 		>
-			<HotkeysProvider initiallyActiveScopes={["app"]}>
+			<HotkeysProvider>
 				<NuqsAdapter>
 					<TooltipProvider>
 						{children}

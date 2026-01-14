@@ -1,5 +1,6 @@
 package com.threadly.post.domain;
 
+import com.threadly.common.PostFeedDTO;
 import com.threadly.post.CreatePostRequest;
 import com.threadly.post.PostType;
 import jakarta.persistence.Column;

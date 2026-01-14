@@ -64,7 +64,7 @@ export const routeData = {
 	primary: [
 		{
 			title: "Home",
-			url: "#",
+			url: "/",
 			icon: Home,
 		},
 		{

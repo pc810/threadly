@@ -16,10 +16,6 @@ function RouteComponent() {
 			<AppLayout>
 				<div>
 					<CommunityPostsList communityId={community.id} />
-					{/* <CommunityPostsList communityId={community.id} />
-					<CommunityPostsList communityId={community.id} />
-					<CommunityPostsList communityId={community.id} />
-					<CommunityPostsList communityId={community.id} /> */}
 				</div>
 				<CommunityDetailsWidget communityId={community.id} />
 			</AppLayout>

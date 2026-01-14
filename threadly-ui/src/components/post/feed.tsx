@@ -1,9 +1,15 @@
-import { Link } from "@tanstack/react-router";
+import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
+import { Link, useMatchRoute, useRouter } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCommunityPostCreateLink } from "@/lib/format";
 import { useCommunity, useCommunityPosts } from "@/query/community";
-import { useUserFeed } from "@/query/feed";
+import { useCommunityFeed, useUserFeed } from "@/query/feed";
+import {
+	PostFeedDTO,
+	PostFeedDTOSlice,
+	type PostFeedSlice,
+} from "@/types/feed";
 import { PostCard } from "./card";
 
 export function PostFeed() {
@@ -41,32 +47,65 @@ export function PostFeed() {
 	);
 }
 
-export function CommunityPostsList({ communityId }: { communityId: string }) {
-	const { data: community } = useCommunity(communityId);
+type PostFeedProviderProps = {
+	query: UseInfiniteQueryResult<InfiniteData<PostFeedDTOSlice>>;
+};
 
-	const { data: posts, isLoading, error } = useCommunityPosts(communityId);
+export function PostFeedProvider({ query }: PostFeedProviderProps) {
+	const {
+		data: feed,
+		fetchNextPage,
+		isFetchingNextPage,
+		isLoading,
+		hasNextPage,
+	} = query;
 
-	if (community == null || posts == null || isLoading) return <p>Loading...</p>;
-	if (error) return <p>Failed to load posts</p>;
+	const matchRoute = useMatchRoute();
+
+	const communityParams = matchRoute({ to: "/r/$communityName" });
+
+	const posts = feed?.pages.flatMap((page) => page.content) ?? [];
+
+	if (posts == null || isLoading) return <p>Loading...</p>;
 
 	if (posts.length === 0)
-		return (
+		return communityParams ? (
 			<PlaceHolderCommunityPostsList
-				createLink={getCommunityPostCreateLink(community.name)}
+				createLink={getCommunityPostCreateLink(communityParams.communityName)}
 			/>
+		) : (
+			<PlaceHolderPostFeed />
 		);
 
 	return (
 		<div className="space-y-4 my-4">
-			{posts?.map((post) => (
+			{posts.map((postFeed) => (
 				<PostCard
-					key={post.id}
-					communityId={post.communityId}
-					postId={post.id}
+					key={postFeed.id}
+					communityId={postFeed.communityId}
+					postId={postFeed.postId}
 				/>
 			))}
+
+			{hasNextPage && (
+				<Button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
+					{isFetchingNextPage && <Skeleton />}
+					Load more
+				</Button>
+			)}
 		</div>
 	);
+}
+
+export function UserFeed() {
+	const userFeedQuery = useUserFeed();
+	return <PostFeedProvider query={userFeedQuery} />;
+}
+
+export function CommunityPostsList({ communityId }: { communityId: string }) {
+	const communityFeedQuery = useCommunityFeed(communityId);
+
+	return <PostFeedProvider query={communityFeedQuery} />;
 }
 
 const PlaceHolderCommunityPostsList = ({
@@ -83,6 +122,14 @@ const PlaceHolderCommunityPostsList = ({
 			<Button className="mt-4 max-w-max rounded-full" asChild>
 				<Link to={createLink}>Create Post</Link>
 			</Button>
+		</div>
+	);
+};
+
+const PlaceHolderPostFeed = () => {
+	return (
+		<div className="gap-2 flex-col flex mx-auto max-w-lg text-center items-center py-30">
+			<h1 className="text-2xl font-bold">No Posts available</h1>
 		</div>
 	);
 };

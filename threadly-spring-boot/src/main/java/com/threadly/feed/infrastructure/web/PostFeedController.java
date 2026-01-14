@@ -1,8 +1,10 @@
 package com.threadly.feed.infrastructure.web;
 
+import com.threadly.common.PostFeedDTO;
 import com.threadly.common.UserPrincipal;
 import com.threadly.feed.domain.PostFeed;
 import com.threadly.feed.infrastructure.PostFeedRepository;
+import com.threadly.post.PostExternalApi;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 class PostFeedController {
 
+  static int PAGE_SIZE = 1;
+
   private final PostFeedRepository postFeedRepository;
+  private final PostExternalApi postExternalApi;
 
   @GetMapping("me")
-  public ResponseEntity<Slice<PostFeed>> getUserPostFeed(
+  public ResponseEntity<Slice<PostFeedDTO>> getUserPostFeed(
       @AuthenticationPrincipal UserPrincipal userPrincipal,
       @RequestParam(required = false) Instant feedTime,
       @RequestParam(defaultValue = "0") int pageNumber
@@ -32,13 +37,23 @@ class PostFeedController {
 
     var feed = postFeedRepository.getPostFeed(
         userPrincipal.userId(),
-        feedTime,
+        feedTime == null ? Instant.now() : feedTime,
         PageRequest.of(
             pageNumber,
-            1
+            PAGE_SIZE
         )
     );
-    return ResponseEntity.ok(feed);
+
+    return ResponseEntity.ok(feed.map(PostFeed::toDTO));
   }
 
+  @GetMapping("communities/{communityId}")
+  ResponseEntity<Slice<PostFeedDTO>> getCommunityPostsAsFeed(
+      @RequestParam(defaultValue = "0") int pageNumber,
+      @PathVariable UUID communityId
+  ) {
+
+    return ResponseEntity.ok(
+        postExternalApi.getPostsByCommunityId(communityId, pageNumber, PAGE_SIZE));
+  }
 }

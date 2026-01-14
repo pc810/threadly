@@ -3,8 +3,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { useAppForm } from "@/hooks/form";
-import { useCommunity } from "@/query/community";
-import { useCreatePost } from "@/query/feed";
+import { useCommunity, useCreatePost } from "@/query/community";
+
 import { type PostFormValues, postFormSchema } from "@/types/post";
 
 const defaultValues: PostFormValues = {

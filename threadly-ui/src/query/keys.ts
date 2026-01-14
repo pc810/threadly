@@ -78,6 +78,8 @@ const communityKeys = {
 		"post",
 	],
 
+	feed: (communityId: string) => [...communityKeys.detail(communityId), "feed"],
+
 	post: (communityId: string, postId: string) => [
 		...communityKeys.posts(communityId),
 		postId,

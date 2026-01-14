@@ -12,7 +12,7 @@ import type {
 	InviteUserDTO,
 	UpdateCommunityMetaDTO,
 } from "@/types/community";
-import type { Post, PostLink } from "@/types/post";
+import type { CreatePostRequest, Post, PostLink } from "@/types/post";
 import { useAuth } from "./auth";
 import { queryKeys } from "./keys";
 import { isLogedIn } from "./utils";
@@ -272,6 +272,37 @@ export function usePost(communityId: string, postId: string) {
 	return useQuery({
 		queryKey: queryKeys.community.post(communityId, postId),
 		queryFn: () => axios.get<Post>(`/posts/${postId}`).then(({ data }) => data),
+	});
+}
+
+export function useCreatePost() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (data: CreatePostRequest) => axios.post("/posts", data),
+		onSuccess: (_data, variable) => {
+			toast("Post created successfully 🎉", {
+				description: "Your post has been published.",
+			});
+
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.community.posts(variable.communityId),
+			});
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.community.feed(variable.communityId),
+			});
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.feed.list(),
+			});
+		},
+		onError: (error: any) => {
+			const message =
+				error.response?.data?.message ||
+				"Failed to create post. Please try again.";
+			toast.error("Error creating post", {
+				description: message,
+			});
+		},
 	});
 }
 

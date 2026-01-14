@@ -20,7 +20,8 @@ class PostFeedService implements PostFeedInternalApi {
 
   @Override
   public Slice<PostFeed> getUserPostFeed(UUID userId, Pageable pageable, Instant feedTime) {
-    return postFeedRepository.getPostFeed(userId, feedTime, pageable);
+    return postFeedRepository.getPostFeed(userId, feedTime,
+        pageable);
   }
 
   @Override

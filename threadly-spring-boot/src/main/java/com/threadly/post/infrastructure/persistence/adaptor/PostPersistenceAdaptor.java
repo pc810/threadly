@@ -1,6 +1,7 @@
 package com.threadly.post.infrastructure.persistence.adaptor;
 
 import com.threadly.post.domain.Post;
+import com.threadly.post.domain.PostSummary;
 import com.threadly.post.infrastructure.persistence.PostRepository;
 import java.util.List;
 import java.util.Optional;
@@ -8,6 +9,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
@@ -34,7 +36,12 @@ public class PostPersistenceAdaptor implements PostRepository {
   }
 
   @Override
-  public List<Post> findByPageAndCommunityId(UUID communityId,PageRequest pageRequest) {
+  public Slice<PostSummary> findBySliceAndCommunityId(UUID communityId, PageRequest pageRequest) {
+    return repository.findByCommunityIdOrderByCreatedAtDesc(communityId, pageRequest);
+  }
+
+  @Override
+  public List<Post> findByPageAndCommunityId(UUID communityId, PageRequest pageRequest) {
     return repository.findByCommunityId(communityId, pageRequest).get().toList();
   }
 

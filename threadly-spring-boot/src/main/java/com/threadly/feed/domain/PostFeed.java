@@ -1,5 +1,6 @@
 package com.threadly.feed.domain;
 
+import com.threadly.common.PostFeedDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -42,17 +43,27 @@ public class PostFeed {
 
   @CreationTimestamp
   @Column(updatable = false, nullable = false)
-  private Instant createdAt;  
+  private Instant createdAt;
 
   @Version
   @Column(nullable = false)
   private Long version;
 
-  public static PostFeed from(UUID communityId,UUID postId, UUID userId) {
+  public static PostFeed from(UUID communityId, UUID postId, UUID userId) {
     return PostFeed.builder()
         .userId(userId)
         .postId(postId)
         .communityId(communityId)
         .build();
+  }
+
+  public PostFeedDTO toDTO() {
+    return new PostFeedDTO(
+        UUID.randomUUID(),
+        getPostId(),
+        getUserId(),
+        getCommunityId(),
+        getCreatedAt()
+    );
   }
 }

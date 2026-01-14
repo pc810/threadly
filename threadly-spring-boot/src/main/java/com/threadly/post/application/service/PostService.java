@@ -1,6 +1,7 @@
 package com.threadly.post.application.service;
 
 import com.threadly.common.AuthRole;
+import com.threadly.common.PostFeedDTO;
 import com.threadly.community.CommunityExternalApi;
 import com.threadly.media.CreateMediaEvent;
 import com.threadly.media.MediaExternalApi;
@@ -8,6 +9,7 @@ import com.threadly.membership.CommunityRole;
 import com.threadly.post.CreatePostRequest;
 import com.threadly.post.PostCreatedEvent;
 import com.threadly.post.PostDeletedEvent;
+import com.threadly.post.PostExternalApi;
 import com.threadly.post.PostType;
 import com.threadly.post.application.usecase.PostInternalApi;
 import com.threadly.post.domain.Post;
@@ -22,6 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -30,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @AllArgsConstructor
 @Service
-public class PostService implements PostInternalApi {
+public class PostService implements PostInternalApi, PostExternalApi {
 
   private final PostRepository postRepository;
   private final PostLinkRepository postLinkRepository;
@@ -166,5 +169,19 @@ public class PostService implements PostInternalApi {
 
           return true;
         }).orElse(false);
+  }
+
+  @Override
+  public Slice<PostFeedDTO> getPostsByCommunityId(UUID communityId, int page, int size) {
+    return postRepository.findBySliceAndCommunityId(communityId, PageRequest.of(
+        page,
+        size
+    )).map(postSummary -> new PostFeedDTO(
+        postSummary.getId(),
+        postSummary.getId(),
+        postSummary.getUserId(),
+        postSummary.getCommunityId(),
+        postSummary.getCreatedAt()
+    ));
   }
 }
