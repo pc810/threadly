@@ -1,7 +1,9 @@
 import clsx from "clsx";
 import { EllipsisVertical } from "lucide-react";
-import { useCallback, useEffect } from "react";
+import { useCallback, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { AppCommunity } from "@/components/community/avatar";
+import { DeleteAlertDialog } from "@/components/delete-alert-dialog";
 import { PostLinkDetail } from "@/components/post/link";
 import { RichTextPreview } from "@/components/rich-text-editor";
 import { Button } from "@/components/ui/button";
@@ -12,7 +14,6 @@ import {
 	DropdownMenuItem,
 	type DropdownMenuItemVariant,
 	DropdownMenuLabel,
-	DropdownMenuShortcut,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -35,7 +36,7 @@ type DropdownAction = {
 	label: string;
 	loading?: boolean;
 	handler: () => void;
-	hasPermisson: boolean;
+	hasPermission: boolean;
 	shortcut: string;
 	variant?: DropdownMenuItemVariant;
 };
@@ -43,7 +44,6 @@ type DropdownAction = {
 export const PostCard = ({ communityId, postId }: PostIdProps) => {
 	const { data: post } = usePost(communityId, postId);
 
-	//   return <PlaceholderCard />;
 	if (!post) return <PlaceholderCard />;
 
 	return (
@@ -114,76 +114,77 @@ const PostCardContent = ({
 	);
 };
 
+type PostCardActionProps = React.ComponentProps<"div"> & PostProps;
+
 export const PostCardActions = ({
 	post,
-
 	className,
 	...props
-}: React.ComponentProps<"div"> & PostProps) => {
-	const {
-		UPDATE: canUpdate,
-		REMOVE: canRemove,
-		isLoading,
-	} = usePermission("POST", post.id, ["UPDATE", "REMOVE"], "latency");
+}: PostCardActionProps) => {
+	const { UPDATE: canUpdate, REMOVE: canRemove } = usePermission(
+		"POST",
+		post.id,
+		["UPDATE", "REMOVE"],
+		"latency",
+	);
 
 	const removePostMutation = usePostRemove(post.communityId, post.id);
+
+	const [menuOpen, setMenuOpen] = useState(false);
+	const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
 	const handleEdit = useCallback(() => {
 		console.log("edit", post.id);
 	}, [post.id]);
 
 	const handleDelete = useCallback(() => {
-		console.log("delete", post.id);
 		removePostMutation.mutate();
-	}, [post.id, removePostMutation.mutate]);
+		setConfirmDeleteOpen(false);
+	}, [removePostMutation]);
 
-	useEffect(() => {
-		const handler = (e: KeyboardEvent) => {
-			const isCmdOrCtrl = e.metaKey || e.ctrlKey;
+	useHotkeys(
+		"ctrl+e",
+		(event) => {
+			event.preventDefault();
+			handleEdit();
+		},
+		{ enabled: menuOpen },
+	);
 
-			if (!isCmdOrCtrl) return;
-
-			if (e.key.toLowerCase() === "e") {
-				e.preventDefault();
-				handleEdit();
-			}
-
-			if (e.key.toLowerCase() === "d") {
-				e.preventDefault();
-				handleDelete();
-			}
-		};
-
-		window.addEventListener("keydown", handler);
-		return () => window.removeEventListener("keydown", handler);
-	}, [handleEdit, handleDelete]);
+	useHotkeys(
+		"delete",
+		(event) => {
+			event.preventDefault();
+			setConfirmDeleteOpen(true);
+		},
+		{ enabled: menuOpen },
+	);
 
 	const allActions: DropdownAction[] = [
 		{
 			label: "Edit",
 			handler: handleEdit,
-			hasPermisson: canUpdate,
+			hasPermission: canUpdate,
 			shortcut: "⌘E",
 		},
 		{
 			label: "Delete",
-			handler: handleDelete,
-			hasPermisson: canRemove,
+			handler: () => setConfirmDeleteOpen(true),
+			hasPermission: canRemove,
 			shortcut: "⌘D",
 			variant: "destructive",
 			loading: removePostMutation.isPending,
 		},
 	];
 
-	const actions = allActions.filter((a) => a.hasPermisson);
-
+	const actions = allActions.filter((a) => a.hasPermission);
 	const loadingActions = removePostMutation.isPending;
 
 	if (actions.length === 0) return null;
 
 	return (
 		<div className={clsx("text-primary-foreground", className)} {...props}>
-			<DropdownMenu>
+			<DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
 				<DropdownMenuTrigger asChild>
 					<Button variant="ghost" size="icon">
 						<EllipsisVertical />
@@ -193,23 +194,30 @@ export const PostCardActions = ({
 
 				<DropdownMenuContent className="w-56" align="start">
 					<DropdownMenuLabel>Post Actions</DropdownMenuLabel>
-
 					<DropdownMenuGroup>
 						{actions.map((action) => (
 							<DropdownMenuItem
+								key={action.shortcut}
 								variant={action.variant}
 								onSelect={action.handler}
-								key={action.shortcut}
 								disabled={loadingActions}
 							>
 								{action.loading && <Spinner />}
 								{action.label}
-								<DropdownMenuShortcut>{action.shortcut}</DropdownMenuShortcut>
+								<span className="ml-auto">{action.shortcut}</span>
 							</DropdownMenuItem>
 						))}
 					</DropdownMenuGroup>
 				</DropdownMenuContent>
 			</DropdownMenu>
+
+			<DeleteAlertDialog
+				open={confirmDeleteOpen}
+				onOpenChange={setConfirmDeleteOpen}
+				description="Are you sure you want to delete this post? This action cannot be undone."
+				onSuccess={handleDelete}
+				loading={loadingActions}
+			/>
 		</div>
 	);
 };

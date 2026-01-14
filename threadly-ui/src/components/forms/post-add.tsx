@@ -1,11 +1,11 @@
 import { useStore } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
 import { useAppForm } from "@/hooks/form";
 import { useCommunity } from "@/query/community";
 import { useCreatePost } from "@/query/feed";
 import { type PostFormValues, postFormSchema } from "@/types/post";
-import { Badge } from "../ui/badge";
 
 const defaultValues: PostFormValues = {
 	community: "",

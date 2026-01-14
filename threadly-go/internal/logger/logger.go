@@ -6,11 +6,11 @@ import (
 
 var Log *zap.Logger
 
-func Init(service_name string) {
+func Init() {
 	var err error
 	Log, err = zap.NewDevelopment(
 		zap.Fields(
-			zap.String("service", service_name),
+			zap.String("service", "logger"),
 		),
 	)
 

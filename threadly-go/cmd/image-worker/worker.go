@@ -81,7 +81,7 @@ type PostMetaUpdateEvent struct {
 }
 
 func start(ctx context.Context, workerCount int) (*sync.WaitGroup, *ImageWorkerContext) {
-
+	logger.Init()
 	var wg sync.WaitGroup
 	wg.Add(workerCount)
 	imageContext := newImageWorkerContext()
@@ -195,6 +195,7 @@ func (w *ImageWorker) downloadImages(event *LinkPostCompletedEvent) {
 	allWebsiteImageEvents := make([]*DownloadedImage, 0)
 
 	collyService := downloader.NewImageCollyService(event.Id, storageService,
+		w.log,
 		func(result downloader.ImageResult) {
 			if result.Err != nil {
 				w.log.Error("Failed to save image", zap.String("url", result.URL), zap.Error(result.Err))

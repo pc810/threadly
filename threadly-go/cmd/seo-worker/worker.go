@@ -62,6 +62,7 @@ func newSeoWorker(workerID int, ctx *SEOWorkerContext) *SEOExtractWorker {
 }
 
 func start(ctx context.Context, workerCount int) (*sync.WaitGroup, *SEOWorkerContext) {
+	logger.Init()
 	var wg sync.WaitGroup
 	wg.Add(workerCount)
 

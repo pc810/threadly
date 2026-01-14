@@ -1,4 +1,5 @@
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
+import { HotkeysProvider } from "react-hotkeys-hook";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "./theme-provider";
@@ -11,12 +12,14 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
 			enableSystem
 			disableTransitionOnChange
 		>
-			<NuqsAdapter>
-				<TooltipProvider>
-					{children}
-					<Toaster />
-				</TooltipProvider>
-			</NuqsAdapter>
+			<HotkeysProvider initiallyActiveScopes={["app"]}>
+				<NuqsAdapter>
+					<TooltipProvider>
+						{children}
+						<Toaster />
+					</TooltipProvider>
+				</NuqsAdapter>
+			</HotkeysProvider>
 		</ThemeProvider>
 	);
 };

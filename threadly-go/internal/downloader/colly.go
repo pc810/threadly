@@ -91,22 +91,18 @@ func parseUrl(rawUrl string) (*Website, error) {
 
 func (website *Website) safeParseUrl(rawUrl string) (string, error) {
 
-	url, err := url.Parse(rawUrl)
+	u, err := url.Parse(rawUrl)
 
 	if err != nil {
 		return "", err
 	}
 
-	if !url.IsAbs() {
-		base := website.Scheme + "://" + website.Host
-		path := url.Path
-		if !strings.HasPrefix(path, "/") {
-			path = "/" + path
-		}
-		return base + path, nil
+	if !u.IsAbs() {
+		base, _ := url.Parse(website.Scheme + "://" + website.Host)
+		return base.ResolveReference(u).String(), nil
 	}
 
-	return url.String(), nil
+	return u.String(), nil
 }
 
 func parseDimensions(h *colly.HTMLElement) (int, int) {
@@ -191,19 +187,54 @@ func NewHTMLCollyService() CollyService {
 	c := colly.NewCollector(
 		colly.AllowURLRevisit(),
 		colly.Async(true),
-		colly.MaxDepth(1),
+		colly.MaxDepth(2),
+		colly.UserAgent(
+			"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+		),
 		colly.DetectCharset(),
 	)
 	c.DisableCookies()
 
-	// c.Limit(&colly.LimitRule{
-	// 	DomainGlob:  "*",
-	// 	Parallelism: 50,                     // Number of concurrent requests per domain
-	// 	RandomDelay: 100 * time.Millisecond, // Optional: jitter to avoid rate-limits
-	// })
+	c.WithTransport(&http.Transport{
+		DisableCompression:    false,
+		ResponseHeaderTimeout: 10 * time.Second,
+		TLSHandshakeTimeout:   5 * time.Second,
+		IdleConnTimeout:       30 * time.Second,
+	})
+
+	c.SetRequestTimeout(20 * time.Second)
+
+	c.OnRequest(func(r *colly.Request) {
+		r.Ctx.Put("redirects", 0)
+		logger.Log.Debug("request", zap.String("url", r.URL.String()))
+	})
+
+	c.OnError(func(r *colly.Response, err error) {
+		logger.Log.Warn("image fetch failed",
+			zap.String("url", r.Request.URL.String()),
+			zap.Error(err),
+		)
+
+		if r.StatusCode >= 300 && r.StatusCode < 400 {
+			loc := r.Headers.Get("Location")
+			if loc != "" {
+				abs := r.Request.AbsoluteURL(loc)
+				if abs != "" {
+					parsed, _ := url.Parse(abs)
+					r.Request.URL = parsed
+					// retry the request
+					_ = r.Request.Retry()
+					return
+				}
+			}
+		}
+
+	})
 
 	c.OnResponse(func(r *colly.Response) {
+
 		contentType := r.Headers.Get("Content-Type")
+
 		if !strings.Contains(contentType, "text/html") {
 			r.Request.Abort()
 			return
@@ -215,42 +246,87 @@ func NewHTMLCollyService() CollyService {
 	}
 }
 
-func NewImageCollyService(prefix string, storageService storage.StorageService, onResult func(ImageResult)) CollyService {
+func NewImageCollyService(
+	prefix string,
+	storageService storage.StorageService,
+	log *zap.Logger,
+	onResult func(ImageResult),
+) CollyService {
+
 	c := colly.NewCollector(
 		colly.Async(true),
-		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"),
+		colly.UserAgent(
+			"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+		),
+		colly.MaxDepth(2),
 	)
+
 	c.DisableCookies()
+
 	c.WithTransport(&http.Transport{
-		DisableCompression: false, // ENABLE decompression
+		DisableCompression:    false,
+		ResponseHeaderTimeout: 10 * time.Second,
+		TLSHandshakeTimeout:   5 * time.Second,
+		IdleConnTimeout:       30 * time.Second,
 	})
+
+	c.SetRequestTimeout(20 * time.Second)
+
+	c.OnRequest(func(r *colly.Request) {
+		logger.Log.Debug("request", zap.String("url", r.URL.String()))
+	})
+
 	c.OnResponse(func(r *colly.Response) {
-		contentType := r.Headers.Get("Content-Type")
-		if !strings.HasPrefix(contentType, "image/") {
-			r.Request.Abort()
+
+		if r.StatusCode >= 300 && r.StatusCode < 400 {
+			loc := r.Headers.Get("Location")
+			if loc != "" {
+				abs := r.Request.AbsoluteURL(loc)
+				if abs != "" {
+					parsed, _ := url.Parse(abs)
+					r.Request.URL = parsed
+					_ = r.Request.Retry()
+				}
+			}
 			return
 		}
+
+		contentType := r.Headers.Get("Content-Type")
+
+		if !strings.HasPrefix(contentType, "image/") {
+			return
+		}
+
 		filePath := filepath.Join(os.TempDir(), "threadly-temp")
 		os.MkdirAll(filePath, os.ModePerm)
 
 		ext := ""
-		switch contentType {
-		case "image/jpeg":
+		switch {
+		case strings.Contains(contentType, "jpeg"):
 			ext = ".jpg"
-		case "image/png":
+		case strings.Contains(contentType, "png"):
 			ext = ".png"
-		case "image/webp":
+		case strings.Contains(contentType, "webp"):
 			ext = ".webp"
+		case strings.Contains(contentType, "gif"):
+			ext = ".gif"
 		default:
 			ext = ".jpg"
 		}
 
-		filename := fmt.Sprintf("image_%s_%d_%s%s", prefix, time.Now().UnixNano(), uuid.New().String(), ext)
+		filename := fmt.Sprintf(
+			"image_%s_%d_%s%s",
+			prefix,
+			time.Now().UnixNano(),
+			uuid.NewString(),
+			ext,
+		)
 
 		size := len(r.Body)
 
 		if err := storageService.Save(filename, r.Body, contentType); err != nil {
-			fmt.Println("Failed to save image:", err)
+			logger.Log.Error("Failed to save image", zap.Error(err))
+			return
 		}
 
 		if onResult != nil {
@@ -261,6 +337,34 @@ func NewImageCollyService(prefix string, storageService storage.StorageService, 
 				Err:         nil,
 				Dimension:   GetImageDimensions(r.Body),
 				ContentType: contentType,
+			})
+		}
+	})
+
+	c.OnError(func(r *colly.Response, err error) {
+		logger.Log.Warn("image fetch failed",
+			zap.String("url", r.Request.URL.String()),
+			zap.Error(err),
+		)
+
+		if r.StatusCode >= 300 && r.StatusCode < 400 {
+			loc := r.Headers.Get("Location")
+			if loc != "" {
+				abs := r.Request.AbsoluteURL(loc)
+				if abs != "" {
+					parsed, _ := url.Parse(abs)
+					r.Request.URL = parsed
+					// retry the request
+					_ = r.Request.Retry()
+					return
+				}
+			}
+		}
+
+		if onResult != nil {
+			onResult(ImageResult{
+				URL: r.Request.URL.String(),
+				Err: err,
 			})
 		}
 	})

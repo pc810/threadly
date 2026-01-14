@@ -1,16 +1,15 @@
 import { AppWidgetLayout } from "@/components/app-layout";
-import { CommunityEditForm } from "@/components/forms/community-edit";
-import { useCommunity } from "@/query/community";
-import { usePermission } from "@/query/permission";
-import type { Community } from "@/types/community";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "../ui/card";
-import { Skeleton } from "../ui/skeleton";
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCommunity } from "@/query/community";
+import { usePermission } from "@/query/permission";
+import type { Community } from "@/types/community";
 import { CommunityEdit } from "./edit";
 import { CommunityStatsList } from "./stats-list";
 

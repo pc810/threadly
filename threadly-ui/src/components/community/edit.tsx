@@ -1,5 +1,6 @@
 import { Edit } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -9,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import type { Community } from "@/types/community";
 import { CommunityEditForm } from "../forms/community-edit";
-import { Button } from "../ui/button";
 
 export const CommunityEdit = ({ community }: { community: Community }) => {
 	const [open, setOpen] = useState(false);

@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { useAppForm } from "@/hooks/form";
 import { useLogin } from "@/query/auth";
 import { loginRequestSchema } from "@/types/auth";
-import { Checkbox } from "../ui/checkbox";
-import { Label } from "../ui/label";
 
 export const LoginForm = () => {
 	const loginMutation = useLogin();
