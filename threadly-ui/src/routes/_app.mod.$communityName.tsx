@@ -6,9 +6,9 @@ import {
 	SquareTerminal,
 	Users,
 } from "lucide-react";
-import { AppLayout } from "@/components/app-layout";
-import { routeData } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/header";
+import { AppLayout } from "@/components/layout/app-layout";
+import { routeData } from "@/components/layout/app-sidebar";
+import { SiteHeader } from "@/components/layout/header";
 import {
 	NavbarButton,
 	NavCollapsibleList,
@@ -66,7 +66,7 @@ function AppModSidebar() {
 		items: [
 			{
 				title: "Mods & Members",
-				url: getCommunityModLink(communityName) + "/moderators",
+				url: `${getCommunityModLink(communityName)}/moderators`,
 				navType: "url",
 				icon: Users,
 			},

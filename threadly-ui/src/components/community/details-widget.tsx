@@ -1,5 +1,5 @@
 import { Edit } from "lucide-react";
-import { AppWidgetLayout } from "@/components/app-layout";
+import { AppWidgetLayout } from "@/components/layout/app-layout";
 import {
 	Card,
 	CardContent,
@@ -12,7 +12,6 @@ import { useModal } from "@/hooks/modal";
 import { useCommunity } from "@/query/community";
 import { usePermission } from "@/query/permission";
 import type { Community } from "@/types/community";
-import { CommunityEdit } from "../modals/community-edit";
 import { Button } from "../ui/button";
 import { CommunityStatsList } from "./stats-list";
 

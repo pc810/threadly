@@ -45,4 +45,11 @@ class UserController {
     return userOpt.map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
   }
+
+  @Operation(summary = "Get a user public info by username")
+  @GetMapping("name/{username}")
+  ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
+    return userInternalApi.getUserByUsername(username).map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.notFound().build());
+  }
 }

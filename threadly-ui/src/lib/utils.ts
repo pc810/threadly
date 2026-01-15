@@ -16,6 +16,7 @@ type DirtyCapableFormApi<TValues> = {
 	) => { isDirty?: boolean } | undefined;
 };
 
+// biome-ignore lint/suspicious/noExplicitAny: <lazy>
 export function pickDirtyValues<TValues extends Record<string, any>>(
 	values: TValues,
 	formApi: DirtyCapableFormApi<TValues>,

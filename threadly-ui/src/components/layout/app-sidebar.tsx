@@ -21,7 +21,7 @@ import {
 	NavCollapsibleList,
 	type NavItem,
 	NavList,
-} from "./nav-list";
+} from "../nav-list";
 
 export function AppSidebar() {
 	const { data: communities } = useCommunities();

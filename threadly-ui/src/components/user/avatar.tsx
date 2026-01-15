@@ -9,15 +9,25 @@ type UserAvatarSize = "sm" | "md";
 
 type UserProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
 	userId: string;
+	hasName?: boolean;
+	size?: UserAvatarSize;
 };
 
-export const AppUser = ({ userId, ...props }: UserProps) => {
+export const AppUser = ({
+	userId,
+	hasName,
+	size = "sm",
+	className,
+	...props
+}: UserProps) => {
 	const { data: user, isLoading } = useUser(userId);
 	if (isLoading || user == null)
 		return (
 			<UserCard href={"#"} {...props}>
-				<Skeleton className="size-6" />
-				<Skeleton className="h-4 w-8" />
+				<Skeleton
+					className={clsx(size === "sm" ? "size-6" : "size-8", "rounded-full")}
+				/>
+				{hasName && <Skeleton className="h-4 w-8" />}
 			</UserCard>
 		);
 
@@ -25,8 +35,8 @@ export const AppUser = ({ userId, ...props }: UserProps) => {
 
 	return (
 		<UserCard href={userLink} {...props}>
-			<UserAvatar src={"#"} name={user.name} />
-			{formatUserName(user.name)}
+			<UserAvatar size={size} src={"#"} name={user.name} />
+			{hasName && formatUserName(user.name)}
 		</UserCard>
 	);
 };
@@ -50,6 +60,38 @@ export const UserItem = ({ userId, size, ...props }: UserItemProps) => {
 		<UserItemCard {...props}>
 			<UserAvatar size={size} src={"#"} name={user.name} />
 			{formatUserName(user.name)}
+		</UserItemCard>
+	);
+};
+
+type AppUserAvatarProps = React.HTMLAttributes<HTMLDivElement> & {
+	userId: string;
+	hasName?: boolean;
+	size?: UserAvatarSize;
+};
+
+export const AppUserAvatar = ({
+	userId,
+	hasName,
+	size = "sm",
+	className,
+	...props
+}: AppUserAvatarProps) => {
+	const { data: user, isLoading } = useUser(userId);
+	if (isLoading || user == null)
+		return (
+			<UserItemCard className={clsx(className, "rounded-full")} {...props}>
+				<Skeleton
+					className={clsx(size === "sm" ? "size-6" : "size-8", "rounded-full")}
+				/>
+				{hasName && <Skeleton className="h-4 w-8" />}
+			</UserItemCard>
+		);
+
+	return (
+		<UserItemCard {...props}>
+			<UserAvatar size={size} src={"#"} name={user.name} />
+			{hasName && formatUserName(user.name)}
 		</UserItemCard>
 	);
 };

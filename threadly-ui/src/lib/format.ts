@@ -62,5 +62,5 @@ export const formatUserName = (name: string) => {
 };
 
 export const getUserLink = (name: string) => {
-	return `/r/${name}`;
+	return `/user/${name}`;
 };

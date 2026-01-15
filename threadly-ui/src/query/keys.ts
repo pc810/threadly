@@ -1,7 +1,7 @@
 // export const postKeys = {
 // 	all: ["posts"] as const,
 
-import { ResourceType } from "@/types/permission";
+import type { ResourceType } from "@/types/permission";
 
 // 	lists: () => [...postKeys.all, "list"] as const,
 

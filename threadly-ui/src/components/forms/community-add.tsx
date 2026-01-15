@@ -8,7 +8,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { Spinner } from "@/components/ui/spinner";
 import { useAppForm, withForm } from "@/hooks/form";
 import { useModal } from "@/hooks/modal";
 import { COMMUNITY_TOPICS, COMMUNITY_VISIBILITY } from "@/lib/label";
@@ -66,7 +65,6 @@ const communityAddFormOptions = formOptions({
 
 export const CommunityAddForm = ({
 	onSuccess,
-	isLoading,
 }: {
 	onSuccess?: (values: CreateCommunityRequest) => Promise<void>;
 	isLoading?: boolean;

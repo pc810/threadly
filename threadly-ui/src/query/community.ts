@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { axios } from "@/lib/axios";
-
 import type {
 	Community,
 	CommunityInviteAction,
@@ -13,9 +12,9 @@ import type {
 	UpdateCommunityMetaDTO,
 } from "@/types/community";
 import type { CreatePostRequest, Post, PostLink } from "@/types/post";
+import type { AppAxoisError } from "@/types/utils";
 import { useAuth } from "./auth";
 import { queryKeys } from "./keys";
-import { isLogedIn } from "./utils";
 
 export const useCommunities = () => {
 	return useQuery({
@@ -37,13 +36,10 @@ export const useCommunity = (communityId: string) => {
 };
 
 export const useHasCommunityInvite = (communityId: string) => {
-	const auth = useAuth();
+	const { auth } = useAuth();
 	return useQuery({
-		enabled: communityId != null && isLogedIn(auth),
-		queryKey: queryKeys.community.invitation(
-			communityId,
-			String(auth.data?.id),
-		),
+		enabled: communityId != null && !!auth,
+		queryKey: queryKeys.community.invitation(communityId, String(auth?.id)),
 		queryFn: () =>
 			axios
 				.get<CommunityMembershipInviteDTO | null>(
@@ -66,7 +62,7 @@ export const useCommunityInvite = (communityId: string) => {
 				queryKey: queryKeys.community.invitations(communityId),
 			});
 		},
-		onError: (error: any) => {
+		onError: (error: AppAxoisError) => {
 			const message =
 				error.response?.data?.message ||
 				"Failed to sent invitation. Please try again.";
@@ -95,7 +91,7 @@ export const useCommunityInviteAction = (communityId: string) => {
 				queryKey: queryKeys.community.memberships(communityId),
 			});
 		},
-		onError: (error: any) => {
+		onError: (error: AppAxoisError) => {
 			const message =
 				error.response?.data?.message ||
 				"Failed to membership action on community. Please try again.";
@@ -120,7 +116,7 @@ export const useCommunityInviteRemove = (communityId: string) => {
 				queryKey: queryKeys.community.membershipsInvite(communityId),
 			});
 		},
-		onError: (error: any) => {
+		onError: (error: AppAxoisError) => {
 			const message =
 				error.response?.data?.message ||
 				"Failed to remove membership invite on community. Please try again.";
@@ -149,7 +145,7 @@ export function useCreateCommunity() {
 			toast("Community created successfully 🎉");
 			queryClient.invalidateQueries({ queryKey: queryKeys.community.list() });
 		},
-		onError: (error: any) => {
+		onError: (error: AppAxoisError) => {
 			const message =
 				error.response?.data?.message ||
 				"Failed to create community. Please try again.";
@@ -174,7 +170,7 @@ export function useUpdateCommunity(id: string) {
 				exact: true,
 			});
 		},
-		onError: (error: any) => {
+		onError: (error: AppAxoisError) => {
 			const message =
 				error.response?.data?.message ||
 				"Failed to update community. Please try again.";
@@ -200,7 +196,7 @@ export function useFollowUnFollowCommunity(
 				queryKey: queryKeys.permission.resource("COMMUNITY", communityId),
 			});
 		},
-		onError: (error: any) => {
+		onError: (error: AppAxoisError) => {
 			toast.error(`Error ${type} community`, {
 				description: error.response?.data?.message || "Please try again.",
 			});
@@ -214,7 +210,7 @@ export const useCommunityMembers = (
 	pageIndex: number,
 	pageSize: number,
 ) => {
-	const auth = useAuth();
+	const { isLogedIn } = useAuth();
 
 	const params = {
 		pageNumber: pageIndex,
@@ -223,7 +219,7 @@ export const useCommunityMembers = (
 	};
 
 	return useQuery({
-		enabled: isLogedIn(auth),
+		enabled: isLogedIn,
 		queryKey: queryKeys.community.memberships(communityId, params),
 		staleTime: 5000,
 		queryFn: () =>
@@ -244,7 +240,7 @@ export const useCommunityInvites = (
 	pageIndex: number,
 	pageSize: number,
 ) => {
-	const auth = useAuth();
+	const { isLogedIn } = useAuth();
 
 	const params = {
 		pageNumber: pageIndex,
@@ -253,7 +249,7 @@ export const useCommunityInvites = (
 	};
 
 	return useQuery({
-		enabled: isLogedIn(auth),
+		enabled: isLogedIn,
 		queryKey: queryKeys.community.membershipsInvite(communityId, params),
 		staleTime: 5000,
 		queryFn: () =>
@@ -295,7 +291,7 @@ export function useCreatePost() {
 				queryKey: queryKeys.feed.list(),
 			});
 		},
-		onError: (error: any) => {
+		onError: (error: AppAxoisError) => {
 			const message =
 				error.response?.data?.message ||
 				"Failed to create post. Please try again.";

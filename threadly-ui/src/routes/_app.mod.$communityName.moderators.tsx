@@ -1,8 +1,8 @@
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
-import { AppPageTitle } from "@/components/app-layout";
 import { CommunityMembersTable } from "@/components/community/members-table";
 import { CommunityModInvite } from "@/components/community/mod-invite";
 import { CommunityMembersTabs } from "@/components/community/mod-members";
+import { AppPageTitle } from "@/components/layout/app-layout";
 import { COMMUNITY_ROLE } from "@/types/community";
 
 export const Route = createFileRoute("/_app/mod/$communityName/moderators")({

@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { LoginForm } from "../forms/login";
 import { SignupForm } from "../forms/signup";
 import { AppLogo } from "../icon/app";
 import { GoogleIcon } from "../icon/google";

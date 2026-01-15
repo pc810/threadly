@@ -1,6 +1,3 @@
-import { Link } from "@tanstack/react-router";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { useAppForm } from "@/hooks/form";
 import { useSignup } from "@/query/auth";
 import { registerUserRequestSchema } from "@/types/auth";

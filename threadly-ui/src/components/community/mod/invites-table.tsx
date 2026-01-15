@@ -1,9 +1,9 @@
 "use client";
 
 import {
-	ColumnDef,
+	type ColumnDef,
 	getCoreRowModel,
-	Row,
+	type Row,
 	useReactTable,
 } from "@tanstack/react-table";
 import clsx from "clsx";

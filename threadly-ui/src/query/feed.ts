@@ -1,20 +1,13 @@
-import {
-	useInfiniteQuery,
-	useMutation,
-	useQuery,
-	useQueryClient,
-} from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { axios } from "@/lib/axios";
-import { PostFeedDTOSlice, PostFeedSlice } from "@/types/feed";
-import type { CreatePostRequest, Post } from "@/types/post";
+import type { PostFeedDTOSlice } from "@/types/feed";
 import { useAuth } from "./auth";
 import { queryKeys } from "./keys";
 
 export function useUserFeed() {
-	const auth = useAuth();
+	const { isLogedIn } = useAuth();
 	return useInfiniteQuery({
-		enabled: !!auth,
+		enabled: isLogedIn,
 		queryKey: queryKeys.feed.list(),
 		initialPageParam: 0,
 		queryFn: async ({ pageParam }) =>

@@ -1,7 +1,7 @@
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
-import { AppLayout } from "@/components/app-layout";
 import { CommunityDetailsWidget } from "@/components/community/details-widget";
 import { CommunityHeader } from "@/components/community/header";
+import { AppLayout } from "@/components/layout/app-layout";
 import { CommunityPostsList } from "@/components/post/feed";
 
 export const Route = createFileRoute("/_app/r/$communityName/")({

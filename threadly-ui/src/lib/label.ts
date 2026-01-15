@@ -1,5 +1,5 @@
 import {
-	CommunityRole,
+	type CommunityRole,
 	CommunityTopic,
 	CommunityVisibility,
 } from "@/types/community";

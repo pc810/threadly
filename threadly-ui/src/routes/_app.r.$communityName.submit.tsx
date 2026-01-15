@@ -1,6 +1,6 @@
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
-import { AppLayout, AppPageTitle } from "@/components/app-layout";
 import { PostAddForm } from "@/components/forms/post-add";
+import { AppLayout, AppPageTitle } from "@/components/layout/app-layout";
 
 export const Route = createFileRoute("/_app/r/$communityName/submit")({
 	component: RouteComponent,

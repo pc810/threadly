@@ -18,10 +18,10 @@ export const useUser = (userId: string | undefined) => {
 };
 
 export const useUsers = (query: string, options?: Partial<UseUsersOpts>) => {
-	const auth = useAuth();
+	const { auth, isLogedIn } = useAuth();
 
 	return useQuery({
-		enabled: query.length >= 2 && !auth.isLoading,
+		enabled: query.length >= 2 && isLogedIn,
 		queryKey: queryKeys.user.search(query, options),
 		queryFn: async ({ signal }) =>
 			axios
@@ -33,10 +33,16 @@ export const useUsers = (query: string, options?: Partial<UseUsersOpts>) => {
 					if (options?.excludeSelf)
 						return {
 							...data,
-							content: data.content.filter((d) => d.id !== auth.data?.id),
+							content: data.content.filter((d) => d.id !== auth?.id),
 						};
 
 					return data;
 				}),
 	});
 };
+
+export const getUserByUsername = async (username: string) =>
+	axios
+		.get<UserDTO>(`/users/name/${username}`)
+		.then(({ data }) => data)
+		.catch(() => null);

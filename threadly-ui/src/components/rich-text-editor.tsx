@@ -1,6 +1,6 @@
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
-import { Content, EditorContent, generateText, useEditor } from "@tiptap/react";
+import { type Content, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import clsx from "clsx";
 import {

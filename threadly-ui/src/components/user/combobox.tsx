@@ -20,11 +20,6 @@ import { UserItem } from "@/components/user/avatar";
 import { cn } from "@/lib/utils";
 import { useUsers } from "@/query/user";
 
-type User = {
-	id: string;
-	name: string;
-};
-
 interface UserComboboxOptions {
 	excludeSelf?: boolean;
 }

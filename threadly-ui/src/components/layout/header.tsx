@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { SidebarIcon } from "lucide-react";
 import { AppLogo } from "@/components/icon/app";
+import { UserMenu } from "@/components/layout/user-menu";
 import { SearchForm } from "@/components/search-form";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -25,6 +26,7 @@ export function SiteHeader() {
 					<AppLogo isFull />
 				</Link>
 				<SearchForm className="w-full sm:mx-auto sm:w-auto" />
+				<UserMenu />
 			</div>
 		</header>
 	);

@@ -2,18 +2,18 @@ import { useStore } from "@tanstack/react-form";
 import { CommunityCombobox as AppCommunityCombobox } from "@/components/community/combobox";
 import {
 	RichTextEditor as AppRichTextEditor,
-	EditorContentFormats,
+	type EditorContentFormats,
 } from "@/components/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Checkbox as ShadcnCheckbox } from "@/components/ui/checkbox";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import * as ShadcnSelect from "@/components/ui/select";
 import { Slider as ShadcnSlider } from "@/components/ui/slider";
+import { Spinner } from "@/components/ui/spinner";
 import { Switch as ShadcnSwitch } from "@/components/ui/switch";
 import { Textarea as ShadcnTextarea } from "@/components/ui/textarea";
 import { useFieldContext, useFormContext } from "@/hooks/form-context";
-import { Field, FieldError, FieldLabel } from "./ui/field";
-import { Spinner } from "./ui/spinner";
 
 export function SubscribeButton({
 	label,

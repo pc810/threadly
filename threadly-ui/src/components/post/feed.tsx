@@ -1,15 +1,13 @@
-import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
-import { Link, useMatchRoute, useRouter } from "@tanstack/react-router";
+import type {
+	InfiniteData,
+	UseInfiniteQueryResult,
+} from "@tanstack/react-query";
+import { Link, useMatchRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCommunityPostCreateLink } from "@/lib/format";
-import { useCommunity, useCommunityPosts } from "@/query/community";
 import { useCommunityFeed, useUserFeed } from "@/query/feed";
-import {
-	PostFeedDTO,
-	PostFeedDTOSlice,
-	type PostFeedSlice,
-} from "@/types/feed";
+import type { PostFeedDTOSlice } from "@/types/feed";
 import { PostCard } from "./card";
 
 export function PostFeed() {

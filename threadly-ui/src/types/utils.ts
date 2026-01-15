@@ -1,3 +1,4 @@
+import type { AxiosError } from "axios";
 import z from "zod";
 
 export const AUTH_ROLE = {
@@ -65,3 +66,5 @@ export const pageSchema = <T extends z.ZodTypeAny>(contentSchema: T) =>
 
 export type PageableSort = z.infer<typeof pageableSortSchema>;
 export type Pageable = z.infer<typeof pageableSchema>;
+
+export type AppAxoisError = AxiosError<{ message?: string }>;

@@ -89,6 +89,7 @@ class SecurityConfig {
                 "/auth/logout",
                 "/auth/register",
                 "/communities/name/**",
+                "/users/name/**",
                 "/oauth2/**",
                 "/v3/api-docs/**",
                 "/swagger-ui/**",

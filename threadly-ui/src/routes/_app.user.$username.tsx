@@ -2,25 +2,17 @@ import { createFileRoute, notFound, Outlet } from "@tanstack/react-router";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/header";
 import { SidebarInset } from "@/components/ui/sidebar";
-import { getCommunityByName } from "@/query/community";
-import { queryKeys } from "@/query/keys";
+import { getUserByUsername } from "@/query/user";
 
-export const Route = createFileRoute("/_app/r/$communityName")({
+export const Route = createFileRoute("/_app/user/$username")({
 	component: RouteComponent,
 
-	loader: async ({ params, context }) => {
-		const community = await getCommunityByName(params.communityName);
+	loader: async ({ params }) => {
+		const userDto = await getUserByUsername(params.username);
 
-		if (!community) {
-			throw notFound();
-		}
+		if (!userDto) throw notFound();
 
-		context.queryClient.setQueryData(
-			queryKeys.community.detail(community.id),
-			community,
-		);
-
-		return community;
+		return userDto;
 	},
 });
 

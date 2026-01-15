@@ -8,7 +8,7 @@ export const Route = createFileRoute("/_app")({
 });
 
 function RouteComponent() {
-	const { data: auth, isLoading } = useAuth();
+	const { auth, isLoading } = useAuth();
 
 	if (isLoading) return <AppLoader />;
 

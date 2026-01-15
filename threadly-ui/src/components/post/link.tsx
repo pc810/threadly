@@ -14,7 +14,7 @@ import type { Post } from "@/types/post";
 export const PostLinkDetail = ({ post }: { post: Post }) => {
 	const { data, isLoading } = usePostLink(post.communityId, post.id);
 
-	if (isLoading || data == null) return <>Loading</>;
+	if (isLoading || data == null) return "Loading";
 
 	const postlink = new URL(post.link);
 

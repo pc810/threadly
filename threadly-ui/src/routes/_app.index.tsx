@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AppLayout, AppWidgetLayout } from "@/components/app-layout";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/header";
+import { AppLayout, AppWidgetLayout } from "@/components/layout/app-layout";
+import { AppSidebar } from "@/components/layout/app-sidebar";
+import { SiteHeader } from "@/components/layout/header";
 import { UserFeed } from "@/components/post/feed";
 import { SidebarInset } from "@/components/ui/sidebar";
 
