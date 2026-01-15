@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Command, SidebarIcon } from "lucide-react";
+import { SidebarIcon } from "lucide-react";
+import { AppLogo } from "@/components/icon/app";
 import { SearchForm } from "@/components/search-form";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -20,13 +21,8 @@ export function SiteHeader() {
 					<SidebarIcon />
 				</Button>
 				<Separator orientation="vertical" className="mr-2 h-4" />
-				<Link to="/" className="flex gap-2">
-					<div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-						<Command className="size-4" />
-					</div>
-					<div className="grid flex-1 text-left text-sm leading-tight items-center">
-						<span className="truncate font-medium">Threadly</span>
-					</div>
+				<Link to="/">
+					<AppLogo isFull />
 				</Link>
 				<SearchForm className="w-full sm:mx-auto sm:w-auto" />
 			</div>

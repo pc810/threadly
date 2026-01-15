@@ -1,12 +1,13 @@
-create table users(
-id UUID not null primary key,
-username varchar(64),
-email varchar(255) unique,
-password_hash varchar(255),
-auth_provider varchar(32) not null,
-provider_id varchar(255),
-status varchar(32) not null,
-version bigint default 0,
-created_at timestamptz not null default now(),
-last_login_at timestamptz
+create table users
+(
+    id            UUID        NOT NULL PRIMARY KEY,
+    username      VARCHAR(64),
+    email         VARCHAR(255) UNIQUE,
+    password_hash VARCHAR(255),
+    auth_provider VARCHAR(32) NOT NULL,
+    provider_id   VARCHAR(255),
+    status        VARCHAR(32) NOT NULL,
+    version       BIGINT               DEFAULT 0,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+    last_login_at TIMESTAMPTZ
 );

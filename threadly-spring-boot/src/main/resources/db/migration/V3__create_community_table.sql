@@ -1,11 +1,13 @@
-create table communities(
-id UUID not null primary key,
-name varchar(64) not null,
-title varchar(128) not null,
-description varchar(512),
-visibility varchar(20) not null,
-is_nsfw boolean not null default false,
-created_at timestamptz not null default now(),
-updated_at timestamptz not null default now(),
-version bigint default 0
+create table communities
+(
+    id          UUID         NOT NULL PRIMARY KEY,
+    name        VARCHAR(64)  NOT NULL,
+    title       VARCHAR(128) NOT NULL,
+    description VARCHAR(512),
+    visibility  VARCHAR(20)  NOT NULL,
+    topic       VARCHAR(32)  NOT NULL,
+    is_nsfw     BOOLEAN      NOT NULL DEFAULT FALSE,
+    created_at  TIMESTAMPTZ  NOT NULL DEFAULT now(),
+    updated_at  TIMESTAMPTZ  NOT NULL DEFAULT now(),
+    version     BIGINT                DEFAULT 0
 );

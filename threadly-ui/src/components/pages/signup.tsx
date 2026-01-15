@@ -1,18 +1,19 @@
 import { Link } from "@tanstack/react-router";
-import { GoogleIcon } from "@/components/icon/google";
-import { Button } from "@/components/ui/button";
+import { LoginForm } from "../forms/login";
+import { SignupForm } from "../forms/signup";
+import { AppLogo } from "../icon/app";
+import { GoogleIcon } from "../icon/google";
+import { Button } from "../ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "@/components/ui/card";
-import { LoginForm } from "../forms/login";
-import { AppLogo } from "../icon/app";
+} from "../ui/card";
 
-export function LoginPage() {
-	function loginWithGoogle() {
+export function SignUpPage() {
+	function signUpWithGoogle() {
 		window.location.href = `${process.env.VITE_API_URL}/oauth2/authorization/google`;
 	}
 
@@ -21,14 +22,14 @@ export function LoginPage() {
 			<Card className="w-full md:w-sm">
 				<CardHeader>
 					<AppLogo className="mx-auto" />
-					<CardTitle className="sm:text-center">Welcome back</CardTitle>
+					<CardTitle className="sm:text-center">Create an account</CardTitle>
 					<CardDescription className="sm:text-center">
-						Enter your credentials to login to your account.
+						Enter your information below to create your account.
 					</CardDescription>
 				</CardHeader>
 
 				<CardContent className="space-y-4">
-					<LoginForm />
+					<SignupForm />
 
 					<div className="flex items-center gap-3 before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border">
 						<span className="text-xs text-muted-foreground">Or</span>
@@ -37,17 +38,17 @@ export function LoginPage() {
 					<Button
 						variant="outline"
 						className="w-full"
-						onClick={loginWithGoogle}
+						onClick={signUpWithGoogle}
 					>
-						<GoogleIcon /> Login with Google
+						<GoogleIcon /> Sign up with Google
 					</Button>
 					<div className="font-normal text-muted-foreground text-center">
-						New to threadly?{" "}
+						Already have an account?{" "}
 						<Link
 							className="text-sm underline hover:no-underline text-foreground"
-							to="/signup"
+							to="/login"
 						>
-							Sign up
+							Sign in
 						</Link>
 					</div>
 				</CardContent>
