@@ -77,8 +77,6 @@ export const CommunityAddForm = ({
 			if (value.step === "topic") formApi.setFieldValue("step", "meta");
 			else if (value.step === "meta") formApi.setFieldValue("step", "about");
 			else if (value.step === "about") {
-				toast.info("submitted form");
-				console.log(value);
 				await onSuccess?.(createCommunityRequestSchema.parse(value));
 			}
 		},
@@ -140,14 +138,14 @@ export const CommunityAddForm = ({
 						}
 					}}
 				>
-					{step === "topic" ? "Reset" : "Back"}
+					{step === "topic" ? "Close" : "Back"}
 				</Button>
 
 				{step === "topic" || step === "meta" ? (
 					<Button>Next</Button>
 				) : (
 					<form.AppForm>
-						<form.SubscribeButton label="Create Community" className="w-full" />
+						<form.SubscribeButton label="Create Community" />
 					</form.AppForm>
 				)}
 			</DialogFooter>

@@ -268,6 +268,7 @@ export function usePost(communityId: string, postId: string) {
 	return useQuery({
 		queryKey: queryKeys.community.post(communityId, postId),
 		queryFn: () => axios.get<Post>(`/posts/${postId}`).then(({ data }) => data),
+		retry: false,
 	});
 }
 
@@ -328,7 +329,7 @@ export function usePostRemove(communityId: string, postId: string) {
 		mutationFn: () => axios.delete(`/posts/${postId}`),
 		onSuccess: (_data) => {
 			queryClient.invalidateQueries({
-				queryKey: queryKeys.feed.list(),
+				queryKey: queryKeys.feed.all,
 			});
 			queryClient.invalidateQueries({
 				queryKey: queryKeys.community.posts(communityId),

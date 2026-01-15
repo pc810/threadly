@@ -6,7 +6,11 @@ import { Link, useMatchRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCommunityPostCreateLink } from "@/lib/format";
-import { useCommunityFeed, useUserFeed } from "@/query/feed";
+import {
+	useCommunityFeed,
+	useUserFeed,
+	useUserProfileFeed,
+} from "@/query/feed";
 import type { PostFeedDTOSlice } from "@/types/feed";
 import { PostCard } from "./card";
 
@@ -104,6 +108,12 @@ export function CommunityPostsList({ communityId }: { communityId: string }) {
 	const communityFeedQuery = useCommunityFeed(communityId);
 
 	return <PostFeedProvider query={communityFeedQuery} />;
+}
+
+export function UserProfilePostsFeed({ userId }: { userId: string }) {
+	const userProfileFeedQuery = useUserProfileFeed(userId);
+
+	return <PostFeedProvider query={userProfileFeedQuery} />;
 }
 
 const PlaceHolderCommunityPostsList = ({

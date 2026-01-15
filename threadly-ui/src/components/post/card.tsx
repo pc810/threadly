@@ -1,5 +1,6 @@
+import { useMatchRoute } from "@tanstack/react-router";
 import clsx from "clsx";
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, Trash2 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { AppCommunity } from "@/components/community/avatar";
@@ -25,6 +26,7 @@ import { usePermission } from "@/query/permission";
 import type { ShortcutKey } from "@/types/common";
 import type { Post } from "@/types/post";
 import { KeyboardShortcut } from "../keyboard-shortcut";
+import { AppUser } from "../user/avatar";
 
 type PostIdProps = {
 	postId: string;
@@ -45,9 +47,11 @@ type DropdownAction = {
 };
 
 export const PostCard = ({ communityId, postId }: PostIdProps) => {
-	const { data: post } = usePost(communityId, postId);
+	const { data: post, isLoading } = usePost(communityId, postId);
 
-	if (!post) return <PlaceholderCard />;
+	if (isLoading) return <PlaceholderCard />;
+
+	if (!post) return <DeletedPostCard />;
 
 	return (
 		<PostCardRoot className="space-y-2">
@@ -65,6 +69,10 @@ const PostCardMeta = ({
 	className,
 	...props
 }: React.ComponentProps<"p"> & PostProps) => {
+	const match = useMatchRoute();
+
+	const displayUserAvatar = match({ to: "/r/$communityName" });
+
 	return (
 		<div
 			className={clsx(
@@ -73,7 +81,11 @@ const PostCardMeta = ({
 			)}
 			{...props}
 		>
-			<AppCommunity communityId={post.communityId} />
+			{displayUserAvatar ? (
+				<AppUser userId={post.userId} hasName />
+			) : (
+				<AppCommunity communityId={post.communityId} />
+			)}
 			<span>•</span>
 			<time dateTime={post.createdAt}>{formatAgo(post.createdAt)}</time>
 
@@ -93,6 +105,25 @@ const PlaceholderCard = () => {
 			</div>
 			<Skeleton className="h-2 w-full" />
 			<Skeleton className="aspect-video w-full max-h-6" />
+		</PostCardRoot>
+	);
+};
+
+const DeletedPostCard = () => {
+	return (
+		<PostCardRoot className="space-y-3 border-dashed opacity-70">
+			<PostCardTitle className="flex items-center gap-2 text-muted-foreground">
+				<Trash2 className="h-4 w-4" />
+				Post deleted
+			</PostCardTitle>
+
+			<p className="text-sm text-muted-foreground">
+				This post was deleted by the author or a moderator.
+			</p>
+
+			<div className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
+				Content is no longer available
+			</div>
 		</PostCardRoot>
 	);
 };

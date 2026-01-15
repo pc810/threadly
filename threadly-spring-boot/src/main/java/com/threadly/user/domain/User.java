@@ -1,6 +1,7 @@
 package com.threadly.user.domain;
 
 import com.threadly.common.AuthProvider;
+import com.threadly.common.UserUtil;
 import com.threadly.user.LocalUserCreateRequest;
 import com.threadly.user.UserCreateRequest;
 import jakarta.persistence.Column;
@@ -79,9 +80,10 @@ public class User {
   }
 
   public static User from(UserCreateRequest request) {
+    var requestUsername = request.username();
     return User.builder()
         .email(request.email())
-        .username(request.email().split("@")[0])
+        .username(requestUsername == null ? UserUtil.getUsername(request.email()) : requestUsername)
         .passwordHash(request.email())
         .authProvider(request.authProvider())
         .version(0L)

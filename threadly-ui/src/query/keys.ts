@@ -115,6 +115,10 @@ const feedKeys = {
 	all: [KEYS.Feed],
 
 	list: () => [...feedKeys.all],
+
+	users: [...communityKeys.all, "users"],
+
+	user: (userId: string) => [...feedKeys.users, userId],
 };
 
 const userKeys = {

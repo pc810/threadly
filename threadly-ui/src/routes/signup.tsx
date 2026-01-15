@@ -4,10 +4,10 @@ import { SignUpPage } from "@/components/pages/signup";
 import { useAuth } from "@/query/auth";
 
 export const Route = createFileRoute("/signup")({
-	component: WithRedirecLoginPage,
+	component: WithRedirectLoginPage,
 });
 
-function WithRedirecLoginPage() {
+function WithRedirectLoginPage() {
 	const { auth, isLoading } = useAuth();
 
 	if (isLoading) return <AppLoader />;

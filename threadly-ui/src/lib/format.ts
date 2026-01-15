@@ -61,6 +61,6 @@ export const formatUserName = (name: string) => {
 	return `u/${name}`;
 };
 
-export const getUserLink = (name: string) => {
-	return `/user/${name}`;
-};
+// export const getUserLink = (name: string) => {
+// 	return `/user/${name}`;
+// };

@@ -1,6 +1,4 @@
-import { Link } from "@tanstack/react-router";
-
-type ExternalLinkProps = React.ComponentProps<typeof Link> & {
+type ExternalLinkProps = React.ComponentProps<"a"> & {
 	extraParams?: Record<string, string>;
 	utmId?: string;
 };
@@ -29,7 +27,5 @@ export function ExternalLink({
 		...(extraParams ?? {}),
 	});
 
-	return (
-		<Link to={link} target="_blank" rel="noopener noreferrer" {...props} />
-	);
+	return <a href={link} target="_blank" rel="noopener noreferrer" {...props} />;
 }

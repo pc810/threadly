@@ -102,7 +102,8 @@ class UserService implements UserExternalService, UserInternalApi {
                 user.getAuthProvider()
             ));
 
-            log.info("User created successfully: {}", user.getEmail());
+            log.info("User created successfully: email={}, username={}", user.getEmail(),
+                user.getUsername());
             return user.getId();
 
           } catch (DataIntegrityViolationException e) {

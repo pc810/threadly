@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatUserName, getTwoCharacter, getUserLink } from "@/lib/format";
+import { formatUserName, getTwoCharacter } from "@/lib/format";
 import { useUser } from "@/query/user";
 import { UserCard, UserItemCard } from "./card";
 
@@ -31,10 +31,12 @@ export const AppUser = ({
 			</UserCard>
 		);
 
-	const userLink = getUserLink(user.name);
-
 	return (
-		<UserCard href={userLink} {...props}>
+		<UserCard
+			to={"/user/$username"}
+			params={{ username: user.name }}
+			{...props}
+		>
 			<UserAvatar size={size} src={"#"} name={user.name} />
 			{hasName && formatUserName(user.name)}
 		</UserCard>

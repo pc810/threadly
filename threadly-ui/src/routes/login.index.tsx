@@ -3,11 +3,11 @@ import { AppLoader } from "@/components/app-loader";
 import { LoginPage } from "@/components/pages/login";
 import { useAuth } from "@/query/auth";
 
-export const Route = createFileRoute("/login")({
-	component: WithRedirecLoginPage,
+export const Route = createFileRoute("/login/")({
+	component: WithRedirectLoginPage,
 });
 
-function WithRedirecLoginPage() {
+function WithRedirectLoginPage() {
 	const { auth, isLoading } = useAuth();
 
 	if (isLoading) return <AppLoader />;

@@ -56,4 +56,14 @@ class PostFeedController {
     return ResponseEntity.ok(
         postExternalApi.getPostsByCommunityId(communityId, pageNumber, PAGE_SIZE));
   }
+
+  @GetMapping("users/{userId}")
+  ResponseEntity<Slice<PostFeedDTO>> getUserPostsAsFeed(
+      @RequestParam(defaultValue = "0") int pageNumber,
+      @PathVariable UUID userId
+  ) {
+
+    return ResponseEntity.ok(
+        postExternalApi.getPostsByUserId(userId, pageNumber, PAGE_SIZE));
+  }
 }

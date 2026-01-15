@@ -19,7 +19,7 @@ export const CommunityHeader = ({
 
 	return (
 		<div className="w-full md:w-280 mx-auto mb-4">
-			<div className="h-18 bg-card rounded-md my-2"></div>
+			<div className="h-18 bg-accent rounded-md my-2"></div>
 			<div className="px-4 -mt-10 flex items-center gap-2">
 				<Avatar className="size-22 border-4 border-background rounded-full">
 					<AvatarImage src={"/"} alt={community.name} />

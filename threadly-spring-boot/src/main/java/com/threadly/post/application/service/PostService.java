@@ -15,6 +15,7 @@ import com.threadly.post.application.usecase.PostInternalApi;
 import com.threadly.post.domain.Post;
 import com.threadly.post.domain.PostLink;
 import com.threadly.post.domain.PostMetaUpdateEvent;
+import com.threadly.post.domain.PostSummary;
 import com.threadly.post.infrastructure.persistence.PostLinkRepository;
 import com.threadly.post.infrastructure.persistence.PostRepository;
 import java.util.List;
@@ -40,6 +41,16 @@ public class PostService implements PostInternalApi, PostExternalApi {
   private final CommunityExternalApi communityExternalApi;
   private final MediaExternalApi mediaExternalApi;
   private final ApplicationEventPublisher eventPublisher;
+
+  private static PostFeedDTO toFeedDto(PostSummary postSummary) {
+    return new PostFeedDTO(
+        postSummary.getId(),
+        postSummary.getId(),
+        postSummary.getUserId(),
+        postSummary.getCommunityId(),
+        postSummary.getCreatedAt()
+    );
+  }
 
   @Override
   @Transactional
@@ -152,6 +163,7 @@ public class PostService implements PostInternalApi, PostExternalApi {
     return postRole == AuthRole.AUTHOR;
   }
 
+  @Transactional
   @Override
   public boolean deletePost(UUID postId, UUID actorId) {
     log.info("deleting post={} by actorId={}", postId, actorId);
@@ -176,12 +188,14 @@ public class PostService implements PostInternalApi, PostExternalApi {
     return postRepository.findBySliceAndCommunityId(communityId, PageRequest.of(
         page,
         size
-    )).map(postSummary -> new PostFeedDTO(
-        postSummary.getId(),
-        postSummary.getId(),
-        postSummary.getUserId(),
-        postSummary.getCommunityId(),
-        postSummary.getCreatedAt()
-    ));
+    )).map(PostService::toFeedDto);
+  }
+
+  @Override
+  public Slice<PostFeedDTO> getPostsByUserId(UUID userId, int page, int size) {
+    return postRepository.findBySliceAndUserId(userId, PageRequest.of(
+        page,
+        size
+    )).map(PostService::toFeedDto);
   }
 }

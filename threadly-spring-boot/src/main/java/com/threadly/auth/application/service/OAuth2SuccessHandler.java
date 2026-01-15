@@ -3,6 +3,7 @@ package com.threadly.auth.application.service;
 
 import com.threadly.common.AuthProvider;
 import com.threadly.common.CookieUtil;
+import com.threadly.common.UserUtil;
 import com.threadly.user.UserCreateRequest;
 import com.threadly.user.UserExternalService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,7 +38,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     var userRequest = new UserCreateRequest(
         email,
-        email.split("@")[0],
+        UserUtil.getUsername(email),
         AuthProvider.GOOGLE
     );
 
@@ -51,7 +52,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     cookieUtil.addCookie(response, "refresh_token", refreshToken, expires * 2);
 
     // Redirect frontend
-    response.sendRedirect("http://localhost:3000/login/success?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8));
+    response.sendRedirect("http://localhost:3002/login/success?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8));
   }
 
 }

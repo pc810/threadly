@@ -41,6 +41,11 @@ public class PostPersistenceAdaptor implements PostRepository {
   }
 
   @Override
+  public Slice<PostSummary> findBySliceAndUserId(UUID userId, PageRequest pageRequest) {
+    return repository.findByUserIdOrderByCreatedAtDesc(userId, pageRequest);
+  }
+
+  @Override
   public List<Post> findByPageAndCommunityId(UUID communityId, PageRequest pageRequest) {
     return repository.findByCommunityId(communityId, pageRequest).get().toList();
   }
@@ -54,4 +59,5 @@ public class PostPersistenceAdaptor implements PostRepository {
   public void deleteById(UUID id) {
     repository.deleteById(id);
   }
+
 }

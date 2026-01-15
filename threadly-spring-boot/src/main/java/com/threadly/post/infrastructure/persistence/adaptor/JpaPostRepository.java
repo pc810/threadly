@@ -19,6 +19,7 @@ public interface JpaPostRepository extends JpaRepository<Post, UUID>,
 
   Slice<PostSummary> findByCommunityIdOrderByCreatedAtDesc(UUID communityId, Pageable pageable);
 
-  List<Post> findByCommunityId(UUID communityId);
+  Slice<PostSummary> findByUserIdOrderByCreatedAtDesc(UUID userId, Pageable pageable);
 
+  List<Post> findByCommunityId(UUID communityId);
 }

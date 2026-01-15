@@ -1,4 +1,6 @@
-import { Link } from "@tanstack/react-router";
+import { Link, Navigate, useNavigate } from "@tanstack/react-router";
+import { CheckCircle2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { GoogleIcon } from "@/components/icon/google";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,12 +10,14 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { useAuth } from "@/query/auth";
+import { UserDTO } from "@/types/user";
 import { LoginForm } from "../forms/login";
 import { AppLogo } from "../icon/app";
 
 export function LoginPage() {
 	function loginWithGoogle() {
-		window.location.href = `${process.env.VITE_API_URL}/oauth2/authorization/google`;
+		window.location.href = `${import.meta.env.VITE_API_URL}/oauth2/authorization/google`;
 	}
 
 	return (
@@ -50,6 +54,50 @@ export function LoginPage() {
 							Sign up
 						</Link>
 					</div>
+				</CardContent>
+			</Card>
+		</div>
+	);
+}
+
+export function LoginSuccesPage({ auth }: { auth: UserDTO }) {
+	const [time, setTime] = useState(
+		Number(import.meta.env.VITE_APP_REDIRECT_TIME),
+	);
+
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (auth) {
+			const intervalId = setInterval(() => {
+				setTime((prev) => {
+					if (prev - 1 === -1) {
+						clearInterval(intervalId);
+						navigate({ to: "/" });
+						return 0;
+					}
+					return prev - 1;
+				});
+			}, 1000);
+
+			return () => clearInterval(intervalId);
+		}
+	}, [auth, navigate]);
+
+	if (!auth) return <Navigate to="/login" />;
+
+	return (
+		<div className="grid place-content-center h-svh">
+			<Card className="w-full md:w-sm text-center">
+				<CardHeader className="text-center space-y-2">
+					<AppLogo className="mx-auto" isFull />
+					<CheckCircle2 className="mx-auto text-success size-14" />
+					<CardTitle>Welcome {auth?.name}</CardTitle>
+				</CardHeader>
+
+				<CardContent className="text-center space-y-2">
+					<p className="text-sm">Successfully Signed Up</p>
+					<div>Redirecting in {time} Sec</div>
 				</CardContent>
 			</Card>
 		</div>

@@ -10,9 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
+import { Route as LoginIndexRouteImport } from './routes/login.index'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
+import { Route as LoginSuccessIndexRouteImport } from './routes/login.success.index'
 import { Route as AppUserUsernameRouteImport } from './routes/_app.user.$username'
 import { Route as AppRCommunityNameRouteImport } from './routes/_app.r.$communityName'
 import { Route as AppModCommunityNameRouteImport } from './routes/_app.mod.$communityName'
@@ -29,19 +30,24 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AppRoute = AppRouteImport.update({
   id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginIndexRoute = LoginIndexRouteImport.update({
+  id: '/login/',
+  path: '/login/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
+} as any)
+const LoginSuccessIndexRoute = LoginSuccessIndexRouteImport.update({
+  id: '/login/success/',
+  path: '/login/success/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppUserUsernameRoute = AppUserUsernameRouteImport.update({
   id: '/user/$username',
@@ -99,12 +105,13 @@ const AppModCommunityNameApprovedUsersRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/': typeof AppIndexRoute
+  '/login': typeof LoginIndexRoute
   '/mod/$communityName': typeof AppModCommunityNameRouteWithChildren
   '/r/$communityName': typeof AppRCommunityNameRouteWithChildren
   '/user/$username': typeof AppUserUsernameRouteWithChildren
+  '/login/success': typeof LoginSuccessIndexRoute
   '/mod/$communityName/approved-users': typeof AppModCommunityNameApprovedUsersRoute
   '/mod/$communityName/invites': typeof AppModCommunityNameInvitesRoute
   '/mod/$communityName/moderators': typeof AppModCommunityNameModeratorsRoute
@@ -114,9 +121,10 @@ export interface FileRoutesByFullPath {
   '/user/$username/': typeof AppUserUsernameIndexRoute
 }
 export interface FileRoutesByTo {
-  '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/': typeof AppIndexRoute
+  '/login': typeof LoginIndexRoute
+  '/login/success': typeof LoginSuccessIndexRoute
   '/mod/$communityName/approved-users': typeof AppModCommunityNameApprovedUsersRoute
   '/mod/$communityName/invites': typeof AppModCommunityNameInvitesRoute
   '/mod/$communityName/moderators': typeof AppModCommunityNameModeratorsRoute
@@ -128,12 +136,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
-  '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/_app/': typeof AppIndexRoute
+  '/login/': typeof LoginIndexRoute
   '/_app/mod/$communityName': typeof AppModCommunityNameRouteWithChildren
   '/_app/r/$communityName': typeof AppRCommunityNameRouteWithChildren
   '/_app/user/$username': typeof AppUserUsernameRouteWithChildren
+  '/login/success/': typeof LoginSuccessIndexRoute
   '/_app/mod/$communityName/approved-users': typeof AppModCommunityNameApprovedUsersRoute
   '/_app/mod/$communityName/invites': typeof AppModCommunityNameInvitesRoute
   '/_app/mod/$communityName/moderators': typeof AppModCommunityNameModeratorsRoute
@@ -145,12 +154,13 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/login'
     | '/signup'
     | '/'
+    | '/login'
     | '/mod/$communityName'
     | '/r/$communityName'
     | '/user/$username'
+    | '/login/success'
     | '/mod/$communityName/approved-users'
     | '/mod/$communityName/invites'
     | '/mod/$communityName/moderators'
@@ -160,9 +170,10 @@ export interface FileRouteTypes {
     | '/user/$username/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/login'
     | '/signup'
     | '/'
+    | '/login'
+    | '/login/success'
     | '/mod/$communityName/approved-users'
     | '/mod/$communityName/invites'
     | '/mod/$communityName/moderators'
@@ -173,12 +184,13 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_app'
-    | '/login'
     | '/signup'
     | '/_app/'
+    | '/login/'
     | '/_app/mod/$communityName'
     | '/_app/r/$communityName'
     | '/_app/user/$username'
+    | '/login/success/'
     | '/_app/mod/$communityName/approved-users'
     | '/_app/mod/$communityName/invites'
     | '/_app/mod/$communityName/moderators'
@@ -190,8 +202,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
-  LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  LoginIndexRoute: typeof LoginIndexRoute
+  LoginSuccessIndexRoute: typeof LoginSuccessIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -203,18 +216,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_app': {
       id: '/_app'
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login/': {
+      id: '/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/': {
@@ -223,6 +236,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/login/success/': {
+      id: '/login/success/'
+      path: '/login/success'
+      fullPath: '/login/success'
+      preLoaderRoute: typeof LoginSuccessIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app/user/$username': {
       id: '/_app/user/$username'
@@ -357,8 +377,9 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
-  LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  LoginIndexRoute: LoginIndexRoute,
+  LoginSuccessIndexRoute: LoginSuccessIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

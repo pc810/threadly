@@ -1,4 +1,5 @@
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
+import { UserProfilePostsFeed } from "@/components/post/feed";
 
 export const Route = createFileRoute("/_app/user/$username/")({
 	component: RouteComponent,
@@ -9,8 +10,8 @@ function RouteComponent() {
 
 	return (
 		<div>
-			Hello "/_app/user/$userName/"!
-			<pre>{JSON.stringify(userDto, null, 2)}</pre>
+			u/{userDto.name} 's Posts
+			<UserProfilePostsFeed userId={userDto.id} />
 		</div>
 	);
 }
