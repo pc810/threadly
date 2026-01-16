@@ -90,6 +90,9 @@ export const useCommunityInviteAction = (communityId: string) => {
 			queryClient.invalidateQueries({
 				queryKey: queryKeys.community.memberships(communityId),
 			});
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.community.invitations(communityId),
+			});
 		},
 		onError: (error: AppAxoisError) => {
 			const message =

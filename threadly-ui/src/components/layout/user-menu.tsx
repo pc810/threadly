@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import {
 	CircleDollarSignIcon,
+	LogOut,
 	MenuSquare,
 	MousePointerClickIcon,
 	PieChart,
@@ -152,6 +153,7 @@ const UserMenuProfile = ({
 					</DropdownMenuItem>
 				</DropdownMenuGroup>
 				<DropdownMenuItem onSelect={onSignOut} variant="destructive">
+					<LogOut />
 					Log out
 				</DropdownMenuItem>
 			</DropdownMenuContent>
