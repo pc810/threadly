@@ -1,17 +1,9 @@
+import { addUtmParams } from "@/lib/format";
+
 type ExternalLinkProps = React.ComponentProps<"a"> & {
 	extraParams?: Record<string, string>;
 	utmId?: string;
 };
-
-export function addUtmParams(url: string, params: Record<string, string>) {
-	const u = new URL(url);
-
-	Object.entries(params).forEach(([key, value]) => {
-		u.searchParams.set(key, value);
-	});
-
-	return u.toString();
-}
 
 export function ExternalLink({
 	href,
@@ -20,8 +12,7 @@ export function ExternalLink({
 	...props
 }: ExternalLinkProps) {
 	const link = addUtmParams(String(href), {
-		utm_source: "threadly",
-		utm_medium: "post",
+		utm_content: "post_link",
 		...(utmId ? { utm_id: utmId } : {}),
 
 		...(extraParams ?? {}),

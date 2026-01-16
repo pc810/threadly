@@ -17,13 +17,19 @@ import { Route as LoginSuccessIndexRouteImport } from './routes/login.success.in
 import { Route as AppUserUsernameRouteImport } from './routes/_app.user.$username'
 import { Route as AppRCommunityNameRouteImport } from './routes/_app.r.$communityName'
 import { Route as AppModCommunityNameRouteImport } from './routes/_app.mod.$communityName'
-import { Route as AppUserUsernameIndexRouteImport } from './routes/_app.user.$username.index'
 import { Route as AppRCommunityNameIndexRouteImport } from './routes/_app.r.$communityName.index'
 import { Route as AppModCommunityNameIndexRouteImport } from './routes/_app.mod.$communityName.index'
+import { Route as AppUserUsernameProfileRouteImport } from './routes/_app.user.$username._profile'
 import { Route as AppRCommunityNameSubmitRouteImport } from './routes/_app.r.$communityName.submit'
 import { Route as AppModCommunityNameModeratorsRouteImport } from './routes/_app.mod.$communityName.moderators'
 import { Route as AppModCommunityNameInvitesRouteImport } from './routes/_app.mod.$communityName.invites'
 import { Route as AppModCommunityNameApprovedUsersRouteImport } from './routes/_app.mod.$communityName.approved-users'
+import { Route as AppUserUsernameProfileIndexRouteImport } from './routes/_app.user.$username._profile.index'
+import { Route as AppUserUsernameProfileUpvotedIndexRouteImport } from './routes/_app.user.$username._profile.upvoted.index'
+import { Route as AppUserUsernameProfileSubmittedIndexRouteImport } from './routes/_app.user.$username._profile.submitted.index'
+import { Route as AppUserUsernameProfileSavedIndexRouteImport } from './routes/_app.user.$username._profile.saved.index'
+import { Route as AppUserUsernameProfileDownvotedIndexRouteImport } from './routes/_app.user.$username._profile.downvoted.index'
+import { Route as AppUserUsernameProfileCommentsIndexRouteImport } from './routes/_app.user.$username._profile.comments.index'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -64,11 +70,6 @@ const AppModCommunityNameRoute = AppModCommunityNameRouteImport.update({
   path: '/mod/$communityName',
   getParentRoute: () => AppRoute,
 } as any)
-const AppUserUsernameIndexRoute = AppUserUsernameIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppUserUsernameRoute,
-} as any)
 const AppRCommunityNameIndexRoute = AppRCommunityNameIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -80,6 +81,10 @@ const AppModCommunityNameIndexRoute =
     path: '/',
     getParentRoute: () => AppModCommunityNameRoute,
   } as any)
+const AppUserUsernameProfileRoute = AppUserUsernameProfileRouteImport.update({
+  id: '/_profile',
+  getParentRoute: () => AppUserUsernameRoute,
+} as any)
 const AppRCommunityNameSubmitRoute = AppRCommunityNameSubmitRouteImport.update({
   id: '/submit',
   path: '/submit',
@@ -103,6 +108,42 @@ const AppModCommunityNameApprovedUsersRoute =
     path: '/approved-users',
     getParentRoute: () => AppModCommunityNameRoute,
   } as any)
+const AppUserUsernameProfileIndexRoute =
+  AppUserUsernameProfileIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppUserUsernameProfileRoute,
+  } as any)
+const AppUserUsernameProfileUpvotedIndexRoute =
+  AppUserUsernameProfileUpvotedIndexRouteImport.update({
+    id: '/upvoted/',
+    path: '/upvoted/',
+    getParentRoute: () => AppUserUsernameProfileRoute,
+  } as any)
+const AppUserUsernameProfileSubmittedIndexRoute =
+  AppUserUsernameProfileSubmittedIndexRouteImport.update({
+    id: '/submitted/',
+    path: '/submitted/',
+    getParentRoute: () => AppUserUsernameProfileRoute,
+  } as any)
+const AppUserUsernameProfileSavedIndexRoute =
+  AppUserUsernameProfileSavedIndexRouteImport.update({
+    id: '/saved/',
+    path: '/saved/',
+    getParentRoute: () => AppUserUsernameProfileRoute,
+  } as any)
+const AppUserUsernameProfileDownvotedIndexRoute =
+  AppUserUsernameProfileDownvotedIndexRouteImport.update({
+    id: '/downvoted/',
+    path: '/downvoted/',
+    getParentRoute: () => AppUserUsernameProfileRoute,
+  } as any)
+const AppUserUsernameProfileCommentsIndexRoute =
+  AppUserUsernameProfileCommentsIndexRouteImport.update({
+    id: '/comments/',
+    path: '/comments/',
+    getParentRoute: () => AppUserUsernameProfileRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
@@ -110,7 +151,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginIndexRoute
   '/mod/$communityName': typeof AppModCommunityNameRouteWithChildren
   '/r/$communityName': typeof AppRCommunityNameRouteWithChildren
-  '/user/$username': typeof AppUserUsernameRouteWithChildren
+  '/user/$username': typeof AppUserUsernameProfileRouteWithChildren
   '/login/success': typeof LoginSuccessIndexRoute
   '/mod/$communityName/approved-users': typeof AppModCommunityNameApprovedUsersRoute
   '/mod/$communityName/invites': typeof AppModCommunityNameInvitesRoute
@@ -118,12 +159,18 @@ export interface FileRoutesByFullPath {
   '/r/$communityName/submit': typeof AppRCommunityNameSubmitRoute
   '/mod/$communityName/': typeof AppModCommunityNameIndexRoute
   '/r/$communityName/': typeof AppRCommunityNameIndexRoute
-  '/user/$username/': typeof AppUserUsernameIndexRoute
+  '/user/$username/': typeof AppUserUsernameProfileIndexRoute
+  '/user/$username/comments': typeof AppUserUsernameProfileCommentsIndexRoute
+  '/user/$username/downvoted': typeof AppUserUsernameProfileDownvotedIndexRoute
+  '/user/$username/saved': typeof AppUserUsernameProfileSavedIndexRoute
+  '/user/$username/submitted': typeof AppUserUsernameProfileSubmittedIndexRoute
+  '/user/$username/upvoted': typeof AppUserUsernameProfileUpvotedIndexRoute
 }
 export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/': typeof AppIndexRoute
   '/login': typeof LoginIndexRoute
+  '/user/$username': typeof AppUserUsernameProfileIndexRoute
   '/login/success': typeof LoginSuccessIndexRoute
   '/mod/$communityName/approved-users': typeof AppModCommunityNameApprovedUsersRoute
   '/mod/$communityName/invites': typeof AppModCommunityNameInvitesRoute
@@ -131,7 +178,11 @@ export interface FileRoutesByTo {
   '/r/$communityName/submit': typeof AppRCommunityNameSubmitRoute
   '/mod/$communityName': typeof AppModCommunityNameIndexRoute
   '/r/$communityName': typeof AppRCommunityNameIndexRoute
-  '/user/$username': typeof AppUserUsernameIndexRoute
+  '/user/$username/comments': typeof AppUserUsernameProfileCommentsIndexRoute
+  '/user/$username/downvoted': typeof AppUserUsernameProfileDownvotedIndexRoute
+  '/user/$username/saved': typeof AppUserUsernameProfileSavedIndexRoute
+  '/user/$username/submitted': typeof AppUserUsernameProfileSubmittedIndexRoute
+  '/user/$username/upvoted': typeof AppUserUsernameProfileUpvotedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -147,9 +198,15 @@ export interface FileRoutesById {
   '/_app/mod/$communityName/invites': typeof AppModCommunityNameInvitesRoute
   '/_app/mod/$communityName/moderators': typeof AppModCommunityNameModeratorsRoute
   '/_app/r/$communityName/submit': typeof AppRCommunityNameSubmitRoute
+  '/_app/user/$username/_profile': typeof AppUserUsernameProfileRouteWithChildren
   '/_app/mod/$communityName/': typeof AppModCommunityNameIndexRoute
   '/_app/r/$communityName/': typeof AppRCommunityNameIndexRoute
-  '/_app/user/$username/': typeof AppUserUsernameIndexRoute
+  '/_app/user/$username/_profile/': typeof AppUserUsernameProfileIndexRoute
+  '/_app/user/$username/_profile/comments/': typeof AppUserUsernameProfileCommentsIndexRoute
+  '/_app/user/$username/_profile/downvoted/': typeof AppUserUsernameProfileDownvotedIndexRoute
+  '/_app/user/$username/_profile/saved/': typeof AppUserUsernameProfileSavedIndexRoute
+  '/_app/user/$username/_profile/submitted/': typeof AppUserUsernameProfileSubmittedIndexRoute
+  '/_app/user/$username/_profile/upvoted/': typeof AppUserUsernameProfileUpvotedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -168,11 +225,17 @@ export interface FileRouteTypes {
     | '/mod/$communityName/'
     | '/r/$communityName/'
     | '/user/$username/'
+    | '/user/$username/comments'
+    | '/user/$username/downvoted'
+    | '/user/$username/saved'
+    | '/user/$username/submitted'
+    | '/user/$username/upvoted'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/signup'
     | '/'
     | '/login'
+    | '/user/$username'
     | '/login/success'
     | '/mod/$communityName/approved-users'
     | '/mod/$communityName/invites'
@@ -180,7 +243,11 @@ export interface FileRouteTypes {
     | '/r/$communityName/submit'
     | '/mod/$communityName'
     | '/r/$communityName'
-    | '/user/$username'
+    | '/user/$username/comments'
+    | '/user/$username/downvoted'
+    | '/user/$username/saved'
+    | '/user/$username/submitted'
+    | '/user/$username/upvoted'
   id:
     | '__root__'
     | '/_app'
@@ -195,9 +262,15 @@ export interface FileRouteTypes {
     | '/_app/mod/$communityName/invites'
     | '/_app/mod/$communityName/moderators'
     | '/_app/r/$communityName/submit'
+    | '/_app/user/$username/_profile'
     | '/_app/mod/$communityName/'
     | '/_app/r/$communityName/'
-    | '/_app/user/$username/'
+    | '/_app/user/$username/_profile/'
+    | '/_app/user/$username/_profile/comments/'
+    | '/_app/user/$username/_profile/downvoted/'
+    | '/_app/user/$username/_profile/saved/'
+    | '/_app/user/$username/_profile/submitted/'
+    | '/_app/user/$username/_profile/upvoted/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -265,13 +338,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppModCommunityNameRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/user/$username/': {
-      id: '/_app/user/$username/'
-      path: '/'
-      fullPath: '/user/$username/'
-      preLoaderRoute: typeof AppUserUsernameIndexRouteImport
-      parentRoute: typeof AppUserUsernameRoute
-    }
     '/_app/r/$communityName/': {
       id: '/_app/r/$communityName/'
       path: '/'
@@ -285,6 +351,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/mod/$communityName/'
       preLoaderRoute: typeof AppModCommunityNameIndexRouteImport
       parentRoute: typeof AppModCommunityNameRoute
+    }
+    '/_app/user/$username/_profile': {
+      id: '/_app/user/$username/_profile'
+      path: ''
+      fullPath: '/user/$username'
+      preLoaderRoute: typeof AppUserUsernameProfileRouteImport
+      parentRoute: typeof AppUserUsernameRoute
     }
     '/_app/r/$communityName/submit': {
       id: '/_app/r/$communityName/submit'
@@ -313,6 +386,48 @@ declare module '@tanstack/react-router' {
       fullPath: '/mod/$communityName/approved-users'
       preLoaderRoute: typeof AppModCommunityNameApprovedUsersRouteImport
       parentRoute: typeof AppModCommunityNameRoute
+    }
+    '/_app/user/$username/_profile/': {
+      id: '/_app/user/$username/_profile/'
+      path: '/'
+      fullPath: '/user/$username/'
+      preLoaderRoute: typeof AppUserUsernameProfileIndexRouteImport
+      parentRoute: typeof AppUserUsernameProfileRoute
+    }
+    '/_app/user/$username/_profile/upvoted/': {
+      id: '/_app/user/$username/_profile/upvoted/'
+      path: '/upvoted'
+      fullPath: '/user/$username/upvoted'
+      preLoaderRoute: typeof AppUserUsernameProfileUpvotedIndexRouteImport
+      parentRoute: typeof AppUserUsernameProfileRoute
+    }
+    '/_app/user/$username/_profile/submitted/': {
+      id: '/_app/user/$username/_profile/submitted/'
+      path: '/submitted'
+      fullPath: '/user/$username/submitted'
+      preLoaderRoute: typeof AppUserUsernameProfileSubmittedIndexRouteImport
+      parentRoute: typeof AppUserUsernameProfileRoute
+    }
+    '/_app/user/$username/_profile/saved/': {
+      id: '/_app/user/$username/_profile/saved/'
+      path: '/saved'
+      fullPath: '/user/$username/saved'
+      preLoaderRoute: typeof AppUserUsernameProfileSavedIndexRouteImport
+      parentRoute: typeof AppUserUsernameProfileRoute
+    }
+    '/_app/user/$username/_profile/downvoted/': {
+      id: '/_app/user/$username/_profile/downvoted/'
+      path: '/downvoted'
+      fullPath: '/user/$username/downvoted'
+      preLoaderRoute: typeof AppUserUsernameProfileDownvotedIndexRouteImport
+      parentRoute: typeof AppUserUsernameProfileRoute
+    }
+    '/_app/user/$username/_profile/comments/': {
+      id: '/_app/user/$username/_profile/comments/'
+      path: '/comments'
+      fullPath: '/user/$username/comments'
+      preLoaderRoute: typeof AppUserUsernameProfileCommentsIndexRouteImport
+      parentRoute: typeof AppUserUsernameProfileRoute
     }
   }
 }
@@ -347,12 +462,41 @@ const AppRCommunityNameRouteChildren: AppRCommunityNameRouteChildren = {
 const AppRCommunityNameRouteWithChildren =
   AppRCommunityNameRoute._addFileChildren(AppRCommunityNameRouteChildren)
 
+interface AppUserUsernameProfileRouteChildren {
+  AppUserUsernameProfileIndexRoute: typeof AppUserUsernameProfileIndexRoute
+  AppUserUsernameProfileCommentsIndexRoute: typeof AppUserUsernameProfileCommentsIndexRoute
+  AppUserUsernameProfileDownvotedIndexRoute: typeof AppUserUsernameProfileDownvotedIndexRoute
+  AppUserUsernameProfileSavedIndexRoute: typeof AppUserUsernameProfileSavedIndexRoute
+  AppUserUsernameProfileSubmittedIndexRoute: typeof AppUserUsernameProfileSubmittedIndexRoute
+  AppUserUsernameProfileUpvotedIndexRoute: typeof AppUserUsernameProfileUpvotedIndexRoute
+}
+
+const AppUserUsernameProfileRouteChildren: AppUserUsernameProfileRouteChildren =
+  {
+    AppUserUsernameProfileIndexRoute: AppUserUsernameProfileIndexRoute,
+    AppUserUsernameProfileCommentsIndexRoute:
+      AppUserUsernameProfileCommentsIndexRoute,
+    AppUserUsernameProfileDownvotedIndexRoute:
+      AppUserUsernameProfileDownvotedIndexRoute,
+    AppUserUsernameProfileSavedIndexRoute:
+      AppUserUsernameProfileSavedIndexRoute,
+    AppUserUsernameProfileSubmittedIndexRoute:
+      AppUserUsernameProfileSubmittedIndexRoute,
+    AppUserUsernameProfileUpvotedIndexRoute:
+      AppUserUsernameProfileUpvotedIndexRoute,
+  }
+
+const AppUserUsernameProfileRouteWithChildren =
+  AppUserUsernameProfileRoute._addFileChildren(
+    AppUserUsernameProfileRouteChildren,
+  )
+
 interface AppUserUsernameRouteChildren {
-  AppUserUsernameIndexRoute: typeof AppUserUsernameIndexRoute
+  AppUserUsernameProfileRoute: typeof AppUserUsernameProfileRouteWithChildren
 }
 
 const AppUserUsernameRouteChildren: AppUserUsernameRouteChildren = {
-  AppUserUsernameIndexRoute: AppUserUsernameIndexRoute,
+  AppUserUsernameProfileRoute: AppUserUsernameProfileRouteWithChildren,
 }
 
 const AppUserUsernameRouteWithChildren = AppUserUsernameRoute._addFileChildren(

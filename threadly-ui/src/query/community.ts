@@ -61,6 +61,10 @@ export const useCommunityInvite = (communityId: string) => {
 			queryClient.invalidateQueries({
 				queryKey: queryKeys.community.invitations(communityId),
 			});
+
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.permission.resource("COMMUNITY", communityId),
+			});
 		},
 		onError: (error: AppAxoisError) => {
 			const message =
@@ -86,12 +90,19 @@ export const useCommunityInviteAction = (communityId: string) => {
 			} else {
 				toast("Community invitation rejected successfully");
 			}
-
+			console.log({
+				k1: queryKeys.community.memberships(communityId),
+				k2: queryKeys.community.invitations(communityId),
+				k3: queryKeys.permission.resource("COMMUNITY", communityId),
+			});
 			queryClient.invalidateQueries({
 				queryKey: queryKeys.community.memberships(communityId),
 			});
-			queryClient.invalidateQueries({
+			queryClient.refetchQueries({
 				queryKey: queryKeys.community.invitations(communityId),
+			});
+			queryClient.refetchQueries({
+				queryKey: queryKeys.permission.resource("COMMUNITY", communityId),
 			});
 		},
 		onError: (error: AppAxoisError) => {
@@ -196,7 +207,10 @@ export function useFollowUnFollowCommunity(
 			toast(`${type === "follow" ? "Following" : "Unfollowing"} Community 🎉`);
 
 			queryClient.invalidateQueries({
-				queryKey: queryKeys.permission.resource("COMMUNITY", communityId),
+				queryKey: queryKeys.permission.all,
+			});
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.community.detail(communityId),
 			});
 		},
 		onError: (error: AppAxoisError) => {

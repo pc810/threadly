@@ -1,16 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
+import { useEffect } from "react";
 import { toast } from "sonner";
+import { authAtom } from "@/atoms/profile";
 import { axios } from "@/lib/axios";
 import type { LoginRequest, RegisterUserRequest } from "@/types/auth";
-import { userDTOSchema } from "@/types/user";
+import { userMetaDTOSchema } from "@/types/user";
 import type { AppAxoisError } from "@/types/utils";
 import { queryKeys } from "./keys";
 
-export const getAuthMe = async () =>
+export const getAuthMe = () =>
 	axios
 		.get("/auth/me")
-		.then(({ data }) => userDTOSchema.parse(data))
-		.catch(async () => {
+		.then(({ data }) => userMetaDTOSchema.parse(data))
+		.catch(async (error) => {
+			console.error(error);
 			try {
 				await axios.post("/auth/logout");
 			} catch (logoutError) {
@@ -21,6 +25,8 @@ export const getAuthMe = async () =>
 
 export const useAuth = () => {
 	const queryClient = useQueryClient();
+
+	const setAuth = useSetAtom(authAtom);
 
 	const { data: auth, isLoading } = useQuery({
 		queryKey: queryKeys.auth.me(),
@@ -50,6 +56,10 @@ export const useAuth = () => {
 			});
 		},
 	});
+
+	useEffect(() => {
+		setAuth(auth ?? null);
+	}, [auth, setAuth]);
 
 	return {
 		isLoading,

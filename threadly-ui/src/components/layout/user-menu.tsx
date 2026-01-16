@@ -3,8 +3,6 @@ import {
 	CircleDollarSignIcon,
 	LogOut,
 	MenuSquare,
-	MousePointerClickIcon,
-	PieChart,
 	Settings,
 	Shield,
 	Shirt,
@@ -138,20 +136,6 @@ const UserMenuProfile = ({
 
 				<DropdownMenuSeparator />
 
-				<DropdownMenuGroup>
-					<DropdownMenuItem asChild>
-						<Link to="/">
-							<MousePointerClickIcon />
-							Advertise on Threadly
-						</Link>
-					</DropdownMenuItem>
-					<DropdownMenuItem asChild>
-						<Link to="/">
-							<PieChart />
-							Try Threadly Pro
-						</Link>
-					</DropdownMenuItem>
-				</DropdownMenuGroup>
 				<DropdownMenuItem onSelect={onSignOut} variant="destructive">
 					<LogOut />
 					Log out

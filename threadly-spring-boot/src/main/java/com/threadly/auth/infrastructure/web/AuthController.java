@@ -6,8 +6,8 @@ import com.threadly.auth.application.usecase.AuthInternalApi;
 import com.threadly.auth.domain.RegisterUserRequest;
 import com.threadly.common.CookieUtil;
 import com.threadly.common.UserPrincipal;
-import com.threadly.user.UserDTO;
 import com.threadly.user.UserExternalService;
+import com.threadly.user.UserMetaDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.UUID;
@@ -97,11 +97,11 @@ public class AuthController {
       summary = "Authenticated user info",
       description = "Returns authenticated user info"
   )
-  public ResponseEntity<UserDTO> getUser(@AuthenticationPrincipal UserPrincipal principal) {
+  public ResponseEntity<UserMetaDTO> getUser(@AuthenticationPrincipal UserPrincipal principal) {
 
 //    log.info("principal={}",principal);
 
-    var user = userExternalService.getUserById(UUID.fromString(principal.getName()));
+    var user = userExternalService.getUserMetaById(UUID.fromString(principal.getName()));
 
     return user.map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());

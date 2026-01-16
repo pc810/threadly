@@ -3,6 +3,7 @@ package com.threadly.user.application.usecase;
 import com.threadly.common.AuthRole;
 import com.threadly.user.UserDTO;
 import com.threadly.user.UserDetailDTO;
+import com.threadly.user.UserMetaDTO;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Slice;
@@ -25,4 +26,6 @@ public interface GetUserUseCase {
   Optional<UserDetailDTO> getUserDetailsByEmail(String email);
 
   AuthRole getUserRoleById(UUID userId);
+
+  Optional<UserMetaDTO> getUserMetaById(UUID id);
 }

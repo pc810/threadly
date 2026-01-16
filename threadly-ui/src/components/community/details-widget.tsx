@@ -1,5 +1,6 @@
 import { Edit } from "lucide-react";
 import { AppWidgetLayout } from "@/components/layout/app-layout";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -12,7 +13,6 @@ import { useModal } from "@/hooks/modal";
 import { useCommunity } from "@/query/community";
 import { usePermission } from "@/query/permission";
 import type { Community } from "@/types/community";
-import { Button } from "../ui/button";
 import { CommunityStatsList } from "./stats-list";
 
 export const CommunityDetailsWidget = ({

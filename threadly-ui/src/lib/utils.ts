@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
-export function kwId(baseId: string, index: number) {
+export function kwId(baseId: string, index: number | string) {
 	return `${baseId}:${index}`;
 }
 

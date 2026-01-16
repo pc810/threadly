@@ -64,3 +64,15 @@ export const formatUserName = (name: string) => {
 // export const getUserLink = (name: string) => {
 // 	return `/user/${name}`;
 // };
+
+export function addUtmParams(url: string, params: Record<string, string>) {
+	const u = new URL(url);
+
+	Object.entries(params).forEach(([key, value]) => {
+		u.searchParams.set(key, value);
+	});
+
+	u.searchParams.set("utm_source", "threadly");
+
+	return u.toString();
+}

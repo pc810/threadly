@@ -1,3 +1,4 @@
+import { cva, type VariantProps } from "class-variance-authority";
 import clsx from "clsx";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -5,7 +6,21 @@ import { formatUserName, getTwoCharacter } from "@/lib/format";
 import { useUser } from "@/query/user";
 import { UserCard, UserItemCard } from "./card";
 
-type UserAvatarSize = "sm" | "md";
+export const userAvatarVariants = cva("rounded-full", {
+	variants: {
+		size: {
+			sm: "size-6",
+			md: "size-8",
+			lg: "size-12",
+			xl: "size-16",
+		},
+	},
+	defaultVariants: {
+		size: "md",
+	},
+});
+
+type UserAvatarSize = VariantProps<typeof userAvatarVariants>["size"];
 
 type UserProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
 	userId: string;
@@ -24,9 +39,7 @@ export const AppUser = ({
 	if (isLoading || user == null)
 		return (
 			<UserCard href={"#"} {...props}>
-				<Skeleton
-					className={clsx(size === "sm" ? "size-6" : "size-8", "rounded-full")}
-				/>
+				<Skeleton className={userAvatarVariants({ size })} />
 				{hasName && <Skeleton className="h-4 w-8" />}
 			</UserCard>
 		);
@@ -53,7 +66,7 @@ export const UserItem = ({ userId, size, ...props }: UserItemProps) => {
 	if (isLoading || user == null)
 		return (
 			<UserItemCard {...props}>
-				<Skeleton className="size-6" />
+				<Skeleton className={userAvatarVariants({ size })} />
 				<Skeleton className="h-4 w-8" />
 			</UserItemCard>
 		);
@@ -83,9 +96,7 @@ export const AppUserAvatar = ({
 	if (isLoading || user == null)
 		return (
 			<UserItemCard className={clsx(className, "rounded-full")} {...props}>
-				<Skeleton
-					className={clsx(size === "sm" ? "size-6" : "size-8", "rounded-full")}
-				/>
+				<Skeleton className={userAvatarVariants({ size })} />
 				{hasName && <Skeleton className="h-4 w-8" />}
 			</UserItemCard>
 		);
@@ -112,13 +123,18 @@ export const UserAvatar = ({
 	return (
 		<Avatar
 			className={clsx(
-				"rounded-full text-foreground",
-				size === "sm" ? "size-6" : "size-8",
+				userAvatarVariants({ size }),
+				"text-foreground",
 				className,
 			)}
 		>
 			<AvatarImage src={src} alt={name} />
-			<AvatarFallback className="rounded-lg">
+			<AvatarFallback
+				className={clsx(
+					"rounded-lg",
+					(size === "xl" || size === "lg") && "text-2xl",
+				)}
+			>
 				{getTwoCharacter(name)}
 			</AvatarFallback>
 		</Avatar>

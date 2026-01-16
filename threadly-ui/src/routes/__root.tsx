@@ -6,9 +6,11 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { DevTools } from "jotai-devtools";
 import { Providers } from "@/components/providers";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
+import "jotai-devtools/styles.css";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -46,6 +48,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
+				<DevTools />
 				<Providers>
 					{children}
 					<TanStackDevtools

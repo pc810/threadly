@@ -1,4 +1,7 @@
 import { createFileRoute, notFound, Outlet } from "@tanstack/react-router";
+import { useSetAtom } from "jotai";
+import { useEffect } from "react";
+import { userDtoAtom } from "@/atoms/profile";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/header";
 import { SidebarInset } from "@/components/ui/sidebar";
@@ -17,6 +20,14 @@ export const Route = createFileRoute("/_app/user/$username")({
 });
 
 function RouteComponent() {
+	const userDTO = Route.useLoaderData();
+
+	const setUserDto = useSetAtom(userDtoAtom);
+
+	useEffect(() => {
+		setUserDto(userDTO);
+	}, [userDTO, setUserDto]);
+
 	return (
 		<>
 			<SiteHeader />

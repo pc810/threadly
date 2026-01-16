@@ -57,16 +57,15 @@ const communityKeys = {
 		userId,
 	],
 
-	memberships: (communityId: string, filters?: Record<string, unknown>) => [
-		...communityKeys.detail(communityId),
-		"membership",
-		filters,
-	],
+	memberships: (communityId: string, filters?: Record<string, unknown>) =>
+		[...communityKeys.detail(communityId), "membership", filters].filter(
+			Boolean,
+		),
 
-	membershipsInvite: (
-		communityId: string,
-		filters?: Record<string, unknown>,
-	) => [...communityKeys.memberships(communityId), "invite", filters],
+	membershipsInvite: (communityId: string, filters?: Record<string, unknown>) =>
+		[...communityKeys.memberships(communityId), "invite", filters].filter(
+			Boolean,
+		),
 
 	membershipsInviteRemote: (communityId: string) => [
 		...communityKeys.membershipsInvite(communityId),
@@ -100,7 +99,10 @@ const permissionKeys = {
 		resource: ResourceType,
 		resourceId: string,
 		permissions?: readonly unknown[],
-	) => [...permissionKeys.resources(resource), resourceId, permissions],
+	) =>
+		[...permissionKeys.resources(resource), resourceId, permissions].filter(
+			Boolean,
+		),
 };
 
 const mediaKeys = {
@@ -131,7 +133,7 @@ const userKeys = {
 	search: (
 		query: string,
 		options?: Partial<{ excludeSelf: boolean; enabled: boolean }>,
-	) => [...feedKeys.all, "search", query, options],
+	) => [...feedKeys.all, "search", query, options].filter(Boolean),
 };
 
 export const queryKeys = {

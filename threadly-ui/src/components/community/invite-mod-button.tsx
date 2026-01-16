@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import {
 	useCommunityInviteAction,
 	useHasCommunityInvite,
@@ -20,26 +19,27 @@ export const InviteModButton = (props: CommunityButtonProps) => {
 	if (isLoading || !hasInvite) return null;
 
 	return (
-		<div className="flex items-center flex-wrap">
-			<div className="self-center px-1">Mod Invite </div>
-			<ButtonGroup>
-				<Button
-					variant="default"
-					size="lg"
-					className="rounded-full"
-					onClick={() => invitationActionMutation.mutate("ACCEPT")}
-				>
-					Accept
-				</Button>
-				<Button
-					variant="outline"
-					className="rounded-full"
-					size="lg"
-					onClick={() => invitationActionMutation.mutate("REJECT")}
-				>
-					Reject
-				</Button>
-			</ButtonGroup>
+		<div className="flex items-center gap-2 h-10 rounded-full bg-background dark:bg-input/30 px-3 py-1.5 text-sm border shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input">
+			<span className="text-muted-foreground whitespace-nowrap">
+				Mod invite
+			</span>
+
+			<Button
+				size="sm"
+				className="h-7 rounded-full px-3"
+				onClick={() => invitationActionMutation.mutate("ACCEPT")}
+			>
+				Accept
+			</Button>
+
+			<Button
+				size="sm"
+				variant="ghost"
+				className="h-7 rounded-full px-3"
+				onClick={() => invitationActionMutation.mutate("REJECT")}
+			>
+				Decline
+			</Button>
 		</div>
 	);
 };

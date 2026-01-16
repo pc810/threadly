@@ -170,7 +170,7 @@ export const routeData: Record<string, NavItem[]> = {
 			icon: LifeBuoy,
 		},
 		{
-			title: "Best of Reddit",
+			title: "Best of Threadly",
 			url: "#",
 			navType: "url",
 			icon: Send,
@@ -178,7 +178,7 @@ export const routeData: Record<string, NavItem[]> = {
 	],
 	rules: [
 		{
-			title: "Reddit Rules",
+			title: "Threadly Rules",
 			url: "#",
 			navType: "url",
 			icon: BookOpen,

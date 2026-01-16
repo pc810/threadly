@@ -7,6 +7,7 @@ import com.threadly.user.UserCreatedEvent;
 import com.threadly.user.UserDTO;
 import com.threadly.user.UserDetailDTO;
 import com.threadly.user.UserExternalService;
+import com.threadly.user.UserMetaDTO;
 import com.threadly.user.application.usecase.UserInternalApi;
 import com.threadly.user.domain.User;
 import com.threadly.user.infrastructure.persistence.UserRepository;
@@ -69,6 +70,11 @@ class UserService implements UserExternalService, UserInternalApi {
   @Override
   public AuthRole getUserRoleById(UUID userId) {
     return getUserDetailsById(userId).map(u -> AuthRole.USER).orElse(AuthRole.PUBLIC);
+  }
+
+  @Override
+  public Optional<UserMetaDTO> getUserMetaById(UUID id) {
+    return userRepository.findById(id).map(UserMapper::toMetaDTO);
   }
 
   @Override

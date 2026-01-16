@@ -1,6 +1,7 @@
 package com.threadly.user.infrastructure.web;
 
 import com.threadly.user.UserDTO;
+import com.threadly.user.UserMetaDTO;
 import com.threadly.user.application.usecase.UserInternalApi;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.UUID;

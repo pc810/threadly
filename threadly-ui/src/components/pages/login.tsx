@@ -10,8 +10,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { useAuth } from "@/query/auth";
-import { UserDTO } from "@/types/user";
+import type { UserDTO } from "@/types/user";
 import { LoginForm } from "../forms/login";
 import { AppLogo } from "../icon/app";
 

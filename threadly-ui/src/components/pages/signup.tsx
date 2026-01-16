@@ -1,15 +1,15 @@
 import { Link } from "@tanstack/react-router";
-import { SignupForm } from "../forms/signup";
-import { AppLogo } from "../icon/app";
-import { GoogleIcon } from "../icon/google";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "../ui/card";
+} from "@/components/ui/card";
+import { SignupForm } from "../forms/signup";
+import { AppLogo } from "../icon/app";
+import { GoogleIcon } from "../icon/google";
 
 export function SignUpPage() {
 	function signUpWithGoogle() {
