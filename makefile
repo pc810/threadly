@@ -6,8 +6,8 @@ image:
 seo:
 	cd threadly-go/cmd/seo-worker && go run .
 
-web:
-	cd web && npm run dev
+# web:
+# 	cd threadly-ui && npm run dev
 
 dev:
-	make -j3 image seo web
+	make -j3 image seo
