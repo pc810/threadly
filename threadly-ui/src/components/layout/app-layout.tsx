@@ -22,12 +22,16 @@ export const AppWidgetLayout = ({
 }: ComponentProps<"div">) => (
 	<div
 		className={clsx(
-			"sticky bottom-0 top-18 w-full h-full max-h-[calc(100svh)] pt-4",
+			"w-full sticky top-14",
+			"h-[calc(100svh-(--spacing(14)))]",
 			className,
 		)}
 		{...props}
 	>
-		<SimpleBar className="h-full">{children}</SimpleBar>
+		<SimpleBar className="h-full simplebar-hover">
+			<div className="h-4"></div>
+			{children}
+		</SimpleBar>
 	</div>
 );
 

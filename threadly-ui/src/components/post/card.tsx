@@ -35,6 +35,7 @@ type PostIdProps = {
 
 type PostProps = {
 	post: Post;
+	hasPostActions?: boolean;
 };
 
 type DropdownAction = {
@@ -71,7 +72,7 @@ const PostCardMeta = ({
 }: React.ComponentProps<"p"> & PostProps) => {
 	const match = useMatchRoute();
 
-	const displayUserAvatar = match({ to: "/r/$communityName" });
+	const isCommunityRoute = !!match({ to: "/r/$communityName" });
 
 	return (
 		<div
@@ -81,7 +82,7 @@ const PostCardMeta = ({
 			)}
 			{...props}
 		>
-			{displayUserAvatar ? (
+			{isCommunityRoute ? (
 				<AppUser userId={post.userId} hasName />
 			) : (
 				<AppCommunity communityId={post.communityId} />
@@ -89,7 +90,11 @@ const PostCardMeta = ({
 			<span>•</span>
 			<time dateTime={post.createdAt}>{formatAgo(post.createdAt)}</time>
 
-			<PostCardActions post={post} className="ml-auto" />
+			<PostCardActions
+				post={post}
+				className="ml-auto"
+				hasPostActions={isCommunityRoute}
+			/>
 		</div>
 	);
 };
@@ -153,6 +158,7 @@ type PostCardActionProps = React.ComponentProps<"div"> & PostProps;
 export const PostCardActions = ({
 	post,
 	className,
+	hasPostActions,
 	...props
 }: PostCardActionProps) => {
 	const { REMOVE: canRemove } = usePermission(
@@ -183,9 +189,17 @@ export const PostCardActions = ({
 
 	const allActions: DropdownAction[] = [
 		{
+			label: "Report",
+			handler: () => {},
+			hasPermission: true,
+			shortcut: [],
+			variant: "default",
+			loading: false,
+		},
+		{
 			label: "Delete",
 			handler: () => setConfirmDeleteOpen(true),
-			hasPermission: canRemove,
+			hasPermission: canRemove && !!hasPostActions,
 			shortcut: ["delete"],
 			variant: "destructive",
 			loading: removePostMutation.isPending,

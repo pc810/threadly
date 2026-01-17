@@ -111,7 +111,7 @@ export const NavbarButton = (props: NavButtonProps) => {
 				asChild
 				key={title}
 				variant="ghost"
-				className="justify-start w-full"
+				className="justify-start w-full font-normal"
 			>
 				<Link to={props.url}>{children}</Link>
 			</Button>
@@ -122,7 +122,7 @@ export const NavbarButton = (props: NavButtonProps) => {
 			<Button
 				key={title}
 				variant="ghost"
-				className="justify-start w-full"
+				className="justify-start w-full font-normal"
 				onClick={props.onClick}
 			>
 				{children}

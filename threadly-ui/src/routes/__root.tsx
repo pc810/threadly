@@ -10,6 +10,7 @@ import { DevTools } from "jotai-devtools";
 import { Providers } from "@/components/providers";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
+import "simplebar-react/dist/simplebar.min.css";
 import "jotai-devtools/styles.css";
 
 interface MyRouterContext {
