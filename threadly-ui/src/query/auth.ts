@@ -2,9 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { tokenAtom } from "@/atoms/auth";
 import { authAtom } from "@/atoms/profile";
 import { axios } from "@/lib/axios";
-import type { LoginRequest, RegisterUserRequest } from "@/types/auth";
+import type { LoginRequest, RegisterUserRequest, tokenDTO } from "@/types/auth";
 import { userMetaDTOSchema } from "@/types/user";
 import type { AppAxoisError } from "@/types/utils";
 import { queryKeys } from "./keys";
@@ -15,11 +16,11 @@ export const getAuthMe = () =>
 		.then(({ data }) => userMetaDTOSchema.parse(data))
 		.catch(async (error) => {
 			console.error(error);
-			try {
-				await axios.post("/auth/logout");
-			} catch (logoutError) {
-				console.error("Logout failed:", logoutError);
-			}
+			// try {
+			// 	await axios.post("/auth/logout");
+			// } catch (logoutError) {
+			// 	console.error("Logout failed:", logoutError);
+			// }
 			return null;
 		});
 
@@ -71,20 +72,22 @@ export const useAuth = () => {
 
 export const useLogin = () => {
 	const queryClient = useQueryClient();
-
+	const setToken = useSetAtom(tokenAtom);
 	return useMutation({
 		mutationKey: queryKeys.auth.login(),
 		mutationFn: async (payload: LoginRequest) =>
-			axios.post("/auth/login", payload),
-		onSuccess: () => {
+			axios.post<tokenDTO>("/auth/login", payload),
+		onSuccess: ({ data: tokenDTO }) => {
 			toast("Login successful", {
 				description: "Welcome back!",
 			});
+			setToken(tokenDTO);
 			queryClient.invalidateQueries({ queryKey: queryKeys.auth.all });
 		},
 		onError: (error: AppAxoisError) => {
 			const message =
 				error?.response?.data?.message || "Failed to login. Please try again.";
+			setToken(null);
 			toast.error("Login failed !", { description: message });
 		},
 	});

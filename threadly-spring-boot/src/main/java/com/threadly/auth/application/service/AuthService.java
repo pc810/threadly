@@ -10,6 +10,7 @@ import com.threadly.common.AuthRole;
 import com.threadly.user.LocalUserCreateRequest;
 import com.threadly.user.UserExternalService;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,6 +42,18 @@ class AuthService implements AuthInternalApi {
     }
 
     return generateTokens(user.id());
+  }
+
+  @Override
+  public Optional<TokenDTO> refresh(String refreshToken) {
+
+    if (refreshToken == null || refreshToken.isEmpty()) {
+      return Optional.empty();
+    }
+
+    UUID userId = jwtInternalApi.parseUserId(refreshToken);
+
+    return Optional.of(generateTokens(userId));
   }
 
   @Override

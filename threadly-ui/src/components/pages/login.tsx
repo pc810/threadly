@@ -10,7 +10,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import type { UserDTO } from "@/types/user";
+import type { UserDTO, UserMetaDTO } from "@/types/user";
 import { LoginForm } from "../forms/login";
 import { AppLogo } from "../icon/app";
 
@@ -59,7 +59,7 @@ export function LoginPage() {
 	);
 }
 
-export function LoginSuccesPage({ auth }: { auth: UserDTO }) {
+export function LoginSuccesPage({ auth }: { auth: UserMetaDTO }) {
 	const [time, setTime] = useState(
 		Number(import.meta.env.VITE_APP_REDIRECT_TIME),
 	);
@@ -91,7 +91,7 @@ export function LoginSuccesPage({ auth }: { auth: UserDTO }) {
 				<CardHeader className="text-center space-y-2">
 					<AppLogo className="mx-auto" isFull />
 					<CheckCircle2 className="mx-auto text-success size-14" />
-					<CardTitle>Welcome {auth?.name}</CardTitle>
+					<CardTitle>Welcome {auth?.username}</CardTitle>
 				</CardHeader>
 
 				<CardContent className="text-center space-y-2">

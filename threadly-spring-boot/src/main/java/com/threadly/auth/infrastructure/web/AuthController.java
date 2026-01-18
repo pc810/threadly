@@ -13,8 +13,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,7 +44,6 @@ public class AuthController {
 
     var tokenDTO = authInternalApi.register(registerUserRequest);
 
-    cookieUtil.addCookie(response, "access_token", tokenDTO.accessToken(), tokenDTO.expires());
     cookieUtil.addCookie(response, "refresh_token", tokenDTO.refreshToken(),
         tokenDTO.expiresRefreshToken());
 
@@ -61,24 +62,21 @@ public class AuthController {
 
     TokenDTO tokenDTO = authInternalApi.login(loginRequest);
 
-    cookieUtil.addCookie(response, "access_token", tokenDTO.accessToken(),
-        tokenDTO.expires());
     cookieUtil.addCookie(response, "refresh_token", tokenDTO.refreshToken(),
         tokenDTO.expiresRefreshToken());
 
     return ResponseEntity.ok(tokenDTO);
   }
 
-//  @Operation(
-//      summary = "Refresh access token",
-//      description = "Uses refresh token cookie to generate a new access token."
-//  )
-//  @PostMapping("/refresh")
-//  public ResponseEntity<TokenDTO> refresh(HttpServletResponse response,
-//      @CookieValue("refresh_token") String refreshToken) {
-//    TokenDTO tokens = authInternalApi.refresh(refreshToken, response);
-//    return ResponseEntity.ok(tokens);
-//  }
+  @Operation(
+      summary = "Refresh access token",
+      description = "Uses refresh token cookie to generate a new access token."
+  )
+  @PostMapping("refresh")
+  public ResponseEntity<TokenDTO> refresh(@CookieValue("refresh_token") String refreshToken) {
+    return authInternalApi.refresh(refreshToken).map(ResponseEntity::ok)
+        .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+  }
 
 
   @Operation(
@@ -87,7 +85,6 @@ public class AuthController {
   )
   @PostMapping("logout")
   public ResponseEntity<Void> logout(HttpServletResponse response) {
-    cookieUtil.clearCookie(response, "access_token");
     cookieUtil.clearCookie(response, "refresh_token");
     return ResponseEntity.noContent().build();
   }

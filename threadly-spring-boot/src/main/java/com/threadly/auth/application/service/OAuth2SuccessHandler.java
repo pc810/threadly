@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -35,7 +34,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     String email = oAuth2User.getAttribute("email");
     String name = oAuth2User.getAttribute("name");
 
-
     var userRequest = new UserCreateRequest(
         email,
         UserUtil.getUsername(email),
@@ -44,15 +42,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     var userId = userExternalService.createOrGetUser(userRequest);
 
-    String accessToken = jwtService.createAccessToken(userId, Map.of("role", "USER"));
     String refreshToken = jwtService.createRefreshToken(userId);
     long expires = jwtService.getExpiration();
 
-    cookieUtil.addCookie(response, "access_token", accessToken, expires);
     cookieUtil.addCookie(response, "refresh_token", refreshToken, expires * 2);
 
-    // Redirect frontend
-    response.sendRedirect("http://localhost:3002/login/success?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8));
+    response.sendRedirect("http://localhost:3002/login/success");
   }
 
 }
