@@ -1,8 +1,10 @@
 import { useMatchRoute } from "@tanstack/react-router";
 import clsx from "clsx";
+import { useAtomValue } from "jotai";
 import { EllipsisVertical, Trash2 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { isSelfProfileAtom } from "@/atoms/profile";
 import { AppCommunity } from "@/components/community/avatar";
 import { DeleteAlertDialog } from "@/components/delete-alert-dialog";
 import { PostLinkDetail } from "@/components/post/link";
@@ -74,6 +76,10 @@ const PostCardMeta = ({
 
 	const isCommunityRoute = !!match({ to: "/r/$communityName" });
 
+	const isSelfProfile = useAtomValue(isSelfProfileAtom);
+
+	const hasPostActions = isCommunityRoute || isSelfProfile;
+
 	return (
 		<div
 			className={clsx(
@@ -93,7 +99,7 @@ const PostCardMeta = ({
 			<PostCardActions
 				post={post}
 				className="ml-auto"
-				hasPostActions={isCommunityRoute}
+				hasPostActions={hasPostActions}
 			/>
 		</div>
 	);
