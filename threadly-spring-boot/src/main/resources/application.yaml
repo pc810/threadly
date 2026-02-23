@@ -58,6 +58,7 @@ springdoc:
 logging:
   level:
     org.springframework.modulith.events: TRACE
+    org.springframework.security: DEBUG
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){blue} %clr([%X{traceId:-},%X{spanId:-}]){cyan} %clr(${LOG_LEVEL_PATTERN:-%5p}) %m%n"
 
