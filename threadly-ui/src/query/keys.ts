@@ -26,6 +26,7 @@ const KEYS = {
 	Media: "Media" as const,
 	Feed: "Feed" as const,
 	User: "User" as const,
+	Comment: "Comment" as const,
 };
 
 const authKeys = {
@@ -83,6 +84,17 @@ const communityKeys = {
 		...communityKeys.posts(communityId),
 		postId,
 	],
+
+	comments: (communityId: string, postId: string) => [
+		...communityKeys.post(communityId, postId),
+		KEYS.Comment,
+	],
+
+	postComment: (
+		communityId: string,
+		postId: string,
+		commentId: string | null,
+	) => [...communityKeys.comments(communityId, postId), commentId],
 
 	postLinks: (communityId: string, postId: string) => [
 		...communityKeys.post(communityId, postId),

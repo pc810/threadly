@@ -66,7 +66,19 @@ export const createPostRequestSchema = z.object({
 	communityId: z.string(),
 });
 
+export const createCommentRequestSchema = z.object({
+	depth: z.number(),
+	postId: z.string(),
+	actorId: z.string(),
+	communityId: z.string(),
+	parentId: z.string().optional(),
+	contentJson: z.any(),
+	contentHtml: z.string(),
+	contentText: z.string(),
+});
+
 export type CreatePostRequest = z.infer<typeof createPostRequestSchema>;
+export type CreateCommentRequest = z.infer<typeof createCommentRequestSchema>;
 export type PostLink = z.infer<typeof postLinkSchema>;
 export type Post = z.infer<typeof postSchema>;
 export type PostFormValues = z.infer<typeof postFormSchema>;

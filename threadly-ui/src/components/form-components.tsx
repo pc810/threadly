@@ -1,8 +1,10 @@
 import { useStore } from "@tanstack/react-form";
+import { forwardRef } from "react";
 import { CommunityCombobox as AppCommunityCombobox } from "@/components/community/combobox";
 import {
 	RichTextEditor as AppRichTextEditor,
 	type EditorContentFormats,
+	RichTextEditorHandle,
 } from "@/components/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Checkbox as ShadcnCheckbox } from "@/components/ui/checkbox";
@@ -43,6 +45,7 @@ export function ResetButton({
 				<Button
 					{...props}
 					type="reset"
+					variant="secondary"
 					onClick={() => form.reset()}
 					disabled={isSubmitting}
 				>
@@ -234,7 +237,13 @@ export function CommunityCombobox({ label }: { label: string }) {
 	);
 }
 
-export function RichTextEditor({ label }: { label: string }) {
+export const RichTextEditor = forwardRef<
+	RichTextEditorHandle,
+	{
+		label: string;
+		variant?: "inline" | "default";
+	}
+>(({ label, variant }, ref) => {
 	const field = useFieldContext<EditorContentFormats>();
 	const errors = useStore(field.store, (state) => state.meta.errors);
 
@@ -242,11 +251,13 @@ export function RichTextEditor({ label }: { label: string }) {
 		<Field>
 			<FieldLabel htmlFor={label}>{label}</FieldLabel>
 			<AppRichTextEditor
+				ref={ref}
 				id={label}
+				variant={variant}
 				value={field.state.value.html}
 				onChange={(value) => field.handleChange(value)}
 			/>
 			{field.state.meta.isTouched && <ErrorMessages errors={errors} />}
 		</Field>
 	);
-}
+});

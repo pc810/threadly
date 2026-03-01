@@ -58,11 +58,9 @@ public class Post {
   @JdbcTypeCode(SqlTypes.JSON)
   private Map<String, Object> contentJson;
 
-  @Lob
   @Column(columnDefinition = "text")
   private String contentHtml;
 
-  @Lob
   @Column(columnDefinition = "text")
   private String contentText;
 

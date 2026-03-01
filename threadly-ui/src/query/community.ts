@@ -11,7 +11,12 @@ import type {
 	InviteUserDTO,
 	UpdateCommunityMetaDTO,
 } from "@/types/community";
-import type { CreatePostRequest, Post, PostLink } from "@/types/post";
+import type {
+	CreateCommentRequest,
+	CreatePostRequest,
+	Post,
+	PostLink,
+} from "@/types/post";
 import type { AppAxoisError } from "@/types/utils";
 import { useAuth } from "./auth";
 import { queryKeys } from "./keys";
@@ -355,6 +360,32 @@ export function usePostRemove(communityId: string, postId: string) {
 		},
 		onError: () => {
 			toast.error("Unable to delete Post");
+		},
+	});
+}
+
+export function useCreateComment(communityId: string, postId: string) {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (data: CreateCommentRequest) =>
+			axios.post(`/posts/${postId}/comment`, data),
+		onSuccess: (_data) => {
+			toast("Comment created successfully 🎉", {
+				description: "Your comment has been published.",
+			});
+
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.community.comments(communityId, postId),
+			});
+		},
+		onError: (error: AppAxoisError) => {
+			const message =
+				error.response?.data?.message ||
+				"Failed to create comment. Please try again.";
+			toast.error("Error creating comment", {
+				description: message,
+			});
 		},
 	});
 }

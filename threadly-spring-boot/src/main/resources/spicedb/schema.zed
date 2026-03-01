@@ -43,4 +43,6 @@ definition post {
 	permission view = community->view
 	permission update = author
 	permission remove = community->mod_privilege + author
+	permission can_add_comment = community->view
+	permission can_view_comment = community->view
 }

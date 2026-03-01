@@ -1,23 +1,31 @@
 import { createFileRoute, useLoaderData } from "@tanstack/react-router";
 import { Fragment } from "react";
 import { CommunityDetailsWidget } from "@/components/community/details-widget";
-import { CommunityHeader } from "@/components/community/header";
 import { AppLayout } from "@/components/layout/app-layout";
-import { CommunityPostsList } from "@/components/post/feed";
+import { PostPage } from "@/components/post/page";
 import { kwId } from "@/lib/utils";
+import { usePost } from "@/query/community";
 
-export const Route = createFileRoute("/_app/r/$communityName/")({
-	component: RouteComponent,
-});
+export const Route = createFileRoute("/_app/r/$communityName/comments/$postId")(
+	{
+		component: RouteComponent,
+	},
+);
 
 function RouteComponent() {
 	const community = useLoaderData({ from: "/_app/r/$communityName" });
+
+	const { postId } = Route.useParams();
+
+	const { data: post } = usePost(community.id, postId);
+
+	if (!post) return <div>loading</div>;
+
 	return (
-		<Fragment key={kwId("community-detail", community.id)}>
-			<CommunityHeader communityId={community.id} />
+		<Fragment key={kwId("post-comment", postId)}>
 			<AppLayout>
 				<div>
-					<CommunityPostsList communityId={community.id} />
+					<PostPage post={post} community={community} />
 				</div>
 				<CommunityDetailsWidget communityId={community.id} />
 			</AppLayout>

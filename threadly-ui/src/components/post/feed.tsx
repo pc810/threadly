@@ -14,40 +14,40 @@ import {
 import type { PostFeedDTOSlice } from "@/types/feed";
 import { PostCard } from "./card";
 
-export function PostFeed() {
-	const {
-		data: feed,
-		isLoading,
-		error,
-		fetchNextPage,
-		isFetchingNextPage,
-		hasNextPage,
-	} = useUserFeed();
+// export function PostFeed() {
+// 	const {
+// 		data: feed,
+// 		isLoading,
+// 		error,
+// 		fetchNextPage,
+// 		isFetchingNextPage,
+// 		hasNextPage,
+// 	} = useUserFeed();
 
-	if (isLoading || feed == null) return <p>Loading...</p>;
-	if (error) return <p>Failed to load posts</p>;
+// 	if (isLoading || feed == null) return <p>Loading...</p>;
+// 	if (error) return <p>Failed to load posts</p>;
 
-	const posts = feed?.pages.flatMap((page) => page.content) ?? [];
+// 	const posts = feed?.pages.flatMap((page) => page.content) ?? [];
 
-	return (
-		<div className="space-y-4 my-4">
-			{posts.map((postFeed) => (
-				<PostCard
-					key={postFeed.id}
-					communityId={postFeed.communityId}
-					postId={postFeed.postId}
-				/>
-			))}
+// 	return (
+// 		<div className="space-y-4 my-4">
+// 			{posts.map((postFeed) => (
+// 				<PostCard
+// 					key={postFeed.id}
+// 					communityId={postFeed.communityId}
+// 					postId={postFeed.postId}
+// 				/>
+// 			))}
 
-			{hasNextPage && (
-				<Button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
-					{isFetchingNextPage && <Skeleton />}
-					Load more
-				</Button>
-			)}
-		</div>
-	);
-}
+// 			{hasNextPage && (
+// 				<Button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
+// 					{isFetchingNextPage && <Skeleton />}
+// 					Load more
+// 				</Button>
+// 			)}
+// 		</div>
+// 	);
+// }
 
 type PostFeedProviderProps = {
 	query: UseInfiniteQueryResult<InfiniteData<PostFeedDTOSlice>>;

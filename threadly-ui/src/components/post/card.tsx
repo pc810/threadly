@@ -1,4 +1,9 @@
-import { useMatchRoute } from "@tanstack/react-router";
+import {
+	Link,
+	LinkProps,
+	useLoaderData,
+	useMatchRoute,
+} from "@tanstack/react-router";
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
 import { EllipsisVertical, Trash2 } from "lucide-react";
@@ -23,7 +28,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { formatAgo } from "@/lib/date";
 import { kwId } from "@/lib/utils";
-import { usePost, usePostRemove } from "@/query/community";
+import { useCommunity, usePost, usePostRemove } from "@/query/community";
 import { usePermission } from "@/query/permission";
 import type { ShortcutKey } from "@/types/common";
 import type { Post } from "@/types/post";
@@ -57,7 +62,13 @@ export const PostCard = ({ communityId, postId }: PostIdProps) => {
 	if (!post) return <DeletedPostCard />;
 
 	return (
-		<PostCardRoot className="space-y-2">
+		<PostCardRoot className="relative space-y-2">
+			<PostCardLink
+				postId={postId}
+				communityId={communityId}
+				title={post.title}
+			/>
+
 			<PostCardMeta post={post} />
 
 			<PostCardTitle>{post.title}</PostCardTitle>
@@ -89,16 +100,16 @@ const PostCardMeta = ({
 			{...props}
 		>
 			{isCommunityRoute ? (
-				<AppUser userId={post.userId} hasName />
+				<AppUser userId={post.userId} hasName className="relative z-1" />
 			) : (
-				<AppCommunity communityId={post.communityId} />
+				<AppCommunity communityId={post.communityId} className="relative z-1" />
 			)}
 			<span>•</span>
 			<time dateTime={post.createdAt}>{formatAgo(post.createdAt)}</time>
 
 			<PostCardActions
 				post={post}
-				className="ml-auto"
+				className="ml-auto  relative z-1"
 				hasPostActions={hasPostActions}
 			/>
 		</div>
@@ -156,6 +167,32 @@ const PostCardContent = ({
 			{post.type === "TEXT" && <RichTextPreview value={post.contentText} />}
 			{post.type === "LINK" && <PostLinkDetail post={post} />}
 		</div>
+	);
+};
+const PostCardLink = ({
+	className,
+	postId,
+	title,
+	communityId,
+	...props
+}: React.AnchorHTMLAttributes<HTMLAnchorElement> &
+	LinkProps & { postId: string; communityId: string }) => {
+	const { data: community } = useCommunity(communityId);
+
+	if (!community) return null;
+
+	return (
+		<Link
+			className="inset-0 absolute size-full z-0"
+			to="/r/$communityName/comments/$postId"
+			params={{
+				communityName: community.name,
+				postId,
+			}}
+			{...props}
+		>
+			<div className="sr-only">{title}</div>
+		</Link>
 	);
 };
 

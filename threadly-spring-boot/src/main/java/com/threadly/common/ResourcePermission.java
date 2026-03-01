@@ -33,7 +33,8 @@ public class ResourcePermission {
   public enum Post implements ResourcePermissionType {
     VIEW,
     UPDATE,
-    REMOVE;
+    REMOVE,
+    CAN_ADD_COMMENT;
 
     public String value() {
       return name().toLowerCase();

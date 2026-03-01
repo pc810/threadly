@@ -25,6 +25,7 @@ import { Route as AppModCommunityNameModeratorsRouteImport } from './routes/_app
 import { Route as AppModCommunityNameInvitesRouteImport } from './routes/_app.mod.$communityName.invites'
 import { Route as AppModCommunityNameApprovedUsersRouteImport } from './routes/_app.mod.$communityName.approved-users'
 import { Route as AppUserUsernameProfileIndexRouteImport } from './routes/_app.user.$username._profile.index'
+import { Route as AppRCommunityNameCommentsPostIdRouteImport } from './routes/_app.r.$communityName..comments.$postId'
 import { Route as AppUserUsernameProfileUpvotedIndexRouteImport } from './routes/_app.user.$username._profile.upvoted.index'
 import { Route as AppUserUsernameProfileSubmittedIndexRouteImport } from './routes/_app.user.$username._profile.submitted.index'
 import { Route as AppUserUsernameProfileSavedIndexRouteImport } from './routes/_app.user.$username._profile.saved.index'
@@ -114,6 +115,12 @@ const AppUserUsernameProfileIndexRoute =
     path: '/',
     getParentRoute: () => AppUserUsernameProfileRoute,
   } as any)
+const AppRCommunityNameCommentsPostIdRoute =
+  AppRCommunityNameCommentsPostIdRouteImport.update({
+    id: '/comments/$postId',
+    path: '/comments/$postId',
+    getParentRoute: () => AppRCommunityNameRoute,
+  } as any)
 const AppUserUsernameProfileUpvotedIndexRoute =
   AppUserUsernameProfileUpvotedIndexRouteImport.update({
     id: '/upvoted/',
@@ -159,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/r/$communityName/submit': typeof AppRCommunityNameSubmitRoute
   '/mod/$communityName/': typeof AppModCommunityNameIndexRoute
   '/r/$communityName/': typeof AppRCommunityNameIndexRoute
+  '/r/$communityName/comments/$postId': typeof AppRCommunityNameCommentsPostIdRoute
   '/user/$username/': typeof AppUserUsernameProfileIndexRoute
   '/user/$username/comments': typeof AppUserUsernameProfileCommentsIndexRoute
   '/user/$username/downvoted': typeof AppUserUsernameProfileDownvotedIndexRoute
@@ -178,6 +186,7 @@ export interface FileRoutesByTo {
   '/r/$communityName/submit': typeof AppRCommunityNameSubmitRoute
   '/mod/$communityName': typeof AppModCommunityNameIndexRoute
   '/r/$communityName': typeof AppRCommunityNameIndexRoute
+  '/r/$communityName/comments/$postId': typeof AppRCommunityNameCommentsPostIdRoute
   '/user/$username/comments': typeof AppUserUsernameProfileCommentsIndexRoute
   '/user/$username/downvoted': typeof AppUserUsernameProfileDownvotedIndexRoute
   '/user/$username/saved': typeof AppUserUsernameProfileSavedIndexRoute
@@ -201,6 +210,7 @@ export interface FileRoutesById {
   '/_app/user/$username/_profile': typeof AppUserUsernameProfileRouteWithChildren
   '/_app/mod/$communityName/': typeof AppModCommunityNameIndexRoute
   '/_app/r/$communityName/': typeof AppRCommunityNameIndexRoute
+  '/_app/r/$communityName/comments/$postId': typeof AppRCommunityNameCommentsPostIdRoute
   '/_app/user/$username/_profile/': typeof AppUserUsernameProfileIndexRoute
   '/_app/user/$username/_profile/comments/': typeof AppUserUsernameProfileCommentsIndexRoute
   '/_app/user/$username/_profile/downvoted/': typeof AppUserUsernameProfileDownvotedIndexRoute
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/r/$communityName/submit'
     | '/mod/$communityName/'
     | '/r/$communityName/'
+    | '/r/$communityName/comments/$postId'
     | '/user/$username/'
     | '/user/$username/comments'
     | '/user/$username/downvoted'
@@ -243,6 +254,7 @@ export interface FileRouteTypes {
     | '/r/$communityName/submit'
     | '/mod/$communityName'
     | '/r/$communityName'
+    | '/r/$communityName/comments/$postId'
     | '/user/$username/comments'
     | '/user/$username/downvoted'
     | '/user/$username/saved'
@@ -265,6 +277,7 @@ export interface FileRouteTypes {
     | '/_app/user/$username/_profile'
     | '/_app/mod/$communityName/'
     | '/_app/r/$communityName/'
+    | '/_app/r/$communityName/comments/$postId'
     | '/_app/user/$username/_profile/'
     | '/_app/user/$username/_profile/comments/'
     | '/_app/user/$username/_profile/downvoted/'
@@ -394,6 +407,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUserUsernameProfileIndexRouteImport
       parentRoute: typeof AppUserUsernameProfileRoute
     }
+    '/_app/r/$communityName/comments/$postId': {
+      id: '/_app/r/$communityName/comments/$postId'
+      path: '/comments/$postId'
+      fullPath: '/r/$communityName/comments/$postId'
+      preLoaderRoute: typeof AppRCommunityNameCommentsPostIdRouteImport
+      parentRoute: typeof AppRCommunityNameRoute
+    }
     '/_app/user/$username/_profile/upvoted/': {
       id: '/_app/user/$username/_profile/upvoted/'
       path: '/upvoted'
@@ -452,11 +472,13 @@ const AppModCommunityNameRouteWithChildren =
 interface AppRCommunityNameRouteChildren {
   AppRCommunityNameSubmitRoute: typeof AppRCommunityNameSubmitRoute
   AppRCommunityNameIndexRoute: typeof AppRCommunityNameIndexRoute
+  AppRCommunityNameCommentsPostIdRoute: typeof AppRCommunityNameCommentsPostIdRoute
 }
 
 const AppRCommunityNameRouteChildren: AppRCommunityNameRouteChildren = {
   AppRCommunityNameSubmitRoute: AppRCommunityNameSubmitRoute,
   AppRCommunityNameIndexRoute: AppRCommunityNameIndexRoute,
+  AppRCommunityNameCommentsPostIdRoute: AppRCommunityNameCommentsPostIdRoute,
 }
 
 const AppRCommunityNameRouteWithChildren =
