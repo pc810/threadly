@@ -35,16 +35,17 @@ export type CommentAddFormHandle = {
 type CommentAddFormProps = {
 	communityId: string;
 	postId: string;
-	parentId: string | null;
+	parentId?: string | null;
 	depth: number;
 
 	onCancel?: () => void;
+	onSuccess?: () => void;
 };
 
 export const CommentAddForm = forwardRef<
 	CommentAddFormHandle,
 	CommentAddFormProps
->(({ communityId, postId, parentId, depth, onCancel }, ref) => {
+>(({ communityId, postId, parentId, depth, onCancel, onSuccess }, ref) => {
 	const { auth } = useAuth();
 	const createCommentMutation = useCreateComment(communityId, postId);
 
@@ -55,13 +56,13 @@ export const CommentAddForm = forwardRef<
 				contentJson: JSON.parse(value.content.json ?? "{}"),
 				contentText: value.content.text ?? "",
 				contentHtml: value.content.html ?? "",
-				parentId: parentId ?? undefined,
+				parentId: parentId ?? null,
 				depth,
 				communityId,
 				postId,
 				actorId: auth?.id ?? "",
 			});
-
+			onSuccess?.();
 			form.reset();
 		},
 	});
@@ -87,10 +88,15 @@ export const CommentAddForm = forwardRef<
 
 			<form.AppForm>
 				<div className="justify-end gap-4 flex">
-					<Button variant="secondary" type="button" onClick={onCancel}>
+					<Button
+						variant="secondary"
+						size="sm"
+						type="button"
+						onClick={onCancel}
+					>
 						Cancel
 					</Button>
-					<form.SubscribeButton label="Comment" />
+					<form.SubscribeButton label="Comment" size="sm" />
 				</div>
 			</form.AppForm>
 		</form>

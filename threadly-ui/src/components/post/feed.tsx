@@ -4,7 +4,7 @@ import type {
 } from "@tanstack/react-query";
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import { getCommunityPostCreateLink } from "@/lib/format";
 import {
 	useCommunityFeed,
@@ -91,7 +91,7 @@ export function PostFeedProvider({ query }: PostFeedProviderProps) {
 
 			{hasNextPage && (
 				<Button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
-					{isFetchingNextPage && <Skeleton />}
+					{isFetchingNextPage && <Spinner />}
 					Load more
 				</Button>
 			)}

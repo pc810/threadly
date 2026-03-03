@@ -26,13 +26,14 @@ type UserProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
 	userId: string;
 	hasName?: boolean;
 	size?: UserAvatarSize;
+	isFormated?: boolean;
 };
 
 export const AppUser = ({
 	userId,
 	hasName,
 	size = "sm",
-	className,
+	isFormated = true,
 	...props
 }: UserProps) => {
 	const { data: user, isLoading } = useUser(userId);
@@ -51,7 +52,7 @@ export const AppUser = ({
 			{...props}
 		>
 			<UserAvatar size={size} src={"#"} name={user.name} />
-			{hasName && formatUserName(user.name)}
+			{hasName && (isFormated ? formatUserName(user.name) : user.name)}
 		</UserCard>
 	);
 };
@@ -83,6 +84,7 @@ type AppUserAvatarProps = React.HTMLAttributes<HTMLDivElement> & {
 	userId: string;
 	hasName?: boolean;
 	size?: UserAvatarSize;
+	isFormated?: boolean;
 };
 
 export const AppUserAvatar = ({
@@ -90,6 +92,7 @@ export const AppUserAvatar = ({
 	hasName,
 	size = "sm",
 	className,
+	isFormated = true,
 	...props
 }: AppUserAvatarProps) => {
 	const { data: user, isLoading } = useUser(userId);
@@ -104,7 +107,7 @@ export const AppUserAvatar = ({
 	return (
 		<UserItemCard {...props}>
 			<UserAvatar size={size} src={"#"} name={user.name} />
-			{hasName && formatUserName(user.name)}
+			{hasName && (isFormated ? formatUserName(user.name) : user.name)}
 		</UserItemCard>
 	);
 };

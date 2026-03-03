@@ -1,6 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+	useInfiniteQuery,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 import { axios } from "@/lib/axios";
+import type { CommentDTOSlice, CreateCommentRequest } from "@/types/comment";
 import type {
 	Community,
 	CommunityInviteAction,
@@ -11,12 +17,7 @@ import type {
 	InviteUserDTO,
 	UpdateCommunityMetaDTO,
 } from "@/types/community";
-import type {
-	CreateCommentRequest,
-	CreatePostRequest,
-	Post,
-	PostLink,
-} from "@/types/post";
+import type { CreatePostRequest, Post, PostLink } from "@/types/post";
 import type { AppAxoisError } from "@/types/utils";
 import { useAuth } from "./auth";
 import { queryKeys } from "./keys";
@@ -386,6 +387,44 @@ export function useCreateComment(communityId: string, postId: string) {
 			toast.error("Error creating comment", {
 				description: message,
 			});
+		},
+	});
+}
+
+export function usePostComment(
+	communityId: string,
+	postId: string,
+	parentCommentId: string | null,
+) {
+	const { isLogedIn, isLoading } = useAuth();
+	return useInfiniteQuery({
+		enabled: isLogedIn && !isLoading,
+		queryKey: queryKeys.community.postComment(
+			communityId,
+			postId,
+			parentCommentId,
+		),
+		initialPageParam: 0,
+		queryFn: async ({ pageParam }) =>
+			axios
+				.get<CommentDTOSlice>(`/posts/${postId}/comment`, {
+					params: {
+						pageNumber: pageParam,
+						parentId: parentCommentId ?? undefined,
+					},
+				})
+				.then(({ data }) => data),
+		getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+			if (lastPage.last) {
+				return undefined;
+			}
+			return lastPageParam + 1;
+		},
+		getPreviousPageParam: (firstPage, _allPages, firstPageParam) => {
+			if (firstPage.first) {
+				return undefined;
+			}
+			return firstPageParam - 1;
 		},
 	});
 }

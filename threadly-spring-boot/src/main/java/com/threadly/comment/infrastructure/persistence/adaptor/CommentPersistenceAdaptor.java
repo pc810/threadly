@@ -17,13 +17,13 @@ class CommentPersistenceAdaptor implements CommentRepository {
 
   @Override
   public Optional<Comment> findById(UUID id) {
-    return Optional.empty();
+    return jpaCommentRepository.findById(id);
   }
 
 
   @Override
   public Slice<Comment> getComments(UUID postId, UUID parentId, PageRequest pageRequest) {
-    return jpaCommentRepository.findByPostIdAndDepthOrderByCreatedAtDesc(postId, parentId,
+    return jpaCommentRepository.findByPostIdAndParentIdOrderByCreatedAtDesc(postId, parentId,
         pageRequest);
   }
 
@@ -41,5 +41,10 @@ class CommentPersistenceAdaptor implements CommentRepository {
   @Override
   public void deleteById(UUID id) {
     jpaCommentRepository.deleteById(id);
+  }
+
+  @Override
+  public void incrementChildCountById(UUID id) {
+    jpaCommentRepository.incrementChildCountById(id);
   }
 }

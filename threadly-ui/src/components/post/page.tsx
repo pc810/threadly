@@ -1,5 +1,6 @@
 import clsx from "clsx";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { PostCommentFeed } from "@/components/comment/feed";
 import {
 	AppCommunityLoadingUI,
 	AppCommunityUserUI,
@@ -31,7 +32,7 @@ export const PostPage = ({ post, community }: PostPageProps) => {
 	};
 
 	return (
-		<div className="space-y-4 mt-6">
+		<div className="space-y-4 my-6">
 			<PostPageMeta post={post} community={community} />
 			<PostPageTitle>{post.title}</PostPageTitle>
 			<PostPageContent post={post} />
@@ -43,6 +44,7 @@ export const PostPage = ({ post, community }: PostPageProps) => {
 					parentId={null}
 					depth={0}
 					onCancel={handleCancelConversation}
+					onSuccess={handleCancelConversation}
 				/>
 			) : (
 				<Button
@@ -53,6 +55,12 @@ export const PostPage = ({ post, community }: PostPageProps) => {
 					Join the conversation
 				</Button>
 			)}
+
+			<PostCommentFeed
+				commentId={null}
+				communityId={community.id}
+				postId={post.id}
+			/>
 		</div>
 	);
 };

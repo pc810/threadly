@@ -49,6 +49,9 @@ public class Comment {
   @Column
   private UUID parentId;
 
+  @Column
+  private Integer childCount;
+
   @Column(columnDefinition = "jsonb", nullable = false)
   @JdbcTypeCode(SqlTypes.JSON)
   private Map<String, Object> contentJson;
@@ -81,6 +84,7 @@ public class Comment {
         .contentHtml(createCommentRequest.contentHtml())
         .contentText(createCommentRequest.contentText())
         .userId(createCommentRequest.actorId())
+          .childCount(0)
         .build();
   }
 

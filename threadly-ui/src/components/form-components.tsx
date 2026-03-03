@@ -6,7 +6,7 @@ import {
 	type EditorContentFormats,
 	RichTextEditorHandle,
 } from "@/components/rich-text-editor";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonProps } from "@/components/ui/button";
 import { Checkbox as ShadcnCheckbox } from "@/components/ui/checkbox";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ import { useFieldContext, useFormContext } from "@/hooks/form-context";
 export function SubscribeButton({
 	label,
 	...props
-}: { label: string } & React.ComponentProps<"button">) {
+}: { label: string } & ButtonProps) {
 	const form = useFormContext();
 	return (
 		<form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
@@ -37,7 +37,7 @@ export function SubscribeButton({
 export function ResetButton({
 	label = "Reset",
 	...props
-}: { label: string } & React.ComponentProps<"button">) {
+}: { label: string } & ButtonProps) {
 	const form = useFormContext();
 	return (
 		<form.Subscribe selector={(state) => state.isSubmitting}>

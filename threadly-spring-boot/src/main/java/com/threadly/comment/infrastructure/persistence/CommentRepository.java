@@ -18,4 +18,6 @@ public interface CommentRepository {
   void deleteByPostId(UUID postId);
 
   void deleteById(UUID id);
+
+  void incrementChildCountById(UUID id);
 }

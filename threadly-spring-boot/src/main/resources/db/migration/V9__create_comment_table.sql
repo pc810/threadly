@@ -5,7 +5,8 @@ CREATE TABLE comments
     post_id      UUID        NOT NULL,
     depth        INTEGER              default 0,
     parent_id    UUID                 default NULL,
-    community_id   UUID        NOT NULL,
+    child_count  INTEGER              DEFAULT 0,
+    community_id UUID        NOT NULL,
 
     content_json JSONB       NOT NULL,
     content_text TEXT,
