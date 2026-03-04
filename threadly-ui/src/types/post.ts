@@ -1,5 +1,5 @@
 import z from "zod";
-import { contentSchema, instant, sliceSchema } from "./utils";
+import { contentSchema, instant } from "./utils";
 
 export const POST_TYPE = {
 	TEXT: "TEXT",

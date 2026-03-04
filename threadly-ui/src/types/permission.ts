@@ -14,12 +14,13 @@ export const ResourcePermissions = {
 		"MOD_PRIVILEGE",
 	] as const,
 	POST: [
-		"VIEW",
-		"UPDATE",
-		"REMOVE",
+		"CAN_VIEW",
+		"CAN_UPDATE",
+		"CAN_REMOVE",
 		"CAN_ADD_COMMENT",
 		"CAN_VIEW_COMMENT",
 	] as const,
+	COMMENT: ["CAN_VIEW", "CAN_VOTE"],
 } as const;
 
 export const ResourceTypeEnum = {

@@ -2,7 +2,6 @@ package com.threadly.membership.application.listener;
 
 
 import com.threadly.common.RelationType;
-import com.threadly.common.ResourceRelation;
 import com.threadly.common.ResourceRelation.Community;
 import com.threadly.common.ResourceType;
 import com.threadly.membership.CommunityMembershipCreatedEvent;

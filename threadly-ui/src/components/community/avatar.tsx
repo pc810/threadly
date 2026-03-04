@@ -2,14 +2,9 @@ import { Link } from "@tanstack/react-router";
 import clsx from "clsx";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-	formatCommunityName,
-	formatUserName,
-	getTwoCharacter,
-} from "@/lib/format";
+import { formatCommunityName, getTwoCharacter } from "@/lib/format";
 import { useCommunity } from "@/query/community";
-import { Community } from "@/types/community";
-import { UserDTO } from "@/types/user";
+import type { Community } from "@/types/community";
 import { CommunityCard, CommunityItemCard } from "./card";
 
 type CommunityAvatarSize = "sm" | "md";

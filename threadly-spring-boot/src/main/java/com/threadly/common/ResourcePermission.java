@@ -31,11 +31,20 @@ public class ResourcePermission {
   }
 
   public enum Post implements ResourcePermissionType {
-    VIEW,
-    UPDATE,
-    REMOVE,
+    CAN_VIEW,
+    CAN_UPDATE,
+    CAN_REMOVE,
     CAN_ADD_COMMENT,
     CAN_VIEW_COMMENT;
+
+    public String value() {
+      return name().toLowerCase();
+    }
+  }
+
+  public enum Comment implements ResourcePermissionType {
+    CAN_VIEW,
+    CAN_VOTE;
 
     public String value() {
       return name().toLowerCase();

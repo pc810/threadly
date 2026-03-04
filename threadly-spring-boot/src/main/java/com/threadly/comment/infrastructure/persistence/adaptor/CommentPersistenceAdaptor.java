@@ -1,6 +1,9 @@
 package com.threadly.comment.infrastructure.persistence.adaptor;
 
 import com.threadly.comment.domain.Comment;
+import com.threadly.comment.domain.Vote;
+import com.threadly.comment.domain.VoteId;
+import com.threadly.comment.domain.exception.VoteAlreadyExistsException;
 import com.threadly.comment.infrastructure.persistence.CommentRepository;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 class CommentPersistenceAdaptor implements CommentRepository {
 
   private final JpaCommentRepository jpaCommentRepository;
+  private final JpaVoteRepository jpaVoteRepository;
 
   @Override
   public Optional<Comment> findById(UUID id) {
@@ -47,4 +51,16 @@ class CommentPersistenceAdaptor implements CommentRepository {
   public void incrementChildCountById(UUID id) {
     jpaCommentRepository.incrementChildCountById(id);
   }
+
+  @Override
+  public Optional<Vote> findVoteById(VoteId id) {
+    return jpaVoteRepository.findById(id);
+  }
+
+  @Override
+  public void save(Vote vote) {
+    jpaVoteRepository.save(vote);
+  }
+
+
 }

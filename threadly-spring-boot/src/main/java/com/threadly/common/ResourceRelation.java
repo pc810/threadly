@@ -32,4 +32,12 @@ public class ResourceRelation {
       return name().toLowerCase();
     }
   }
+
+  public enum Comment implements RelationType {
+    POST;
+
+    public String value() {
+      return name().toLowerCase();
+    }
+  }
 }

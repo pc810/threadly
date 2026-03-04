@@ -34,7 +34,7 @@ export function CommentFeedProvider({
 
 	if (comments.length === 0) return <PlaceHolderCommentFeed />;
 
-	const commentCount = (childCount ?? 0) - 1;
+	const commentCount = (childCount ?? 0) - comments.length;
 
 	return (
 		<div className="space-y-4">

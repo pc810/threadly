@@ -1,9 +1,4 @@
-import {
-	Link,
-	LinkProps,
-	useLoaderData,
-	useMatchRoute,
-} from "@tanstack/react-router";
+import { Link, LinkProps, useMatchRoute } from "@tanstack/react-router";
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
 import { EllipsisVertical, Trash2 } from "lucide-react";
@@ -204,10 +199,10 @@ export const PostCardActions = ({
 	hasPostActions,
 	...props
 }: PostCardActionProps) => {
-	const { REMOVE: canRemove } = usePermission(
+	const { CAN_REMOVE } = usePermission(
 		"POST",
 		post.id,
-		["REMOVE"],
+		["CAN_REMOVE"],
 		"latency",
 	);
 
@@ -227,7 +222,7 @@ export const PostCardActions = ({
 			event.preventDefault();
 			setConfirmDeleteOpen(true);
 		},
-		{ enabled: menuOpen && canRemove },
+		{ enabled: menuOpen && CAN_REMOVE },
 	);
 
 	const allActions: DropdownAction[] = [
@@ -242,7 +237,7 @@ export const PostCardActions = ({
 		{
 			label: "Delete",
 			handler: () => setConfirmDeleteOpen(true),
-			hasPermission: canRemove && !!hasPostActions,
+			hasPermission: CAN_REMOVE && !!hasPostActions,
 			shortcut: ["delete"],
 			variant: "destructive",
 			loading: removePostMutation.isPending,

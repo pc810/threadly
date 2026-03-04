@@ -4,7 +4,8 @@ public enum ResourceType {
   COMMUNITY,
   USER,
   SYS,
-  POST;
+  POST,
+  COMMENT;
 
   public String value() {
     return name().toLowerCase();

@@ -4,9 +4,9 @@ import { CommunityCombobox as AppCommunityCombobox } from "@/components/communit
 import {
 	RichTextEditor as AppRichTextEditor,
 	type EditorContentFormats,
-	RichTextEditorHandle,
+	type RichTextEditorHandle,
 } from "@/components/rich-text-editor";
-import { Button, ButtonProps } from "@/components/ui/button";
+import { Button, type ButtonProps } from "@/components/ui/button";
 import { Checkbox as ShadcnCheckbox } from "@/components/ui/checkbox";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";

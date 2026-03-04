@@ -68,7 +68,7 @@ public class PostController {
       summary = "Delete post by ID"
   )
   @DeleteMapping("{id}")
-  @PreAuthorize("hasPermission(#id, 'POST', 'REMOVE')")
+  @PreAuthorize("hasPermission(#id, 'POST', 'CAN_REMOVE')")
   ResponseEntity<Void> deletePost(@PathVariable UUID id,
       @AuthenticationPrincipal UserPrincipal principal) {
 

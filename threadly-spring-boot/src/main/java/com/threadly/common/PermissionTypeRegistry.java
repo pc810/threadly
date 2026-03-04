@@ -13,6 +13,7 @@ public class PermissionTypeRegistry {
     register(ResourcePermission.Sys.values());
     register(ResourcePermission.Community.values());
     register(ResourcePermission.Post.values());
+    register(ResourcePermission.Comment.values());
   }
 
   private static void register(ResourcePermissionType[] values) {

@@ -13,6 +13,7 @@ public class RelationTypeRegistry {
     register(ResourceRelation.Sys.values());
     register(ResourceRelation.Community.values());
     register(ResourceRelation.Post.values());
+    register(ResourceRelation.Comment.values());
   }
 
   private static void register(RelationType[] values) {

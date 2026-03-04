@@ -21,7 +21,7 @@ export const commentDTOSchema = z.object({
 	contentJson: z.any(),
 	contentHtml: z.string(),
 	contentText: z.string(),
-	childCount:z.number(),
+	childCount: z.number(),
 	createdAt: instant,
 	updatedAt: instant,
 });

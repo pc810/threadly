@@ -40,9 +40,16 @@ definition post {
 	relation community: community
 	relation author: user
 
-	permission view = community->view
-	permission update = author
-	permission remove = community->mod_privilege + author
+	permission can_view = community->view
+	permission can_update = author
+	permission can_remove = community->mod_privilege + author
 	permission can_add_comment = community->view
 	permission can_view_comment = community->view
+}
+
+definition comment {
+  relation post: post
+
+  permission can_view = post->view
+  permission can_vote = can_view
 }

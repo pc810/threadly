@@ -3,7 +3,9 @@ package com.threadly.comment.infrastructure.web;
 import com.threadly.comment.CreateCommentRequest;
 import com.threadly.comment.application.usecase.CommentInternalApi;
 import com.threadly.comment.domain.Comment;
+import com.threadly.comment.domain.Vote;
 import com.threadly.common.UserPrincipal;
+import java.net.URI;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,9 +39,11 @@ public class CommentController {
       return ResponseEntity.badRequest().build();
     }
 
-    commentInternalApi.createComment(createCommentRequest, userPrincipal.getUserId());
+    var commentId = commentInternalApi.createComment(createCommentRequest,
+        userPrincipal.getUserId());
 
-    return ResponseEntity.ok().build();
+    var location = URI.create("/comments/" + commentId);
+    return ResponseEntity.created(location).build();
   }
 
   @GetMapping("/posts/{postId}/comment")
@@ -50,5 +54,35 @@ public class CommentController {
       @RequestParam(defaultValue = "0") int pageNumber
   ) {
     return ResponseEntity.ok(commentInternalApi.getPostComments(postId, parentId, pageNumber, 1));
+  }
+
+  @PostMapping("/comments/{commentId}/vote/{direction}")
+  @PreAuthorize("hasPermission(#commentId, 'COMMENT', 'CAN_VOTE')")
+  ResponseEntity<Void> vote(
+      @PathVariable UUID commentId,
+      @PathVariable String direction,
+      @AuthenticationPrincipal UserPrincipal principal
+  ) {
+    if (direction.equals("up")) {
+      commentInternalApi.upVote(commentId, principal.getUserId());
+    } else if (direction.equals("down")) {
+      commentInternalApi.downVote(commentId, principal.getUserId());
+    }
+
+    return ResponseEntity.ok().build();
+  }
+
+
+  @GetMapping("/comments/{commentId}/vote")
+  @PreAuthorize("hasPermission(#commentId, 'COMMENT', 'CAN_VIEW')")
+  ResponseEntity<Vote> vote(
+      @PathVariable UUID commentId,
+      @AuthenticationPrincipal UserPrincipal principal
+  ) {
+
+    return commentInternalApi
+        .getVote(commentId, principal.userId())
+        .map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.notFound().build());
   }
 }

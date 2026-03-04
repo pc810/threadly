@@ -113,9 +113,3 @@ const PostPageContent = ({
 		</div>
 	);
 };
-
-type PostCommentBoxProps = {
-	postId: string;
-	parentId: string | null;
-	isOpen: boolean;
-};

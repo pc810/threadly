@@ -10,7 +10,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import type { UserDTO, UserMetaDTO } from "@/types/user";
+import type { UserMetaDTO } from "@/types/user";
 import { LoginForm } from "../forms/login";
 import { AppLogo } from "../icon/app";
 

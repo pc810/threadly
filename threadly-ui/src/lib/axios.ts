@@ -1,7 +1,7 @@
 import axiosClient from "axios";
 import { tokenAtom } from "@/atoms/auth";
 import { store } from "@/atoms/store";
-import { tokenDTO } from "@/types/auth";
+import type { tokenDTO } from "@/types/auth";
 
 export const axios = axiosClient.create({
 	baseURL: import.meta.env.VITE_API_URL ?? process.env.VITE_API_URL,
