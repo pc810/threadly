@@ -27,6 +27,7 @@ const KEYS = {
 	Feed: "Feed" as const,
 	User: "User" as const,
 	Comment: "Comment" as const,
+	Vote: "Vote" as const,
 };
 
 const authKeys = {

@@ -35,7 +35,8 @@ public class ResourcePermission {
     CAN_UPDATE,
     CAN_REMOVE,
     CAN_ADD_COMMENT,
-    CAN_VIEW_COMMENT;
+    CAN_VIEW_COMMENT,
+    CAN_VOTE;
 
     public String value() {
       return name().toLowerCase();

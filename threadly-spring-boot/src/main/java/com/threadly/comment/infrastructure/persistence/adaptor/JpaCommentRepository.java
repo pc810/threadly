@@ -28,4 +28,18 @@ public interface JpaCommentRepository extends JpaRepository<Comment, UUID>,
       WHERE c.id = :id
       """)
   void incrementChildCountById(UUID id);
+
+
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
+  @Query("""
+      UPDATE Comment c SET c.upVote = c.upVote + :delta WHERE c.id = :id
+      """)
+  void incrementUpVote(UUID id, int delta);
+  
+  @Modifying(clearAutomatically = true, flushAutomatically = true)
+  @Query("""
+      UPDATE Comment c SET c.downVote = c.downVote + :delta WHERE c.id = :id
+      """)
+  void incrementDownVote(UUID id, int delta);
+
 }

@@ -17,6 +17,8 @@ export const postSchema = z.object({
 	id: z.string(),
 	userId: z.string(),
 	communityId: z.string(),
+	upVote: z.number(),
+	downVote: z.number(),
 	title: z.string(),
 	type: postTypeSchema,
 	contentJson: z.any(),

@@ -19,6 +19,7 @@ import type {
 } from "@/types/community";
 import type { CreatePostRequest, Post, PostLink } from "@/types/post";
 import type { AppAxoisError } from "@/types/utils";
+import { CreateVoteRequest } from "@/types/vote";
 import { useAuth } from "./auth";
 import { queryKeys } from "./keys";
 
@@ -429,6 +430,50 @@ export function usePostComment(
 	});
 }
 
+export function useVote(communityId: string, postId: string) {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({ id, direction }: CreateVoteRequest) => {
+			const strDirection = direction === 1 ? "up" : "down";
+			if (id.postId) {
+				return axios.post(`/posts/${id.postId}/vote/${strDirection}`);
+			} else if (id.commentId) {
+				return axios.post(`/comments/${id.commentId}/vote/${strDirection}`);
+			} else {
+				return Promise.reject(new Error("No postId or commentId provided"));
+			}
+		},
+		onSuccess: (_data, { id }) => {
+			toast("Vote submitted ✅", {
+				description: "Your vote has been counted.",
+			});
+
+			if (id.postId) {
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.community.post(communityId, id.postId),
+				});
+			}
+
+			if (id.commentId) {
+				queryClient.invalidateQueries({
+					queryKey: queryKeys.community.postComment(
+						communityId,
+						postId,
+						id.commentId,
+					),
+				});
+			}
+		},
+		onError: (error: AppAxoisError) => {
+			console.error(error);
+			const message =
+				error.response?.data?.message ||
+				"Failed to submit vote. Please try again.";
+			toast.error("Error voting", { description: message });
+		},
+	});
+}
 async function addCommunityWithDelay(
 	communityId: string,
 	type: "follow" | "unfollow",

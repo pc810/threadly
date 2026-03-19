@@ -17,8 +17,29 @@ CREATE TABLE comments
     updated_at   TIMESTAMPTZ,
     version      BIGINT               DEFAULT 0,
 
+    CONSTRAINT fk_comments_user
+        FOREIGN KEY (user_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE,
+
+    CONSTRAINT fk_comments_post
+        FOREIGN KEY (post_id)
+            REFERENCES posts(id)
+            ON DELETE CASCADE,
+
+    CONSTRAINT fk_comments_community
+        FOREIGN KEY (community_id)
+            REFERENCES communities(id)
+            ON DELETE CASCADE,
+
     CONSTRAINT fk_comments_parent
         FOREIGN KEY (parent_id)
-            REFERENCES comments (id)
-            ON DELETE CASCADE
+            REFERENCES comments(id)
+            ON DELETE CASCADE,
+
+    CONSTRAINT chk_comment_depth
+        CHECK (depth >= 0),
+
+    CONSTRAINT chk_comment_votes
+        CHECK (up_vote >= 0 AND down_vote >= 0)
 );

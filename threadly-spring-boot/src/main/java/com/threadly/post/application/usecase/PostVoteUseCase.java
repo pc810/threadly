@@ -1,8 +1,8 @@
-package com.threadly.comment.application.usecase;
+package com.threadly.post.application.usecase;
 
 import java.util.UUID;
 
-public interface CommentVoteUseCase {
+public interface PostVoteUseCase {
 
   void incrementUpVote(UUID id, Integer delta);
 

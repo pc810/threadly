@@ -15,18 +15,16 @@ const defaultValues: PostFormValues = {
 	link: "",
 	content: {
 		json: JSON.stringify({
-			json: {
-				type: "doc",
-				content: [
-					{
-						type: "paragraph",
-						content: [
-							{ text: "user1personal1 ", type: "text" },
-							{ text: "post1", type: "text", marks: [{ type: "bold" }] },
-						],
-					},
-				],
-			},
+			type: "doc",
+			content: [
+				{
+					type: "paragraph",
+					content: [
+						{ text: "user1personal1 ", type: "text" },
+						{ text: "post1", type: "text", marks: [{ type: "bold" }] },
+					],
+				},
+			],
 		}),
 		text: "user1personal1 post1",
 		html: "<p>user1personal1 <strong>post1</strong></p>",

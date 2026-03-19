@@ -1,12 +1,9 @@
 package com.threadly.comment.infrastructure.persistence;
 
 import com.threadly.comment.domain.Comment;
-import com.threadly.comment.domain.Vote;
-import com.threadly.comment.domain.VoteId;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 public interface CommentRepository {
@@ -23,7 +20,8 @@ public interface CommentRepository {
 
   void incrementChildCountById(UUID id);
 
-  Optional<Vote> findVoteById(VoteId id);
+  void incrementUpVote(UUID id, Integer delta);
 
-  void save(Vote vote);
+  void incrementDownVote(UUID id, Integer delta);
+
 }

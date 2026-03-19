@@ -19,6 +19,7 @@ export const ResourcePermissions = {
 		"CAN_REMOVE",
 		"CAN_ADD_COMMENT",
 		"CAN_VIEW_COMMENT",
+		"CAN_VOTE",
 	] as const,
 	COMMENT: ["CAN_VIEW", "CAN_VOTE"],
 } as const;

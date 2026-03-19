@@ -2,7 +2,7 @@ import type {
 	InfiniteData,
 	UseInfiniteQueryResult,
 } from "@tanstack/react-query";
-import { ChevronDown, ChevronUp, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -11,6 +11,7 @@ import type { CommentDTO, CommentDTOSlice } from "@/types/comment";
 import { CommentAddForm } from "../forms/comment-add";
 import { RichTextContent } from "../rich-text-editor";
 import { AppUser } from "../user/avatar";
+import { VoteButton } from "../vote-button";
 
 type CommentFeedProviderProps = {
 	query: UseInfiniteQueryResult<InfiniteData<CommentDTOSlice>>;
@@ -93,15 +94,12 @@ const CommendCard = ({ comment }: { comment: CommentDTO }) => {
 					<div className="w-px h-full bg-border mx-auto"></div>
 				</div>
 				<div className="px-2 flex gap-1">
-					<div className="flex gap-1">
-						<Button size="icon-sm" variant="ghost">
-							<ChevronUp />
-						</Button>
-						<div>0</div>
-						<Button size="icon-sm" variant="ghost">
-							<ChevronDown />
-						</Button>
-					</div>
+					<VoteButton
+						initialVote={comment.upVote}
+						communityId={comment.communityId}
+						commentId={comment.communityId}
+						postId={comment.postId}
+					/>
 					<Button onClick={() => setReply(true)} size="sm" variant="ghost">
 						<MessageCircle /> Reply
 					</Button>

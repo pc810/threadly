@@ -45,6 +45,7 @@ definition post {
 	permission can_remove = community->mod_privilege + author
 	permission can_add_comment = community->view
 	permission can_view_comment = community->view
+	permission can_vote = can_view
 }
 
 definition comment {

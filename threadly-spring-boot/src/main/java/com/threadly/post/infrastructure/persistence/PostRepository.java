@@ -26,4 +26,8 @@ public interface PostRepository {
   void deleteById(UUID id);
 
   Slice<PostSummary> findBySliceAndUserId(UUID userId, PageRequest of);
+
+  void incrementUpVote(UUID id, Integer delta);
+
+  void incrementDownVote(UUID id, Integer delta);
 }

@@ -3,8 +3,11 @@ package com.threadly.comment.infrastructure.web;
 import com.threadly.comment.CreateCommentRequest;
 import com.threadly.comment.application.usecase.CommentInternalApi;
 import com.threadly.comment.domain.Comment;
-import com.threadly.comment.domain.Vote;
 import com.threadly.common.UserPrincipal;
+import com.threadly.vote.VoteDTO;
+import com.threadly.vote.VoteExternalApi;
+import com.threadly.vote.VoteId;
+import com.threadly.vote.VoteResult;
 import java.net.URI;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommentController {
 
   private final CommentInternalApi commentInternalApi;
+  private final VoteExternalApi voteExternalApi;
 
 
   @PostMapping("/posts/{postId}/comment")
@@ -63,10 +68,29 @@ public class CommentController {
       @PathVariable String direction,
       @AuthenticationPrincipal UserPrincipal principal
   ) {
-    if (direction.equals("up")) {
-      commentInternalApi.upVote(commentId, principal.getUserId());
-    } else if (direction.equals("down")) {
-      commentInternalApi.downVote(commentId, principal.getUserId());
+    var voteId = VoteId.forComment(principal.getUserId(), commentId);
+
+    VoteResult result;
+    if ("up".equalsIgnoreCase(direction)) {
+      result = voteExternalApi.upVote(voteId);
+    } else if ("down".equalsIgnoreCase(direction)) {
+      result = voteExternalApi.downVote(voteId);
+    } else {
+      return ResponseEntity.badRequest().build();
+    }
+
+    switch (result) {
+      case NEW_UPVOTE -> commentInternalApi.incrementUpVote(commentId, 1);
+      case NEW_DOWNVOTE -> commentInternalApi.incrementDownVote(commentId, 1);
+      case UP_TO_DOWN -> {
+        commentInternalApi.incrementUpVote(commentId, -1);
+        commentInternalApi.incrementDownVote(commentId, 1);
+      }
+      case DOWN_TO_UP -> {
+        commentInternalApi.incrementUpVote(commentId, 1);
+        commentInternalApi.incrementDownVote(commentId, -1);
+      }
+      case NO_CHANGE -> { /* do nothing */ }
     }
 
     return ResponseEntity.ok().build();
@@ -75,13 +99,13 @@ public class CommentController {
 
   @GetMapping("/comments/{commentId}/vote")
   @PreAuthorize("hasPermission(#commentId, 'COMMENT', 'CAN_VIEW')")
-  ResponseEntity<Vote> vote(
+  ResponseEntity<VoteDTO> vote(
       @PathVariable UUID commentId,
       @AuthenticationPrincipal UserPrincipal principal
   ) {
 
-    return commentInternalApi
-        .getVote(commentId, principal.userId())
+    return voteExternalApi
+        .getVote(VoteId.forComment(principal.userId(), commentId))
         .map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
   }

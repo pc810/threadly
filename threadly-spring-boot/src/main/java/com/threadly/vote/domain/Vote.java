@@ -1,8 +1,12 @@
-package com.threadly.comment.domain;
+package com.threadly.vote.domain;
 
+import com.threadly.vote.VoteDTO;
+import com.threadly.vote.VoteId;
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import java.time.Instant;
@@ -23,8 +27,18 @@ import org.hibernate.annotations.CreationTimestamp;
 @Setter
 public class Vote {
 
-  @EmbeddedId
-  private VoteId id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private UUID id;
+
+  @Column(nullable = false)
+  private UUID userId;
+
+  @Column
+  private UUID postId;
+
+  @Column
+  private UUID commentId;
 
   @Column(nullable = false)
   private Integer direction;
@@ -37,10 +51,19 @@ public class Vote {
   @Column(nullable = false)
   private Long version;
 
-  public static Vote from(UUID commentId, UUID userId, Integer direction) {
+
+  public static Vote from(VoteId id, Integer direction) {
     return Vote.builder()
-        .id(VoteId.from(commentId, userId))
+        .postId(id.postId())
+        .commentId(id.commentId())
         .direction(direction)
         .build();
+  }
+
+  public static VoteDTO toDTO(Vote vote) {
+    return new VoteDTO(
+        new VoteId(vote.getUserId(), vote.getCommentId(), vote.getPostId()),
+        vote.getDirection()
+    );
   }
 }

@@ -16,6 +16,8 @@ export const commentDTOSchema = z.object({
 	userId: z.string(),
 	postId: z.string(),
 	communityId: z.string(),
+	upVote: z.number(),
+	downVote: z.number(),
 	depth: z.number(),
 	parentId: z.string().optional(),
 	contentJson: z.any(),
@@ -25,6 +27,7 @@ export const commentDTOSchema = z.object({
 	createdAt: instant,
 	updatedAt: instant,
 });
+
 export const commentDTOSliceSchema = sliceSchema(commentDTOSchema);
 export type CommentDTO = z.infer<typeof commentDTOSchema>;
 export type CommentDTOSlice = z.infer<typeof commentDTOSliceSchema>;

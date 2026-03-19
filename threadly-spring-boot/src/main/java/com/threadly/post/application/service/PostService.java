@@ -198,4 +198,16 @@ public class PostService implements PostInternalApi, PostExternalApi {
         size
     )).map(PostService::toFeedDto);
   }
+
+  @Transactional
+  @Override
+  public void incrementUpVote(UUID id, Integer delta) {
+    postRepository.incrementUpVote(id, delta);
+  }
+
+  @Transactional
+  @Override
+  public void incrementDownVote(UUID id, Integer delta) {
+    postRepository.incrementDownVote(id, delta);
+  }
 }

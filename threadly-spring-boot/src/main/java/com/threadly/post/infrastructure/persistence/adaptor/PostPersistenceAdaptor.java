@@ -46,6 +46,16 @@ public class PostPersistenceAdaptor implements PostRepository {
   }
 
   @Override
+  public void incrementUpVote(UUID id, Integer delta) {
+    repository.incrementUpVote(id, delta);
+  }
+
+  @Override
+  public void incrementDownVote(UUID id, Integer delta) {
+    repository.incrementDownVote(id, delta);
+  }
+
+  @Override
   public List<Post> findByPageAndCommunityId(UUID communityId, PageRequest pageRequest) {
     return repository.findByCommunityId(communityId, pageRequest).get().toList();
   }

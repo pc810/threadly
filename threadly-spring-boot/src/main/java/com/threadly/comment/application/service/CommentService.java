@@ -4,11 +4,8 @@ import com.threadly.comment.CommentCreatedEvent;
 import com.threadly.comment.CreateCommentRequest;
 import com.threadly.comment.application.usecase.CommentInternalApi;
 import com.threadly.comment.domain.Comment;
-import com.threadly.comment.domain.Vote;
-import com.threadly.comment.domain.VoteId;
-import com.threadly.comment.domain.exception.VoteAlreadyExistsException;
 import com.threadly.comment.infrastructure.persistence.CommentRepository;
-import java.util.Optional;
+import com.threadly.vote.VoteExternalApi;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,30 +68,15 @@ class CommentService implements CommentInternalApi {
     commentRepository.incrementChildCountById(id);
   }
 
+  @Transactional
   @Override
-  public void upVote(UUID id, UUID userId) {
-    vote(id, userId, 1);
+  public void incrementUpVote(UUID id, Integer delta) {
+    commentRepository.incrementUpVote(id, delta);
   }
 
+  @Transactional
   @Override
-  public void downVote(UUID id, UUID userId) {
-    vote(id, userId, -1);
-  }
-
-  private void vote(UUID commentId, UUID userId, Integer direction) {
-    var voteId = VoteId.from(commentId, userId);
-
-    var vote = commentRepository.findVoteById(voteId);
-
-    if (vote.isPresent()) {
-      throw VoteAlreadyExistsException.from(voteId);
-    } else {
-      commentRepository.save(Vote.from(commentId, userId, direction));
-    }
-  }
-
-  @Override
-  public Optional<Vote> getVote(UUID commentId, UUID userId) {
-    return commentRepository.findVoteById(VoteId.from(commentId, userId));
+  public void incrementDownVote(UUID id, Integer delta) {
+    commentRepository.incrementDownVote(id, delta);
   }
 }

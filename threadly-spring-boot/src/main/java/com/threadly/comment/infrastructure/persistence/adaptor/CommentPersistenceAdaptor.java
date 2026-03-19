@@ -1,9 +1,6 @@
 package com.threadly.comment.infrastructure.persistence.adaptor;
 
 import com.threadly.comment.domain.Comment;
-import com.threadly.comment.domain.Vote;
-import com.threadly.comment.domain.VoteId;
-import com.threadly.comment.domain.exception.VoteAlreadyExistsException;
 import com.threadly.comment.infrastructure.persistence.CommentRepository;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,13 +8,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
 class CommentPersistenceAdaptor implements CommentRepository {
 
   private final JpaCommentRepository jpaCommentRepository;
-  private final JpaVoteRepository jpaVoteRepository;
 
   @Override
   public Optional<Comment> findById(UUID id) {
@@ -53,14 +50,13 @@ class CommentPersistenceAdaptor implements CommentRepository {
   }
 
   @Override
-  public Optional<Vote> findVoteById(VoteId id) {
-    return jpaVoteRepository.findById(id);
+  public void incrementUpVote(UUID id, Integer delta) {
+    jpaCommentRepository.incrementUpVote(id, delta);
   }
 
   @Override
-  public void save(Vote vote) {
-    jpaVoteRepository.save(vote);
+  public void incrementDownVote(UUID id, Integer delta) {
+    jpaCommentRepository.incrementDownVote(id, delta);
   }
-
 
 }

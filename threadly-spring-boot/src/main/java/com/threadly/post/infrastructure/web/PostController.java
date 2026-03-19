@@ -5,6 +5,10 @@ import com.threadly.post.CreatePostRequest;
 import com.threadly.post.application.usecase.PostInternalApi;
 import com.threadly.post.domain.Post;
 import com.threadly.post.domain.PostLink;
+import com.threadly.vote.VoteDTO;
+import com.threadly.vote.VoteExternalApi;
+import com.threadly.vote.VoteId;
+import com.threadly.vote.VoteResult;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -31,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostController {
 
   private final PostInternalApi postInternalApi;
+  private final VoteExternalApi voteExternalApi;
 
   @Operation(
       summary = "Create a new post",
@@ -108,6 +113,55 @@ public class PostController {
   ) {
     List<Post> posts = postInternalApi.getAllPostsByCommunityId(page, size, communityId);
     return ResponseEntity.ok(posts);
+  }
+
+  @PostMapping("{id}/vote/{direction}")
+  @PreAuthorize("hasPermission(#id, 'POST', 'CAN_VOTE')")
+  ResponseEntity<Void> vote(
+      @PathVariable UUID id,
+      @PathVariable String direction,
+      @AuthenticationPrincipal UserPrincipal principal
+  ) {
+    var voteId = VoteId.forPost(principal.getUserId(), id);
+
+    VoteResult result;
+    if ("up".equalsIgnoreCase(direction)) {
+      result = voteExternalApi.upVote(voteId);
+    } else if ("down".equalsIgnoreCase(direction)) {
+      result = voteExternalApi.downVote(voteId);
+    } else {
+      return ResponseEntity.badRequest().build();
+    }
+
+    switch (result) {
+      case NEW_UPVOTE -> postInternalApi.incrementUpVote(id, 1);
+      case NEW_DOWNVOTE -> postInternalApi.incrementDownVote(id, 1);
+      case UP_TO_DOWN -> {
+        postInternalApi.incrementUpVote(id, -1);
+        postInternalApi.incrementDownVote(id, 1);
+      }
+      case DOWN_TO_UP -> {
+        postInternalApi.incrementUpVote(id, 1);
+        postInternalApi.incrementDownVote(id, -1);
+      }
+      case NO_CHANGE -> { /* do nothing */ }
+    }
+
+    return ResponseEntity.ok().build();
+  }
+
+
+  @GetMapping("{id}/vote")
+  @PreAuthorize("hasPermission(#commentId, 'COMMENT', 'CAN_VIEW')")
+  ResponseEntity<VoteDTO> vote(
+      @PathVariable UUID id,
+      @AuthenticationPrincipal UserPrincipal principal
+  ) {
+
+    return voteExternalApi
+        .getVote(VoteId.forPost(principal.userId(), id))
+        .map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
 }

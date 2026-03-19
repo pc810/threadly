@@ -54,6 +54,12 @@ public class Post {
   @Column(nullable = false, length = 20)
   private PostType type;
 
+  @Column
+  private Integer upVote;
+
+  @Column
+  private Integer downVote;
+
   @Column(columnDefinition = "jsonb", nullable = false)
   @JdbcTypeCode(SqlTypes.JSON)
   private Map<String, Object> contentJson;
