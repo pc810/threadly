@@ -6,12 +6,12 @@ A full-stack, Reddit-like social platform built with a polyglot, event-driven mi
 
 ## 📦 Monorepo Structure
 
-| Directory | Description |
-|---|---|
-| `threadly-spring-boot` | Core REST API — Spring Boot 4, Spring Modulith, PostgreSQL |
-| `threadly-go` | Background workers — image & SEO processing via RabbitMQ |
-| `threadly-ui` | React 19 SPA — TanStack Router, TanStack Query, Tailwind CSS v4 |
-| `threadly-observability` | Grafana dashboards for metrics and tracing |
+| Directory                | Description                                                     |
+| ------------------------ | --------------------------------------------------------------- |
+| `threadly-spring-boot`   | Core REST API — Spring Boot 4, Spring Modulith, PostgreSQL      |
+| `threadly-go`            | Background workers — image & SEO processing via RabbitMQ        |
+| `threadly-ui`            | React 19 SPA — TanStack Router, TanStack Query, Tailwind CSS v4 |
+| `threadly-observability` | Grafana dashboards for metrics and tracing                      |
 
 ---
 
@@ -48,6 +48,70 @@ cd threadly-ui && npm install && npm run dev
 - **Schema migration** with **Flyway** — 10+ versioned PostgreSQL migrations (users, communities, posts, comments, votes, memberships, invites, feed)
 - **API documentation** via **SpringDoc OpenAPI** with Swagger UI + Actuator integration
 
+### 🌱 Spring Boot Environment Variables
+
+The application is configured using Spring Boot environment variables.  
+All values can be overridden via system environment variables or `.env` files.
+
+---
+
+#### 🗄 Database Configuration
+
+| Environment Variable | Default                                       | Description                    |
+| -------------------- | --------------------------------------------- | ------------------------------ |
+| `DB_URL`             | `jdbc:postgresql://localhost:5432/mydatabase` | PostgreSQL JDBC connection URL |
+| `DB_USERNAME`        | `myuser`                                      | Database username              |
+| `DB_PASSWORD`        | `secret`                                      | Database password              |
+
+---
+
+##### 🐇 RabbitMQ Configuration
+
+| Environment Variable | Default     | Description       |
+| -------------------- | ----------- | ----------------- |
+| `RABBIT_HOST`        | `localhost` | RabbitMQ host     |
+| `RABBIT_PORT`        | `5672`      | RabbitMQ port     |
+| `RABBIT_USERNAME`    | `guest`     | RabbitMQ username |
+| `RABBIT_PASSWORD`    | `guest`     | RabbitMQ password |
+
+---
+
+##### 🔐 Google OAuth2
+
+| Environment Variable   | Required | Description                |
+| ---------------------- | -------- | -------------------------- |
+| `GOOGLE_CLIENT_ID`     | ✅ Yes   | Google OAuth client ID     |
+| `GOOGLE_CLIENT_SECRET` | ✅ Yes   | Google OAuth client secret |
+
+Scopes used:
+
+- `openid`
+- `profile`
+- `email`
+
+---
+
+##### 🔑 JWT Security
+
+| Environment Variable | Required | Description                        |
+| -------------------- | -------- | ---------------------------------- |
+| `JWT_SECRET`         | ✅ Yes   | Secret key used to sign JWT tokens |
+
+Token durations (configured internally):
+
+- Access Token: `86400000 ms` (24 hours)
+- Refresh Token: `1209600000 ms` (14 days)
+
+---
+
+##### 🗂 Media Server
+
+| Environment Variable | Default                 | Description             |
+| -------------------- | ----------------------- | ----------------------- |
+| `MEDIA_ENDPOINT`     | `http://localhost:9000` | Media server endpoint   |
+| `MEDIA_ACCESS_KEY`   | ✅ Yes                  | Media server access key |
+| `MEDIA_SECRET_KEY`   | ✅ Yes                  | Media server secret key |
+
 ---
 
 ## ⚙️ Workers — Go (Go 1.24)
@@ -82,27 +146,27 @@ cd threadly-ui && npm install && npm run dev
 
 ## 🏗️ Infrastructure (Docker Compose)
 
-| Service | Image | Purpose |
-|---|---|---|
-| PostgreSQL | `postgres:16` | Primary database |
-| RabbitMQ | `rabbitmq:4-management` | Message broker |
-| MinIO | `minio/minio` | Object/media storage |
-| SpiceDB | `authzed/spicedb:v1.31.0` | ReBAC permission engine |
-| SpiceDB Migrate | `authzed/spicedb:v1.31.0` | One-shot schema migration |
-| SpiceDB Playground | `ghcr.io/authzed/spicedb-playground` | Dev permission debugger |
+| Service            | Image                                | Purpose                   |
+| ------------------ | ------------------------------------ | ------------------------- |
+| PostgreSQL         | `postgres:16`                        | Primary database          |
+| RabbitMQ           | `rabbitmq:4-management`              | Message broker            |
+| MinIO              | `minio/minio`                        | Object/media storage      |
+| SpiceDB            | `authzed/spicedb:v1.31.0`            | ReBAC permission engine   |
+| SpiceDB Migrate    | `authzed/spicedb:v1.31.0`            | One-shot schema migration |
+| SpiceDB Playground | `ghcr.io/authzed/spicedb-playground` | Dev permission debugger   |
 
 ---
 
 ## 🔑 Known Challenges Solved
 
-| Problem | Solution |
-|---|---|
-| Scalable permissions | Replaced AOP `@Permission` with SpiceDB ReBAC over gRPC |
-| Heavy I/O on request path | Async Go workers via RabbitMQ for image/SEO processing |
-| Redirect chains during image download | Custom redirect-following OkHttp/Go HTTP client logic |
-| HTML content storage & rendering | Tiptap editor with ProseMirror, stored as HTML |
-| Infinite pagination | Cursor-based feed table with keyset pagination |
-| Secure media access | Presigned MinIO URLs via object bucket key abstraction |
+| Problem                               | Solution                                                |
+| ------------------------------------- | ------------------------------------------------------- |
+| Scalable permissions                  | Replaced AOP `@Permission` with SpiceDB ReBAC over gRPC |
+| Heavy I/O on request path             | Async Go workers via RabbitMQ for image/SEO processing  |
+| Redirect chains during image download | Custom redirect-following OkHttp/Go HTTP client logic   |
+| HTML content storage & rendering      | Tiptap editor with ProseMirror, stored as HTML          |
+| Infinite pagination                   | Cursor-based feed table with keyset pagination          |
+| Secure media access                   | Presigned MinIO URLs via object bucket key abstraction  |
 
 ---
 

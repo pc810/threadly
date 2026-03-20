@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/mydatabase
-    username: myuser
-    password: secret
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/mydatabase}
+    username: ${DB_USERNAME:myuser}
+    password: ${DB_PASSWORD:secret}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -25,10 +25,10 @@ spring:
           exchange: modulith.events
 
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+    host: ${RABBIT_HOST:localhost}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USERNAME:guest}
+    password: ${RABBIT_PASSWORD:guest}
     virtual-host: /
     listener:
       simple:
@@ -42,8 +42,8 @@ spring:
       client:
         registration:
           google:
-            client-id: 633490798203-cu1n5gt964mnqa9pm6lpmkog102bjnqo.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             scope:
               - openid
               - profile
@@ -66,13 +66,13 @@ threadly:
   base-url: http://localhost:8080
 
   media-server:
-    endpoint: http://localhost:9000
-    access-key: minioadmin
-    secret-key: minioadmin
+    endpoint: ${MEDIA_ENDPOINT:http://localhost:9000}
+    access-key: ${MEDIA_ACCESS_KEY}
+    secret-key: ${MEDIA_SECRET_KEY}
 
   security:
     jwt:
-      secret: UZjBmGoDLCb0PnAcmnSjZdkcZnNoN35S
+      secret: ${JWT_SECRET}
       access-ms: 86400000
       refresh-ms: 1209600000
 
