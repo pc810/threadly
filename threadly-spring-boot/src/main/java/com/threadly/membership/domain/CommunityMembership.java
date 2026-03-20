@@ -57,10 +57,6 @@ public class CommunityMembership {
             .build();
   }
 
-  public boolean hasModOwnerPrivilege() {
-    return role.isAuthor() || role.isMod();
-  }
-
   public void updateRole(CommunityRole role) {
     this.setRole(role);
   }

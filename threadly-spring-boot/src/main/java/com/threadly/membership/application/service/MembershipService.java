@@ -80,9 +80,13 @@ class MembershipService implements MembershipExternalApi {
     }
   }
 
-  @Override
-  public Optional<CommunityMembership> getMembership(UUID communityId, UUID userId) {
+  private Optional<CommunityMembership> getMembershipInternal(UUID communityId, UUID userId) {
     return repository.findById(CommunityMembershipId.from(communityId, userId));
+  }
+
+  @Override
+  public Optional<CommunityMembershipDTO> getMembership(UUID communityId, UUID userId) {
+    return getMembershipInternal(communityId, userId).map(CommunityMembershipDTO::from);
   }
 
   @Override
@@ -114,8 +118,9 @@ class MembershipService implements MembershipExternalApi {
   }
 
   @Override
-  public List<CommunityMembership> getMembers(UUID communityId) {
-    return repository.findByCommunityId(communityId);
+  public List<CommunityMembershipDTO> getMembers(UUID communityId) {
+    return repository.findByCommunityId(communityId).stream().map(CommunityMembershipDTO::from)
+        .toList();
   }
 
   @Override
@@ -200,7 +205,7 @@ class MembershipService implements MembershipExternalApi {
         .orElseThrow(() -> MembershipNotFoundException.from(inviteId));
 
     inviteRepository.delete(invite);
-    var membershipOps = getMembership(communityId, userId);
+    var membershipOps = getMembershipInternal(communityId, userId);
     membershipOps.ifPresentOrElse(
         membership -> {
           membership.updateRole(invite.getRole());
@@ -213,7 +218,7 @@ class MembershipService implements MembershipExternalApi {
   }
 
   @Override
-  public void removeInvite(UUID communityId, UUID userId,UUID actorId) {
+  public void removeInvite(UUID communityId, UUID userId, UUID actorId) {
     var inviteId = CommunityMembershipId.from(communityId, userId);
 
     var invite = inviteRepository.findById(inviteId)

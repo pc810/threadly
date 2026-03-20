@@ -48,6 +48,8 @@ cd threadly-ui && npm install && npm run dev
 - **Schema migration** with **Flyway** — 10+ versioned PostgreSQL migrations (users, communities, posts, comments, votes, memberships, invites, feed)
 - **API documentation** via **SpringDoc OpenAPI** with Swagger UI + Actuator integration
 
+![Project Screenshot](./docs/spring.png)
+
 ### 🌱 Spring Boot Environment Variables
 
 The application is configured using Spring Boot environment variables.  

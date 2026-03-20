@@ -16,11 +16,11 @@ public interface MembershipExternalApi {
 
   void addMember(UUID communityId, UUID userId, CommunityRole role, UUID addedBy);
 
-  Optional<CommunityMembership> getMembership(UUID communityId, UUID userId);
+  Optional<CommunityMembershipDTO> getMembership(UUID communityId, UUID userId);
 
   void removeMember(UUID communityId, UUID userId);
 
-  List<CommunityMembership> getMembers(UUID communityId);
+  List<CommunityMembershipDTO> getMembers(UUID communityId);
 
   Slice<CommunityMembershipDTO> getMembers(UUID communityId, Pageable pageable,
       Optional<String> role);

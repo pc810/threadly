@@ -17,4 +17,8 @@ public record CommunityMembershipDTO(
         m.getCreatedAt()
     );
   }
+
+  public boolean hasModOwnerPrivilege() {
+    return role.isAuthor() || role.isMod();
+  }
 }

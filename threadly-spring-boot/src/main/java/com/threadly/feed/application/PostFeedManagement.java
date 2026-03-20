@@ -36,7 +36,7 @@ class PostFeedManagement {
 //                    .setFullyConsistent(true)
 //                    .build())
 //        )
-        .map(membership -> membership.getId().userId())
+        .map(membership -> membership.id().userId())
         .forEach((userId) -> postFeedInternalApi.createPostFeed(event.communityId(), event.id(),
             userId));
   }
