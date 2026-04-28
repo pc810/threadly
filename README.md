@@ -15,6 +15,10 @@ A full-stack, Reddit-like social platform built with a polyglot, event-driven mi
 
 ---
 
+> 📸 **[View Screenshots →](./screenshots.md)**
+
+---
+
 ## 🚀 Start Order
 
 1. **Docker** — starts PostgreSQL, RabbitMQ, MinIO, SpiceDB (runs migrations)

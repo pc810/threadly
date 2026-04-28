@@ -120,7 +120,7 @@ class MembershipService implements MembershipExternalApi {
   @Override
   public List<CommunityMembershipDTO> getMembers(UUID communityId) {
     return repository.findByCommunityId(communityId).stream().map(CommunityMembershipDTO::from)
-        .toList();
+        .toList() ;
   }
 
   @Override
